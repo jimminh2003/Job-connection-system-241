@@ -1,0 +1,108 @@
+/* Container tổng thể */
+.jobhome-container {
+    width: 70%;
+    max-height: 1200px;
+    height:750px;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  
+  
+  /* Header với chữ và nút Xem tất cả */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0px;
+  }
+  
+  .header h1 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .view-all-btn {
+    background-color: #004080;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .view-all-btn:hover {
+    background-color: #003366;
+  }
+  
+  /* Bộ lọc */
+  .filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  /* Phần bên trái của filter */
+  .filter-left {
+    display: flex;
+    align-items: center;
+  }
+  
+  .filter-left label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .filter-left select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Phần bên phải chứa các giá trị */
+  .filter-right {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .filter-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    overflow: hidden; /* Để chỉ hiển thị các giá trị trong không gian giới hạn */
+    transition: transform 0.3s ease; /* Hiệu ứng mượt khi chuyển trang */
+    width: 500px; /* Chiều rộng giới hạn để các nút chuyển trang hoạt động */
+  }
+  
+  .filter-value {
+    white-space: nowrap;
+    padding: 8px 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .arrow-btn {
+    background-color: #004080;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .arrow-btn:hover {
+    background-color: #003366;
+  }
+  
+  /* Danh sách công việc */
+  

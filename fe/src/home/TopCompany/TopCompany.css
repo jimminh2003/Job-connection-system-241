@@ -1,0 +1,130 @@
+/* Container tổng thể của các công ty */
+.home-container {
+    width: 70%;
+    max-height: 1000px;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .section-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Danh sách công ty */
+  .topcompany-list {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; /* Tự động xuống dòng nếu không đủ chỗ */
+    gap: 20px;
+  }
+  
+  /* Ô công ty */
+  .topcompany-card {
+    width: 150px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .topcompany-card:hover {
+    transform: translateY(-5px); /* Hiệu ứng nhấn nổi khi di chuột qua */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Ảnh logo công ty */
+  .topcompany-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+  }
+  
+  /* Tên công ty */
+  .topcompany-name {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+  }
+
+  /* Tổng thể container cho phần carousel tin tức */
+.news-carousel-container {
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 0px;
+    /* border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+    position: relative;
+    box-sizing: border-box;
+  }
+  
+  /* Nút điều hướng trái và phải */
+  .carousel-control {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+  }
+  
+  .carousel-control:hover {
+    background-color: #003366;
+  }
+  
+  .carousel-control.left {
+    position: absolute;
+    left: 20px;
+  }
+  
+  .carousel-control.right {
+    position: absolute;
+    right: 20px;
+  }
+  
+  /* Ô chứa tin tức hiện tại */
+  .news-card {
+    width: 100%;
+    padding: 200px;
+    background-color: rgb(205, 167, 167);
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Tiêu đề và nội dung tin tức */
+  .news-card h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .news-card p {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  

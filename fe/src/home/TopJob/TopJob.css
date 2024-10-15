@@ -1,0 +1,85 @@
+/* Container tổng thể */
+.industry-container {
+    width: 70%;
+    /* max-height: 800px; */
+    height: 500px;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Header với tiêu đề và nút chuyển trang */
+  .industry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .industry-header h2 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* Nút chuyển trang */
+  .pagination-controls button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .pagination-controls button:hover {
+    background-color: #003366;
+    color: white;
+  }
+  
+  /* Flexbox chứa danh sách ngành nghề */
+  .industry-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  /* Mỗi ô ngành nghề */
+  .industry-card {
+    width: 20%; /* 4 ô mỗi hàng */
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .industry-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Logo ngành nghề */
+  .industry-logo {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+  
+  /* Thông tin ngành nghề */
+  .industry-info h3 {
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .industry-info p {
+    font-size: 14px;
+    color: #666;
+  }
+  
