@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TopCompany.css';
 
 
@@ -29,7 +29,7 @@ function TopCompany() {
         window.location.href = url; // Điều hướng đến trang tin tức tương ứng
     };
     const companies = [
-        { name: 'Công ty A', logo: 'https://via.placeholder.com/100', url: '/company-a' },
+        { name: 'Công Ty Cổ Phần Đầu Tư Thương Mại Và Phát Triển Công Nghệ FSI', logo: 'https://via.placeholder.com/100', url: '/company-a' },
         { name: 'Công ty B', logo: 'https://via.placeholder.com/100', url: '/company-b' },
         { name: 'Công ty C', logo: 'https://via.placeholder.com/100', url: '/company-c' },
         { name: 'Công ty D', logo: 'https://via.placeholder.com/100', url: '/company-d' },
@@ -72,7 +72,9 @@ function TopCompany() {
                         onClick={() => handleCompanyClick(company.url)}
                     >
                         <img src={company.logo} alt={company.name} className="topcompany-logo" />
-                        <p className="topcompany-name">{company.name}</p>
+                        <p className="topcompany-name" title={company.name}>
+                            {company.name.length > 20 ? company.name.slice(0, 20) + '...' : company.name}
+                        </p>
                     </div>
                     ))}
                 </div>

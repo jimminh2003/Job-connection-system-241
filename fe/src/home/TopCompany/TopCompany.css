@@ -54,6 +54,8 @@
     font-size: 16px;
     color: #333;
     font-weight: bold;
+    overflow: hidden; /* Ẩn phần dư thừa */
+    text-overflow: ellipsis; /* Thêm '...' khi có overflow */
   }
 
   /* Tổng thể container cho phần carousel tin tức */
@@ -102,7 +104,7 @@
   .news-card {
     width: 100%;
     padding: 200px;
-    background-color: rgb(205, 167, 167);
+    background-color: rgb(171, 200, 211);
     text-align: center;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);

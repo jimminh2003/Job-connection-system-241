@@ -8,8 +8,8 @@ function Navbar() {
         <div id="header">
         <div id="nav">
         <div className='nav__logo'>
-              <a className="navbar-brand-custom" href="#home">
-                <img
+              <a className="navbar-brand-custom" href="/">
+                <img 
                   src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXkI3X3ldqL1YTY2TZhVx-8QeRWlqvCiqtxg&s"
                   width="50"
                   height="50"
@@ -20,7 +20,7 @@ function Navbar() {
 
             <div className="nav__menu">
                 <div className="menu-home menu-effect">
-                    <a href="./">Trang chủ</a>
+                    <a href="/">Trang chủ</a>
                 </div>
                 <div className="menu-job menu-effect auth-only">
                     <a href="./teacher-info.html">
