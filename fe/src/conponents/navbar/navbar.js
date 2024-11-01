@@ -5,7 +5,7 @@ import './navbar.css';
 
 function Navbar() {  
     return (
-        <div id="header">
+        <div id="headernav">
         <div id="nav">
         <div className='nav__logo'>
               <a className="navbar-brand-custom" href="/">

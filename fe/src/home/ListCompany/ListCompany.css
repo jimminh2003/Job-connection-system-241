@@ -1,5 +1,5 @@
 /* Tổng thể container */
-.list-company-container {
+#list-company-container {
     width: 70%;
     margin: 0 auto;
     margin-top: 20px;
@@ -9,19 +9,19 @@
   }
   
   /* Header với tiêu đề và nút xem tất cả */
-  .list-company-container .header {
+  #list-company-container .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
   }
   
-  .list-company-container .header h2 {
+  #list-company-container  .header h2 {
     font-size: 24px;
     color: #333;
   }
   
-  .list-company-container .view-all-btn {
+  #list-company-container  .view-all-btn {
     background-color: #004080;
     color: white;
     padding: 10px 20px;
@@ -30,12 +30,12 @@
     cursor: pointer;
   }
   
-  .list-company-container .view-all-btn:hover {
+  #list-company-container  .view-all-btn:hover {
     background-color: #003366;
   }
   
   /* Flexbox chứa các công ty và nút điều hướng */
-  .company-flexbox-container {
+  #list-company-container .company-flexbox-container {
     display: flex;
     align-items: center;
     position: relative;
@@ -46,7 +46,7 @@
   }
   
   /* Nút điều hướng */
-  .carousel-control {
+  #list-company-container  .carousel-control {
     background-color: white;
     color: black;
     border: none;
@@ -60,27 +60,27 @@
     transform: translateY(-50%);
   }
   
-  .carousel-control:hover {
+  #list-company-container   .carousel-control:hover {
     background-color: #003366;
   }
   
-  .carousel-control.left {
+  #list-company-container   .carousel-control.left {
     left: 0;
   }
   
-  .carousel-control.right {
+  #list-company-container   .carousel-control.right {
     right: 0;
   }
   
   /* Ô công ty */
-  .company-list {
+  #list-company-container  .company-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     width: 100%;
   }
   
-  .company-card {
+  #list-company-container  .company-card {
     display: flex;
     align-items: center;
     width: calc(30% - 20px); /* Hiển thị 3 bài trên một hàng */
@@ -93,29 +93,29 @@
     cursor: pointer;
   }
   
-  .company-card:hover {
+  #list-company-container .company-card:hover {
     transform: scale(1.02);
   }
   
   /* Logo công ty */
-  .company-logo {
+  #list-company-container .company-logo {
     font-size: 40px;
     margin-right: 15px;
   }
   
   /* Thông tin công ty */
-  .company-info h3 {
+  #list-company-container .company-info h3 {
     font-size: 18px;
     margin: 0;
     color: #333;
   }
   
-  .company-info p {
+  #list-company-container .company-info p {
     font-size: 14px;
     color: #666;
   }
   
-  .job-count {
+  #list-company-container .job-count {
     margin-top: 5px;
     font-size: 12px;
     color: #999;
@@ -123,13 +123,13 @@
   }
   
   /* Dấu chấm phân trang */
-  .pagination-dots {
+  #list-company-container  .pagination-dots {
     display: flex;
     justify-content: center;
     margin-top: 20px;
   }
   
-  .pagination-dots .dot {
+  #list-company-container .pagination-dots .dot {
     height: 12px;
     width: 12px;
     margin: 0 5px;
@@ -140,7 +140,7 @@
     transition: background-color 0.3s;
   }
   
-  .pagination-dots .dot.active {
+  #list-company-container .pagination-dots .dot.active {
     background-color: #004080;
   }
   

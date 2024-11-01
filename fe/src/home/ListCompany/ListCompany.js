@@ -30,7 +30,7 @@ function ListCompany() {
 
   return (
     <div>
-      <div className="list-company-container">
+      <div id="list-company-container">
         {/* Dòng đầu tiên */}
         <div className="header">
           <h2>Các Công Ty Lớn</h2>

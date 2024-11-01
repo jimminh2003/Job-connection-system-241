@@ -3,7 +3,7 @@ import './Footer.css';
 
 function Footer() {
   return (
-    <footer className="footer">
+    <footer id="footer">
       <div className="footer-container">
         {/* Cột 1 - Thông tin công ty */}
         <div className="footer-column">

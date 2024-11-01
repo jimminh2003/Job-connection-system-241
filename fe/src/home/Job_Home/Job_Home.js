@@ -78,7 +78,7 @@ function Job_Home() {
 
     return (
         <div>
-            <div className="jobhome-container" id='job-portial'>
+            <div id="jobhome-container">
                 {/* Hàng đầu tiên - Việc làm tốt nhất và nút Xem tất cả */}
                 <div className="header">
                     <h1>Việc làm tốt nhất</h1>

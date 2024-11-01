@@ -34,7 +34,7 @@ function TopJob() {
   };
 
   return (
-    <div className="industry-container">
+    <div id="industry-container">
       {/* Header với tiêu đề và nút chuyển trang */}
       <div className="industry-header">
         <h2>Top Các Ngành Nghề Nổi Bật</h2>

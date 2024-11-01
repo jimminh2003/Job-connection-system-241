@@ -1,5 +1,5 @@
 /* Container tổng thể */
-.jobhome-container {
+#jobhome-container {
     width: 70%;
     max-height: 1200px;
     height:750px;
@@ -13,19 +13,19 @@
   
   
   /* Header với chữ và nút Xem tất cả */
-  .header {
+  #jobhome-container .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0px;
   }
   
-  .header h1 {
+  #jobhome-container  .header h1 {
     font-size: 24px;
     color: #333;
   }
   
-  .view-all-btn {
+  #jobhome-container .view-all-btn {
     background-color: #004080;
     color: white;
     padding: 10px 20px;
@@ -34,12 +34,12 @@
     cursor: pointer;
   }
   
-  .view-all-btn:hover {
+  #jobhome-container .view-all-btn:hover {
     background-color: #003366;
   }
   
   /* Bộ lọc */
-  .filter-container {
+  #jobhome-container  .filter-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -51,30 +51,30 @@
   }
   
   /* Phần bên trái của filter */
-  .filter-left {
+  #jobhome-container .filter-left {
     display: flex;
     align-items: center;
   }
   
-  .filter-left label {
+  #jobhome-container  .filter-left label {
     margin-right: 10px;
     font-weight: bold;
   }
   
-  .filter-left select {
+  #jobhome-container  .filter-left select {
     padding: 8px;
     border-radius: 5px;
     border: 1px solid #ccc;
   }
   
   /* Phần bên phải chứa các giá trị */
-  .filter-right {
+  #jobhome-container .filter-right {
     display: flex;
     align-items: center;
     overflow: hidden;
   }
   
-  .filter-values {
+  #jobhome-container .filter-values {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
@@ -83,7 +83,7 @@
     width: 500px; /* Chiều rộng giới hạn để các nút chuyển trang hoạt động */
   }
   
-  .filter-value {
+  #jobhome-container .filter-value {
     white-space: nowrap;
     padding: 8px 10px;
     background-color: #f0f0f0;
@@ -91,7 +91,7 @@
     font-size: 14px;
   }
   
-  .arrow-btn {
+  #jobhome-container .arrow-btn {
     background-color: #004080;
     color: white;
     padding: 5px 10px;
@@ -100,7 +100,7 @@
     cursor: pointer;
   }
   
-  .arrow-btn:hover {
+  #jobhome-container .arrow-btn:hover {
     background-color: #003366;
   }
   

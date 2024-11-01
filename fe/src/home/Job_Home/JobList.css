@@ -1,5 +1,5 @@
 /* Container của danh sách job */
-.job-list-container {
+#jobhome-container .job-list-container {
   width: 100%;
   height: 600px;
   background-color: #c5d5e2;
@@ -9,7 +9,7 @@
 }
 
 /* Flexbox cho danh sách job - 3 cột */
-.job-list {
+#jobhome-container .job-list {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -17,7 +17,7 @@
   box-sizing: border-box; /* Đảm bảo padding được tính trong kích thước */
 }
 
-.job-card {
+#jobhome-container .job-card {
   flex: 1 1 calc(30% - 20px); /* Hiển thị 3 bài trên một hàng */
   background-color: white;
   padding: 10px;
@@ -28,37 +28,37 @@
   cursor: pointer; /* Thêm con trỏ pointer để cho biết có thể nhấn */
 }
 
-.job-card:hover {
+#jobhome-container .job-card:hover {
   transform: scale(1.02); /* Thay đổi hiệu ứng hover */
 }
 
-.job-card h3 {
+#jobhome-container .job-card h3 {
   font-size: 18px;
   margin-bottom: 10px;
   color: #333;
 }
 
-.job-card p {
+#jobhome-container .job-card p {
   font-size: 14px;
   margin-bottom: 8px;
   color: #666;
 }
 
 /* Đặc biệt cho mô tả job */
-.job-description {
+#jobhome-container .job-description {
   overflow: hidden; /* Ẩn phần dư thừa */
   white-space: nowrap; /* Không cho mô tả xuống dòng */
   text-overflow: ellipsis; /* Thêm '...' khi có overflow */
 }
 
 /* Pagination styles */
-.pagination {
+#jobhome-container .pagination {
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
 
-.pagination button {
+#jobhome-container .pagination button {
   background-color: #004080;
   color: white;
   padding: 10px 15px;
@@ -68,7 +68,7 @@
   cursor: pointer;
 }
 
-.pagination button.active {
+#jobhome-container .pagination button.active {
   background-color: #ffcc00;
   color: black;
 }

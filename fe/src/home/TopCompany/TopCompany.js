@@ -41,7 +41,7 @@ function TopCompany() {
         window.location.href = url;
       };
     return (
-        <div className="home-container">
+        <div id="hometopcompany-container">
             <div className="news-carousel-container">
             <button className="carousel-control left" onClick={handlePrevious}>
                 {"<"}

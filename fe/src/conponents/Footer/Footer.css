@@ -1,5 +1,5 @@
 /* Tổng thể footer */
-.footer {
+#footer {
     background-color: #003366;
     color: white;
     padding: 40px 20px;
@@ -7,7 +7,7 @@
     margin-top: 40px;
   }
   
-  .footer-container {
+  #footer  .footer-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -15,13 +15,13 @@
     margin: 0 auto;
   }
   
-  .footer-column {
+  #footer  .footer-column {
     flex: 1;
     margin: 10px;
     min-width: 220px;
   }
   
-  .footer-column h3 {
+  #footer  .footer-column h3 {
     font-size: 18px;
     margin-bottom: 20px;
     border-bottom: 2px solid #005599;
@@ -29,46 +29,46 @@
     color: #fff;
   }
   
-  .footer-column p,
-  .footer-column li,
-  .footer-column a {
+  #footer  .footer-column p,
+  #footer  .footer-column li,
+  #footer  .footer-column a {
     color: #ccc;
     margin-bottom: 10px;
     text-decoration: none;
     transition: color 0.3s ease;
   }
   
-  .footer-column a:hover {
+  #footer .footer-column a:hover {
     color: #fff;
   }
   
-  .footer-column ul {
+  #footer .footer-column ul {
     list-style: none;
     padding: 0;
   }
   
-  .footer-column i {
+  #footer .footer-column i {
     margin-right: 10px;
   }
   
-  .social-icons a {
+  #footer .social-icons a {
     margin-right: 15px;
     font-size: 20px;
     color: #ccc;
     transition: color 0.3s ease;
   }
   
-  .social-icons a:hover {
+  #footer .social-icons a:hover {
     color: #fff;
   }
   
   /* Form đăng ký nhận thông báo */
-  .newsletter-form {
+  #footer .newsletter-form {
     display: flex;
     margin-top: 20px;
   }
   
-  .newsletter-form input {
+  #footer .newsletter-form input {
     padding: 10px;
     border: none;
     border-radius: 4px;
@@ -76,7 +76,7 @@
     flex: 1;
   }
   
-  .newsletter-form button {
+  #footer .newsletter-form button {
     padding: 10px 20px;
     background-color: #005599;
     color: white;
@@ -86,19 +86,19 @@
     transition: background-color 0.3s ease;
   }
   
-  .newsletter-form button:hover {
+  #footer .newsletter-form button:hover {
     background-color: #0077cc;
   }
   
   /* Footer cuối cùng */
-  .footer-bottom {
+  #footer .footer-bottom {
     text-align: center;
     margin-top: 30px;
     border-top: 1px solid #005599;
     padding-top: 20px;
   }
   
-  .footer-bottom p {
+  #footer .footer-bottom p {
     margin: 0;
     color: #ccc;
   }
