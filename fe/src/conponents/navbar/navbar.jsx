@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import './navbar.css';
+// import AllCompany from '../../Pages/Allcompany';
 
 
+function Navbar() { 
 
-function Navbar() {  
     return (
         <div id="headernav">
         <div className="nav">
@@ -30,7 +32,7 @@ function Navbar() {
                     </a>
                     
                     <ul className="subnav">
-                        <li><a href='./alljob'>Toàn Bộ Việc Làm</a></li>
+                        <li><Link to="/alljob">Toàn Bộ Việc Làm</Link></li>
                         <li><a href="./">Việc Làm IT</a></li>
                         <li><a href="./">Việc Làm Hot</a></li>
                     </ul>

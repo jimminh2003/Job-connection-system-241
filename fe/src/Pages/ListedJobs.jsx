@@ -88,7 +88,7 @@ const ListedJobs = ({ jobs = [], setSavedJobs = () => {}, savedJobs = [] }) => {
           </div>
           <div className="flex flex-col gap-4 self-end">
             <button
-              onClick={() => navigate(`/jobs/${job.id}`)}
+              onClick={() => navigate(`/JobDetail/${job.id}`)}
               className="text-white font-bold text-lg rounded-md bg-indigo-500 hover:bg-indigo-600 transition-colors w-40 h-10"
             >
               Apply

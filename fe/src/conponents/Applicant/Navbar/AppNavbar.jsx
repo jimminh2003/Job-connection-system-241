@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from "react";
 import './AppNavBar.css';
-import { useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
-
+// import { useNavigate } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function AppNavbar() {  
 
-    const navigate = useNavigate();
-    const handleProfile = () => {
-        navigate('/ApplicantProfile');
-    };
+    // const navigate = useNavigate();
+    // const handleProfile = () => {
+    //     navigate('/ApplicantProfile');
+    // };
     return (
         <div className="headernavapp">
         <div className="nav">
@@ -35,7 +35,7 @@ function AppNavbar() {
                     </a>
                     
                     <ul className="subnav">
-                        <li><a href="./">Toàn Bộ Việc Làm</a></li>
+                        <li><Link to="/alljob">Toàn Bộ Việc Làm</Link></li>
                         <li><a href="./">Việc Làm IT</a></li>
                         <li><a href="./">Việc Làm Hot</a></li>
                     </ul>
@@ -47,7 +47,7 @@ function AppNavbar() {
                         <i className="fa-solid fa-angle-down"></i>
                     </a>
                     <ul className="subnav">
-                        <li><a href="./">Toàn Bộ Công Ty</a></li>
+                        <li><Link to="/allcompany">Toàn Bộ Công Ty</Link></li>
                         <li><a href="./">Công Ty Hàng Đầu</a></li>
                         <li><a href="./">Công Ty IT</a></li>
                     </ul>
@@ -90,7 +90,8 @@ function AppNavbar() {
                     </div>
                     <li>
                         <i className="fa-solid fa-user-cog"></i>
-                        <a onClick={handleProfile}>Cài đặt thông tin cá nhân</a>
+                        {/* <a onClick={handleProfile}>Cài đặt thông tin cá nhân</a> */}
+                        <Link to="/ApplicantProfile">Cài đặt thông tin cá nhân</Link>
                     </li>
                     <li>
                         <i className="fa-solid fa-crown"></i>

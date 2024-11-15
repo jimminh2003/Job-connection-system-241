@@ -12,6 +12,7 @@ import AllCompany from './Pages/Allcompany.jsx';
 import AllJob from "./Pages/AllJob";
 import SavedJobs from "./Pages/SavedJobs";
 import ErrorBoundary from "./Pages/ErrorBoudary";
+import Test from './Pages/test.jsx';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/saved-jobs" element={<SavedJobs />} />
         <Route path="/saved-jobs/:id" element={<SavedJobs />} />
         <Route path="/allcompany" element={<AllCompany />} />
+        <Route path="/test" element={<Test />} />
         <Route path="*" element={<ErrorBoundary />} />
       </Routes>
 
