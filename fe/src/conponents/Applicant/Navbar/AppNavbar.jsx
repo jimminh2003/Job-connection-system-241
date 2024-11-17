@@ -29,7 +29,7 @@ function AppNavbar() {
                     <a href="/">Trang chủ</a>
                 </div>
                 <div className="menu-job menu-effect auth-only">
-                    <a href="./teacher-info.html">
+                    <a href="/alljob">
                         Việc Làm
                         <i className="fa-solid fa-angle-down"></i>
                     </a>
@@ -42,7 +42,7 @@ function AppNavbar() {
                     <div className="underline"></div>
                 </div>
                 <div className="menu-company menu-effect student-only">
-                    <a href="./student-info.html">
+                    <a href="/allcompany">
                         Công Ty
                         <i className="fa-solid fa-angle-down"></i>
                     </a>
@@ -54,7 +54,7 @@ function AppNavbar() {
                     <div className="underline"></div>
                 </div>
                 <div className="menu-courses menu-effect student-only">
-                    <a href="./courses.html">
+                    <a href="./">
                         Công Cụ
                         <i className="fa-solid fa-angle-down"></i>
                     </a>

@@ -22,8 +22,10 @@
 .nav {
   display: flex;
   align-items: center;
-  background-color: #white;   
+  background-color: white;   
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: relative; /* Thiết lập làm gốc cho các thành phần con */
+    z-index: 1; /* Đảm bảo thanh menu nằm trên các thành phần khác */
 }
 
 .nav .nav__logo {
@@ -64,7 +66,11 @@
 }
 
 .nav .nav__menu div {
-  padding: 0 20px;
+  padding: 5px 20px;
+  display: flex;
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: center; /* (Tuỳ chọn) Căn giữa theo chiều ngang */
+  height: 80px;  /* Chiều cao khớp với menu */
 }
 
 .nav .nav__menu a {
@@ -90,7 +96,6 @@
   display: block;
   border-radius: 20px;
   top: 100%;
-  transform: translateY(10px); /* Dịch chuyển xuống 10px */
 }
 
 
@@ -103,7 +108,7 @@
   border-radius: 20px;
   line-height: 60px !important;
   display: none;
-  z-index: 1;
+  z-index: 999;
 }
 
 .nav .subnav li {

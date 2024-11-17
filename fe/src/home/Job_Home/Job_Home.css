@@ -77,6 +77,8 @@
   #jobhome-container .filter-values {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center; /* Căn giữa các giá trị */
+    align-items: center; /* Căn giữa theo chiều dọc */
     gap: 15px;
     overflow: hidden; /* Để chỉ hiển thị các giá trị trong không gian giới hạn */
     transition: transform 0.3s ease; /* Hiệu ứng mượt khi chuyển trang */

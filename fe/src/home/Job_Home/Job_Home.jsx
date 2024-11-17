@@ -33,7 +33,7 @@ function Job_Home() {
         { id: 15, title: 'Product Manager', company: 'Company O', description: 'Thỏa thuận' },
     ];
 
-    const valuesPerPage = 5;
+    const valuesPerPage = 4;
     const jobsPerPage = 9;
 
     const navigate = useNavigate();

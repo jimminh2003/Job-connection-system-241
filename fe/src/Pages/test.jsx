@@ -21,6 +21,7 @@ const Test = () => {
          return (
             <div className="post-card" key={post.id}>
                <h2 className="post-title">Title: {post.title}</h2>
+               <image ></image>
                <p className="post-body">Body: {post.body}</p>
                <div className="button">
                <button className="delete-btn">Delete</button>

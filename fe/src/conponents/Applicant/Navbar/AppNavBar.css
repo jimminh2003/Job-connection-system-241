@@ -12,6 +12,10 @@
     box-sizing: border-box;
     
   }
+  body {
+    position: relative; /* Đặt gốc cho toàn bộ layout */
+    z-index: 0; /* Đảm bảo các phần tử khác không che menu */
+  }
   
   .headernav {
     width: 100%;
@@ -24,6 +28,8 @@
     align-items: center;
     background-color: white;   
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    position: relative; /* Thiết lập làm gốc cho các thành phần con */
+    z-index: 1; /* Đảm bảo thanh menu nằm trên các thành phần khác */
   } 
   
   .nav .nav__logo {
@@ -64,13 +70,19 @@
   }
   
   .nav .nav__menu div {
-    padding: 0 20px;
+    padding: 5px 20px;
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* (Tuỳ chọn) Căn giữa theo chiều ngang */
+    height: 80px;
+     /* Chiều cao khớp với menu */
   }
   
   .nav .nav__menu a {
     text-decoration: none;
     color: #000;
   }
+
   
   .nav .nav__menu:hover {
     cursor: pointer;
@@ -90,7 +102,8 @@
     display: block;
     border-radius: 20px;
     top: 100%;
-    transform: translateY(10px); /* Dịch chuyển xuống 10px */
+    /* transform: translateY(10px);  */
+    /* Dịch chuyển xuống 10px */
   }
   
   
@@ -103,7 +116,7 @@
     border-radius: 20px;
     line-height: 60px !important;
     display: none;
-    z-index: 1;
+    z-index: 999;
   }
   
   .nav .subnav li {
@@ -236,9 +249,17 @@
     border-radius: 10px;
     width: 350px;
     padding: 15px 0;
-    z-index: 5;
-    /* font-family: Arial, sans-serif; */
+    z-index: 99;
     list-style-type: none;  /* Loại bỏ dấu chấm */
+}
+
+.nav__avatar:hover .dropdown-menu {
+  display: block; /* Hiển thị dropdown-menu khi hover avatar */
+}
+
+/* Điều chỉnh vị trí cho dropdown-menu nếu cần */
+.nav__avatar {
+  position: relative;
 }
 
 .dropdown-menu li {
@@ -287,7 +308,6 @@
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: auto;
-    /* font-family: Arial, sans-serif; */
     padding: 20px 40px;  /* Thêm khoảng cách bên trong */
     border-radius: 8px;  /* Bo góc phần tử */
   }
