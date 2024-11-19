@@ -2,7 +2,7 @@
 #jobhome-container {
     width: 70%;
     max-height: 1200px;
-    height:750px;
+    height:710px;
     margin: 0 auto;
     margin-top: 20px;
     padding: 20px;
@@ -26,7 +26,7 @@
   }
   
   #jobhome-container .view-all-btn {
-    background-color: #004080;
+    background-color: #7AB2D3;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -35,7 +35,7 @@
   }
   
   #jobhome-container .view-all-btn:hover {
-    background-color: #003366;
+    background-color: #4A628A;
   }
   
   /* Bộ lọc */
@@ -44,9 +44,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: white;
+    background-color: #f9f9f9;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
     margin-bottom: 20px;
   }
   
@@ -94,8 +94,8 @@
   }
   
   #jobhome-container .arrow-btn {
-    background-color: #004080;
-    color: white;
+    background-color: #f9f9f9;
+    color: black;
     padding: 5px 10px;
     border: none;
     border-radius: 5px;
@@ -103,7 +103,7 @@
   }
   
   #jobhome-container .arrow-btn:hover {
-    background-color: #003366;
+    background-color: #4A628A;
   }
   
   /* Danh sách công việc */

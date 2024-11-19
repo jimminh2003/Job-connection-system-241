@@ -114,11 +114,46 @@ const CompanyProfile = () => {
              
           )}
 
-          {activeTab === 'Đăng tuyển việc làm' &&(
-            <div>
-              <h2>Đăng Bài Tuyển Dụng</h2>
+          {activeTab === 'Đăng tuyển việc làm' && (
+            <div className="post-job">
+              <h2>Đăng Tuyển Việc Làm</h2>
+
+              <div className="form-group">
+                <label>Tiêu đề</label>
+                <input type="text" placeholder="Nhập tiêu đề công việc" />
+              </div>
+
+              <div className="form-group">
+                <label>Mức lương tối thiểu</label>
+                <input type="number" placeholder="Nhập mức lương tối thiểu (VND)" />
+              </div>
+
+              <div className="form-group">
+                <label>Mức lương tối đa</label>
+                <input type="number" placeholder="Nhập mức lương tối đa (VND)" />
+              </div>
+
+              <div className="form-group">
+                <label>Lịch làm việc</label>
+                <select>
+                  <option>Toàn thời gian</option>
+                  <option>Bán thời gian</option>
+                  <option>Hợp đồng</option>
+                  <option>Thực tập</option>
+                  <option>Khác</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Mô tả công việc</label>
+                <textarea
+                  rows="5"
+                  placeholder="Nhập mô tả chi tiết về công việc"
+                ></textarea>
+              </div>
+
+              <button className="post-btn">Đăng Tuyển</button>
             </div>
-             
           )}
 
           {activeTab === 'Đổi mật khẩu' &&(

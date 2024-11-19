@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../css/ApplicationForm.css';
+import { Button, Flex } from 'antd';
 
 const ApplicationForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -90,6 +91,11 @@ const ApplicationForm = ({ onClose }) => {
           <div className="button-group">
             <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
             <button type="submit" className="submit-btn">Submit Application</button>
+            {/* <Flex vertical gap="small" style={{ width: '100%' }}>
+              <Button type="primary" block>
+                Primary
+              </Button>
+            </Flex> */}
           </div>
         </form>
       </div>

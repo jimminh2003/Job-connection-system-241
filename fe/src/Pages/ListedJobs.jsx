@@ -1,12 +1,13 @@
 import React from 'react';
-import {
-  Bookmark,
-  BookmarkOutline,
-  BusinessOutline,
-  LocationOutline,
-  NewspaperOutline,
-} from "react-ionicons";
 import { useNavigate } from "react-router-dom";
+import defaultImage from '../images/logo1.png';
+import {
+  BookmarkPlus,
+  Bookmark,
+  Building2,
+  MapPin,
+  Newspaper
+} from "lucide-react";
 
 const ListedJobs = ({ jobs = [], setSavedJobs = () => {}, savedJobs = [] }) => {
   const navigate = useNavigate();
@@ -21,6 +22,13 @@ const ListedJobs = ({ jobs = [], setSavedJobs = () => {}, savedJobs = [] }) => {
     });
   };
 
+  const formatSalaryRange = (min, max) => {
+    if (min === 0 && max === 0) return "Negotiable";
+    if (min === 0) return `Up to $${max}k`;
+    if (max === 0) return `From $${min}k`;
+    return `$${min}k - $${max}k`;
+  };
+
   if (!Array.isArray(jobs)) {
     return (
       <div className="w-full flex justify-center items-center mt-8">
@@ -32,7 +40,7 @@ const ListedJobs = ({ jobs = [], setSavedJobs = () => {}, savedJobs = [] }) => {
   if (jobs.length === 0) {
     return (
       <div className="w-full flex justify-center items-center mt-8">
-        <span className="text-gray-500 text-lg">No jobs matched your filters!</span>
+        <span className="text-gray-500 text-lg">No jobs found!</span>
       </div>
     );
   }
@@ -46,53 +54,58 @@ const ListedJobs = ({ jobs = [], setSavedJobs = () => {}, savedJobs = [] }) => {
         >
           <div className="flex md:flex-row flex-col md:items-center items-start gap-6">
             <img
-              src={job.logo}
-              alt={job.title}
-              className="w-[70px] object-contain"
+              src={job.image || defaultImage}
+              alt="Company logo"
+              className="w-[70px] h-[70px] object-contain bg-gray-50 rounded-md"
             />
             <div className="flex flex-col gap-[6px]">
               <span className="font-semibold text-indigo-500 text-[22px]">
-                {job.title}
+                {job.description || 'Position Available'}
               </span>
+              
               <div className="flex items-center gap-2">
-                <BusinessOutline
-                  width="18px"
-                  height="18px"
-                  color="#555"
-                />
+                <Building2 className="w-4 h-4 text-gray-600" />
                 <span className="text-[14px] font-medium text-gray-600">
-                  {job.company}
+                  Level: {job.level}
                 </span>
               </div>
+
               <div className="flex items-center gap-2">
-                <LocationOutline
-                  width="18px"
-                  height="18px"
-                  color="#555"
-                />
+                <MapPin className="w-4 h-4 text-gray-600" />
                 <span className="text-[14px] font-medium text-gray-600">
-                  {job.workStatus}
+                  Schedule: {job.schedule === '0' ? 'Part Time' : job.schedule === '1' ? 'Full Time' : 'Not specified'}
                 </span>
               </div>
+
               <div className="flex items-center gap-2">
-                <NewspaperOutline
-                  width="18px"
-                  height="18px"
-                  color="#555"
-                />
+                <Newspaper className="w-4 h-4 text-gray-600" />
                 <span className="text-[14px] font-medium text-gray-600">
-                  {job.contractStatus}
+                  {formatSalaryRange(job.minSalary, job.maxSalary)}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-500 mt-2">
+                <span className="font-medium">
+                  Applicants: {job.numberOfApplicants} | 
+                  Allowance: ${job.allowance}
                 </span>
               </div>
             </div>
           </div>
+
           <div className="flex flex-col gap-4 self-end">
             <button
               onClick={() => navigate(`/JobDetail/${job.id}`)}
-              className="text-white font-bold text-lg rounded-md bg-indigo-500 hover:bg-indigo-600 transition-colors w-40 h-10"
+              className={`text-white font-bold text-lg rounded-md transition-colors w-40 h-10 ${
+                job.status 
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-500 hover:bg-indigo-600'
+              }`}
+              disabled={!job.status}
             >
-              Apply
+              {job.status ? 'Closed' : 'Apply'}
             </button>
+            
             <button
               onClick={() => handleSave(job.id)}
               className={`flex items-center gap-2 cursor-pointer rounded-md justify-center py-1 border ${
@@ -102,9 +115,9 @@ const ListedJobs = ({ jobs = [], setSavedJobs = () => {}, savedJobs = [] }) => {
               }`}
             >
               {savedJobs.includes(job.id) ? (
-                <Bookmark color="#6366fa" />
+                <Bookmark className="w-4 h-4 text-indigo-500" />
               ) : (
-                <BookmarkOutline color="#6366fa" />
+                <BookmarkPlus className="w-4 h-4 text-indigo-500" />
               )}
               <span className="font-medium text-[14.5px] text-gray-600">
                 {savedJobs.includes(job.id) ? "Saved!" : "Save"}

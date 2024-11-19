@@ -1,51 +1,123 @@
 /* Container của danh sách job */
 #jobhome-container .job-list-container {
   width: 100%;
-  height: 600px;
-  background-color: #c5d5e2;
+  height: auto;
+  background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
   box-sizing: border-box;
 }
 
-/* Flexbox cho danh sách job - 3 cột */
+/* Flexbox cho danh sách job - 4 cột */
 #jobhome-container .job-list {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  padding: 20px; /* Thêm padding cho job-list */
-  box-sizing: border-box; /* Đảm bảo padding được tính trong kích thước */
+  padding: 20px;
+  box-sizing: border-box;
+  justify-content: flex-start; /* Điều chỉnh căn giữa hoặc kéo các job về bên trái */
+
 }
 
+
 #jobhome-container .job-card {
-  flex: 1 1 calc(30% - 20px); /* Hiển thị 3 bài trên một hàng */
+  display: flex; /* Sử dụng flex để căn chỉnh logo và nội dung */
+  flex-direction: row; /* Logo nằm bên trái, nội dung nằm bên phải */
+  align-items: center; /* Căn giữa logo và nội dung theo chiều dọc */
+  flex: 1 1 calc(30% - 20px);
   background-color: white;
   padding: 10px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   text-align: left;
   transition: transform 0.2s ease-in-out;
-  cursor: pointer; /* Thêm con trỏ pointer để cho biết có thể nhấn */
+  cursor: pointer;
+  min-width: 385px;
+  flex: 1 1 auto; /* Cho phép tự điều chỉnh width theo không gian còn lại */
 }
 
 #jobhome-container .job-card:hover {
   transform: scale(1.02); /* Thay đổi hiệu ứng hover */
+
+}
+#jobhome-container .job-card:hover h3 {
+  color: #EC8305; /* Màu chữ tiêu đề khi hover */
+}
+/* Đảm bảo các ô không kéo dài khi có ít hơn 4 job */
+#jobhome-container .job-list > .job-card {
+  flex-basis: calc(30% - 20px); /* Chia 3 ô trong 1 hàng */
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+#jobhome-container .job-list > .job-card:nth-child(3n + 1) {
+  margin-left: 0;
+}
+
+#jobhome-container .job-list > .job-card:nth-child(3n) {
+  margin-right: 0;
+}
+
+@media (max-width: 1024px) {
+  #jobhome-container .job-card {
+    flex-basis: calc(50% - 20px); /* 2 cột cho màn hình nhỏ */
+  }
+}
+
+@media (max-width: 768px) {
+  #jobhome-container .job-card {
+    flex-basis: 100%; /* 1 cột cho màn hình cực nhỏ */
+  }
 }
 
 #jobhome-container .job-card h3 {
   font-size: 18px;
-  margin-bottom: 10px;
   color: #333;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 #jobhome-container .job-card p {
-  font-size: 14px;
-  margin-bottom: 8px;
+  font-size: 12px;
   color: #666;
+  margin-bottom: 5px;;
+}
+
+
+#jobhome-container .job-content {
+  display: flex;
+  align-items: center; /* Đảm bảo căn giữa logo và nội dung theo chiều dọc */
+}
+
+#jobhome-container .job-logo {
+  width: 80px;
+  height: 80px;
+  margin-right: 5px; /* Khoảng cách giữa logo và nội dung */
+  border-radius: 8px; /* Bo góc cho logo */
+  object-fit: cover; /* Logo giữ tỉ lệ và lấp đầy khung */
+  flex-shrink: 0; /* Đảm bảo logo không co lại khi nội dung dài */
+}
+
+#jobhome-container .job-info {
+  flex: 1; /* Nội dung chiếm toàn bộ không gian còn lại */
 }
 
 /* Đặc biệt cho mô tả job */
-#jobhome-container .job-description {
+#jobhome-container .job-salary {
+  overflow: hidden; /* Ẩn phần dư thừa */
+  white-space: nowrap; /* Không cho mô tả xuống dòng */
+  text-overflow: ellipsis; /* Thêm '...' khi có overflow */
+}
+#jobhome-container .job-company {
+  overflow: hidden; /* Ẩn phần dư thừa */
+  white-space: nowrap; /* Không cho mô tả xuống dòng */
+  text-overflow: ellipsis; /* Thêm '...' khi có overflow */
+}
+#jobhome-container .job-title {
+  overflow: hidden; /* Ẩn phần dư thừa */
+  white-space: nowrap; /* Không cho mô tả xuống dòng */
+  text-overflow: ellipsis; /* Thêm '...' khi có overflow */
+}
+#jobhome-container .job-location {
   overflow: hidden; /* Ẩn phần dư thừa */
   white-space: nowrap; /* Không cho mô tả xuống dòng */
   text-overflow: ellipsis; /* Thêm '...' khi có overflow */
@@ -59,7 +131,7 @@
 }
 
 #jobhome-container .pagination button {
-  background-color: #004080;
+  background-color: #7AB2D3;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -68,7 +140,18 @@
   cursor: pointer;
 }
 
-#jobhome-container .pagination button.active {
-  background-color: #ffcc00;
-  color: black;
+#jobhome-container .pagination button:hover {
+  background-color: #0a61f8;
+  color: white;
 }
+
+
+
+#jobhome-container .pagination button.active {
+  background-color: #0a61f8;
+  color: white;
+}
+
+
+
+

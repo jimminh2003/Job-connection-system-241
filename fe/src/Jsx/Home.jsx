@@ -6,10 +6,11 @@ import TopJob from "./TopJob";
 import ListCompany from "./ListCompany";
 import Footer from "./Footer";
 import AppNavbar from "./AppNavbar";
+import '../css/Home.css'
 
 function Home(){
     return(
-        <div>
+        <div id="home-container">
             <AppNavbar/>
             <TopCompany/>
             <Job_Home/>

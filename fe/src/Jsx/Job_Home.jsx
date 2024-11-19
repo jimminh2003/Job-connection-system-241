@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Job_Home.css';
 import '../css/JobList.css';
+// import a from '../images/bg.jpg';
 
 function Job_Home() {
     const [selectedFilter, setSelectedFilter] = useState('nganh-nghe');
@@ -16,23 +17,41 @@ function Job_Home() {
     };
 
     const jobs = [
-        { id: 1, title: 'Quản lý dự án - PM', company: 'Công Ty Cổ Phần Đầu Tư Thương Mại Và Phát Triển Công Nghệ FSI', description: '20 - 27 triệu' },
-        { id: 2, title: 'Backend Developer', company: 'Company B', description: 'Thỏa thuận' },
-        { id: 3, title: 'Full Stack Developer', company: 'Company C', description: 'Thỏa thuận' },
-        { id: 4, title: 'Data Scientist', company: 'Company D', description: 'Thỏa thuận' },
-        { id: 5, title: 'Mobile Developer', company: 'Company E', description: 'Thỏa thuận' },
-        { id: 6, title: 'DevOps Engineer', company: 'Company F', description: 'Thỏa thuận' },
-        { id: 7, title: 'UI/UX Designer', company: 'Company G', description: 'Thỏa thuận' },
-        { id: 8, title: 'QA Engineer', company: 'Company H', description: 'Thỏa thuận' },
-        { id: 9, title: 'Project Manager', company: 'Company I', description: 'Thỏa thuận' },
-        { id: 10, title: 'Cybersecurity Expert', company: 'Company J', description: 'Thỏa thuận' },
-        { id: 11, title: 'Cloud Architect', company: 'Company K', description: 'Thỏa thuận' },
-        { id: 12, title: 'AI Engineer', company: 'Company L', description: 'Thỏa thuận' },
-        { id: 13, title: 'Blockchain Developer', company: 'Company M', description: 'Thỏa thuận' },
-        { id: 14, title: 'Marketing Manager', company: 'Company N', description: 'Thỏa thuận' },
-        { id: 15, title: 'Product Manager', company: 'Company O', description: 'Thỏa thuận' },
+        { id: 1, logo: 'bg.jpg',
+             title: 'Quản lý dự án - PM', company: 'Công Ty Cổ Phần Đầu Tư Thương Mại Và Phát Triển Công Nghệ FSI', salary: '20 - 27 triệu', location: 'Hà Nội' },
+        { id: 2, logo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4Q82eAkv7WH4rOneemtfTuuEcoN0t2z5QWw&s',
+            title: 'Backend Developer', company: 'Company B', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 3, logo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAF7GdiqagbkpF49NynmJF5xVC2PKqKjzocg&s',
+            title: 'Full Stack Developer', company: 'Company C', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 4, logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAHXPluq6GtTRPDIHRv5kJPy86uFjp5sO7hg&s',
+             title: 'Data Scientist', company: 'Company D', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 5, logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzDdgCcGyJ-lpQfyzNa5SonMe9XWA00odLGg&s',
+             title: 'Mobile Developer', company: 'Company E', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 6, logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAF7GdiqagbkpF49NynmJF5xVC2PKqKjzocg&s',
+             title: 'DevOps Engineer', company: 'Company F', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 7, logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4Q82eAkv7WH4rOneemtfTuuEcoN0t2z5QWw&s',
+             title: 'UI/UX Designer', company: 'Company G', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 8, logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_uTZZ1Ww1dkoVAabEBarS19qoWKbww3BzMw&s',
+             title: 'QA Engineer', company: 'Company H', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 9, logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNfzY0jYPDNjRaFdyT7cpvSabL8l69GLcULQ&s',
+             title: 'Project Manager', company: 'Company I', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 10, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Cybersecurity Expert', company: 'Company J', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 11, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Cloud Architect', company: 'Company K', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 12, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'AI Engineer', company: 'Company L', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 13, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Blockchain Developer', company: 'Company M', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 14, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Marketing Manager', company: 'Company N', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 15, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Product Manager', company: 'Company O', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 16, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Product Manager', company: 'Company O', salary: 'Thỏa thuận', location: 'Hà Nội'  },
+        { id: 17, logo: 'https://www.saokim.com.vn/blog/wp-content/uploads/2022/04/logo-moi-cua-starbucks.jpg.webp',
+             title: 'Product Manager', company: 'Company O', salary: 'Thỏa thuận', location: 'Hà Nội'  },
     ];
-
     const valuesPerPage = 4;
     const jobsPerPage = 9;
 
@@ -109,22 +128,42 @@ function Job_Home() {
 
                 {/* Hàng thứ ba - Danh sách các job */}
                 <div className="job-list-container">
-                    <div className="job-list">
-                        {currentJobs.map((job) => (
-                            <div
-                                key={job.id}
-                                className="job-card"
-                                onClick={() => handleJobDetail(job.id)}
-                            >
-                                <h3>{job.title}</h3>
-                                <p><strong>Company:</strong> {job.company}</p>
-                                <p className="job-description" title={job.description}>
-                                    <strong>Lương: </strong>
-                                    {job.description.length > 30 ? job.description.slice(0, 30) + '...' : job.description}
-                                </p>
+                <div className="job-list">
+                    {currentJobs.map((job) => (
+                        <div
+                            key={job.id}
+                            className="job-card"
+                            onClick={() => handleJobDetail(job.id)}
+                        >
+                            <div className="job-content">
+                                <img
+                                    src={job.logo} 
+                                    // src={require(`../logo/${job.logo}`)} alt={`${job.company} logo`}
+                                    alt={`${job.company} logo`} 
+                                    className="job-logo" 
+                                />
+                                <div className="job-info">
+                                    <h3 className='job-title' title={job.title}>
+                                        {job.title.length > 25 ? job.title.slice(0, 25) + '...' : job.title}
+                                    </h3>
+                                    <p className='job-company' title={job.company}> 
+                                        {job.company.length > 40 ? job.company.slice(0, 40) + '...' : job.company}
+                                    </p>
+                                    <p className="job-salary" title={job.salary}>
+                                        
+                                        {job.salary.length > 30 ? job.salary.slice(0, 30) + '...' : job.salary}
+
+                                    </p>
+                                    <p className="job-location" title={job.location}>
+                                        
+                                        {job.location.length > 25 ? job.location.slice(0, 25) + '...' : job.location}
+
+                                    </p>
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
+                </div>
 
                     {/* Phân trang */}
                     <div className="pagination">
