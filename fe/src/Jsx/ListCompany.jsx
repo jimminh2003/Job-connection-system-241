@@ -47,14 +47,21 @@ function ListCompany() {
 
           <div className="company-list">
             {currentItems.map((company, index) => (
-              <div key={index} className="company-card">
+              <div className="company-card" key={index}>
+              {/* Phần trên: logo + thông tin */}
+              <div className="card-top">
                 <div className="company-logo">{company.logo}</div>
                 <div className="company-info">
                   <h3>{company.name}</h3>
                   <p>{company.industry}</p>
-                  <p className="job-count">Việc làm: {company.jobs}</p>
                 </div>
               </div>
+            
+              {/* Phần dưới: số lượng việc làm */}
+              <div className="card-bottom">
+                <p>Việc làm: {company.jobs}</p>
+              </div>
+            </div>
             ))}
           </div>
 

@@ -26,7 +26,7 @@
   .nav {
     display: flex;
     align-items: center;
-    background-color: white;   
+    background-color: #B6FFA1;   
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     position: relative; /* Thiết lập làm gốc cho các thành phần con */
     z-index: 1; /* Đảm bảo thanh menu nằm trên các thành phần khác */
