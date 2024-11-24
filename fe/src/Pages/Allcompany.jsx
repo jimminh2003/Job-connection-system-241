@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { companies } from '../data/company';
 import Navbar from '../Jsx/navbar';
+import Footer from '../Jsx/Footer';
 
 
 const AllCompany = () => {
@@ -139,6 +140,7 @@ const AllCompany = () => {
           ))}
         </div>
       </div>
+      <Footer />
     </>
   );
 };

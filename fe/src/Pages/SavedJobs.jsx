@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 // import ListedJobs from '../conponents/ListedJobs';
 import { jobs } from '../data/jobs';
-import JobDetail from '../Jsx/JobDetail';
+import JobDetail from './JobDetail';
 
 const SavedJobs = () => {
   const [savedJobIds, setSavedJobIds] = useState(() => {

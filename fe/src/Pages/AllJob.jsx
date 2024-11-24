@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Jsx/navbar';
 import AppContainer from './AppContainer';
+import Footer from '../Jsx/Footer';
 
 const AllJob = () => {
   const [jobs, setJobs] = useState([]);
@@ -12,7 +13,7 @@ const AllJob = () => {
   
   // Thêm state cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
-  const jobsPerPage = 6; // Số công việc trên mỗi trang
+  const jobsPerPage = 8; // Số công việc trên mỗi trang
 
   useEffect(() => {
     // Fetch job data from backend
@@ -39,8 +40,8 @@ const AllJob = () => {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">All Available Jobs</h1>
+      <div className="container mx-auto px-1 py-8 max-w-full">
+        {/* <h1 className="text-2xl font-bold mb-6">All Available Jobs</h1> */}
         <AppContainer 
           jobs={currentJobs} 
           savedJobs={savedJobs} 
@@ -64,6 +65,7 @@ const AllJob = () => {
           </div>
         </div>
       </div>
+      <Footer />   
     </>
   );
 };
