@@ -91,18 +91,21 @@ const SearchComponent = ({ jobs, searchCriteria, onSearchUpdate, currentResults 
     { text: 'Tài chính', icon: '💰' },
  
     { text: 'Bảo hiểm', icon: '🏦' },
-    { text: 'Kế toán', icon: '📑' },
     { text: 'Đầu tư', icon: '💎' },
+   
+    { text: 'Content Creator', icon: '✍️' },
     
     // Marketing & Truyền thông
     { text: 'Marketing', icon: '📱' },
     { text: 'Digital Marketing', icon: '🌐' },
-    { text: 'Content Creator', icon: '✍️' },
+    { text: 'Kỹ sư', icon: '⚡' },
+    
+    { text: 'Kế toán', icon: '📑' },
     
     { text: 'Quảng cáo', icon: '📣' },
     
     // Sản xuất & Công nghiệp
-    { text: 'Kỹ sư', icon: '⚡' },
+   
     { text: 'Cơ khí', icon: '🔧' },
    
     { text: 'Kiến trúc', icon: '🏛️' },
@@ -123,7 +126,7 @@ const SearchComponent = ({ jobs, searchCriteria, onSearchUpdate, currentResults 
   
     { text: 'Giảng viên', icon: '👨‍🏫' },
     { text: 'Tiếng Anh', icon: '🗣️' },
-    
+    { text: 'Game', icon: '🎮' },
     // Nhân sự & Hành chính
     { text: 'Nhân sự', icon: '👥' },
     { text: 'Admin', icon: '📋' },
@@ -138,7 +141,7 @@ const SearchComponent = ({ jobs, searchCriteria, onSearchUpdate, currentResults 
     // Nghệ thuật & Thiết kế
   
    
-    { text: 'Game', icon: '🎮' },
+    
     
     // Môi trường & Năng lượng
    

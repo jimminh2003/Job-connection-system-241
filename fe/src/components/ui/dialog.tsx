@@ -70,7 +70,24 @@ export const DialogContent: React.FC<DialogComponentProps> = ({ children, classN
     </div>
   );
 };
-
+export const DialogClose: React.FC<DialogComponentProps> = ({ children, className = '' }) => {
+    const context = useContext(DialogContext);
+    if (!context) throw new Error('DialogClose must be used within Dialog');
+    
+    const { setIsOpen, onOpenChange } = context;
+    
+    const handleClick = () => {
+      setIsOpen(false);
+      onOpenChange?.(false);
+    };
+  
+    return (
+      <div onClick={handleClick} className={className}>
+        {children}
+      </div>
+    );
+  };
+  
 export const DialogHeader: React.FC<DialogComponentProps> = ({ children, className = '' }) => (
   <div className={`mb-4 ${className}`}>
     {children}

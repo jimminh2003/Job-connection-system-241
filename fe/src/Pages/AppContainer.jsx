@@ -79,7 +79,7 @@ const AppContainer = ({ jobs, savedJobs, setSavedJobs }) => {
     
     <div className="container-fluid mx-auto px-4">
       
-      <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[2300px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="w-full px-8 py-6 mb-8 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
           <Search 
             jobs={jobs}
