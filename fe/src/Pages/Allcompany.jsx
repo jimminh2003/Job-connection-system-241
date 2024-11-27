@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '../Jsx/Footer';
 import Navbar from '../Jsx/navbar';
+import TokenManager from '../utils/tokenManager';
 
 const AllCompany = () => {
   // State for companies and search
@@ -42,13 +43,23 @@ const AllCompany = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await fetch('/companies');
+        const token = TokenManager.getToken(); // Lấy token từ TokenManager
+        const response = await fetch('/companies', {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Thêm token vào header
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
-        setCompanies(data);
+        setCompanies(data); 
       } catch (error) {
+        console.error('Error fetching jobs:', error);
         console.error('Error fetching companies:', error);
-        // Fallback to mock data in case of error
-        setCompanies([/* your mock data here */]);
       }
     };
     

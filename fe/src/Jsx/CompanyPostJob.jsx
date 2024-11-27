@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../css/CompanyPostJob.css";
+import TokenManager from "../utils/tokenManager";
 
 const CompanyPostJob = () => {
   const [fields, setFields] = useState([]); // Dữ liệu từ API
@@ -31,28 +32,41 @@ const CompanyPostJob = () => {
 
   // Gọi API để lấy dữ liệu
   useEffect(() => {
-    fetch("/fields")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const fetchData = async () => {
+      try {
+        const token = TokenManager.getToken();
+        // Fetch fields
+        const fieldsResponse = await fetch("/fields", {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!fieldsResponse.ok) {
+          throw new Error(`HTTP error! status: ${fieldsResponse.status}`);
         }
-        return response.json();
-      })
-      .then((data) => {
-        setFields(data); // Lưu toàn bộ dữ liệu lĩnh vực
-      })
-      .catch((error) => console.error("Error fetching fields:", error));
+        const fieldsData = await fieldsResponse.json();
+        setFields(fieldsData);
 
-    // Gọi API lấy danh sách tỉnh
-    fetch("/provinces")
-      .then((response) => response.json())
-      .then((data) => {
-        setProvinces(data);
-        console.log("Provinces loaded:", data); // Debug: Kiểm tra dữ liệu tỉnh
-      })
-      .catch((error) => console.error("Error fetching provinces:", error));
+       
+        const provincesResponse = await fetch("/provinces", {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!provincesResponse.ok) {
+          throw new Error(`HTTP error! status: ${provincesResponse.status}`);
+        }
+        const provincesData = await provincesResponse.json();
+        setProvinces(provincesData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
-
 
   // JobTyoe:
    // Xử lý khi chọn lĩnh vực
@@ -156,11 +170,15 @@ const CompanyPostJob = () => {
   
     console.log("Dữ liệu gửi đi:", jobPostingData);
   
-    fetch("/jobpostings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(jobPostingData),
-    })
+    const token = TokenManager.getToken();
+fetch("/jobpostings", {
+  method: "POST",
+  headers: { 
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json' 
+  },
+  body: JSON.stringify(jobPostingData),
+})
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -382,7 +400,7 @@ const CompanyPostJob = () => {
         <label>Mô tả công việc</label>
         <textarea
           rows="5" 
-          placeholder="Nhập mô tả chi tiết về công việc"
+          placeholder="Nhập chi tiết bao gồm: Mô tả công việc, Yêu cầu ứng viên, Quyền lợi, Địa điểm làm việc, Thời gian làm việc, Cách thưc ứng tuyển. Mỗi ý là 1 gạch đầu dòng"
           value={description}
           onChange={(e) => setDescription(e.target.value)} 
           ></textarea>

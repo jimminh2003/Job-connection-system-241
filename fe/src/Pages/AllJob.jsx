@@ -3,9 +3,11 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Jsx/navbar';
 import AppContainer from './AppContainer';
 import Footer from '../Jsx/Footer';
+import TokenManager from '../utils/tokenManager';
 
 const AllJob = () => {
   const [jobs, setJobs] = useState([]);
+  const [error, setError] = useState(null); 
   const [savedJobs, setSavedJobs] = useState(() => {
     const saved = localStorage.getItem('savedJobs');
     return saved ? JSON.parse(saved) : [];
@@ -19,14 +21,23 @@ const AllJob = () => {
     // Fetch job data from backend
     const fetchJobs = async () => {
       try {
-        const response = await fetch('/jobpostings');
+        const token = TokenManager.getToken(); // Lấy token từ TokenManager
+        const response = await fetch('/jobpostings', {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Thêm token vào header
+            'Content-Type': 'application/json'
+          }
+        });
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const data = await response.json();
         setJobs(data);
       } catch (error) {
         console.error('Error fetching jobs:', error);
+        setError(error.message);
       }
     };
     fetchJobs();

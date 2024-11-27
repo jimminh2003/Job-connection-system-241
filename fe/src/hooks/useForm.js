@@ -5,13 +5,36 @@ export const useForm = (initialState = {}, onSubmit) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const validateForm = () => {
+    const errors = {};
+    
+    // Validate với formData hiện tại, không cần tham số values
+    if (!formData.username?.trim()) {
+      errors.username = 'Vui lòng nhập tên đăng nhập';
+    } else if (formData.username.length < 3) {
+      errors.username = 'Tên đăng nhập phải có ít nhất 3 ký tự';
+    }
+
+    if (!formData.password) {
+      errors.password = 'Vui lòng nhập mật khẩu';
+    } else if (formData.password.length < 6) {
+      errors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+    }
+
+    // Cập nhật state errors
+    setErrors(errors);
+    
+    // Trả về true nếu không có lỗi
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    // Clear error khi user bắt đầu gõ
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -20,34 +43,13 @@ export const useForm = (initialState = {}, onSubmit) => {
     }
   };
 
-  const validateForm = () => {
-    let tempErrors = {};
-    let isValid = true;
-
-    // Add your validation rules here
-    if (!formData.email) {
-      tempErrors.email = 'Email là bắt buộc';
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      tempErrors.email = 'Email không hợp lệ';
-      isValid = false;
-    }
-
-    if (!formData.password) {
-      tempErrors.password = 'Mật khẩu là bắt buộc';
-      isValid = false;
-    } else if (formData.password.length < 6) {
-      tempErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-      isValid = false;
-    }
-
-    setErrors(tempErrors);
-    return isValid;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    // Validate form trước khi submit
+    if (!validateForm()) {
+      return;
+    }
 
     setLoading(true);
     try {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Badge } from '../Jsx/badge';
-import { Button } from '../Jsx/Button';
-import { Card } from '../Jsx/card';
-import { Checkbox } from '../Jsx/checkbox';
-import { Slider } from '../Jsx/Slider';
+import { Badge } from '../components/badge';
+import { Button } from '../components/Button';
+import { Card } from '../components/card';
+import { Checkbox } from '../components/checkbox';
+import { Slider } from '../components/Slider';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -144,7 +144,12 @@ const JobFilter = ({ jobs, onFilterUpdate, currentResults }) => {
       return newSkills;
     });
   };
-
+  const isSkillMatching = (jobSkill, selectedSkill) => {
+    const normalizedJobSkill = jobSkill.toLowerCase().replace(/[-_\s.]/g, '');
+    const normalizedSelectedSkill = selectedSkill.toLowerCase().replace(/[-_\s.]/g, '');
+    return normalizedJobSkill.includes(normalizedSelectedSkill) || 
+           normalizedSelectedSkill.includes(normalizedJobSkill);
+  };
   const addCustomSkill = () => {
     // Chuẩn hóa skill trước khi thêm
     const normalizedSkill = customSkill.trim();
@@ -249,16 +254,17 @@ const JobFilter = ({ jobs, onFilterUpdate, currentResults }) => {
       
       // Xử lý skills
       let jobSkillsArray = [];
-      if (typeof job.skills === 'string') {
+      if (Array.isArray(job.skills)) {
+        jobSkillsArray = job.skills.map(skill => skill.toLowerCase());
+      } else if (typeof job.skills === 'string') {
         jobSkillsArray = job.skills.split(',').map(skill => skill.trim().toLowerCase());
       }
   
       const matchesSkills = selectedSkills.length === 0 || 
-        selectedSkills.every(selectedSkill => 
-          jobSkillsArray.some(jobSkill => 
-            jobSkill.includes(selectedSkill.toLowerCase())
-          )
-        );
+      selectedSkills.some(selectedSkill => 
+        jobSkillsArray.some(jobSkill => isSkillMatching(jobSkill, selectedSkill))
+      );
+
   
       return matchesSchedule && matchesLevel && matchesSalary && 
              matchesYoe && matchesSkills;

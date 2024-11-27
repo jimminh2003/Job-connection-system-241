@@ -5,7 +5,10 @@ import DefaultImage from '../images/logo1.png'; // Thay thế bằng hình ảnh
 import Navbar from './navbar';
 import Footer from './Footer';
 import ApplicationForm from "./ApplicationForm";
+import Loading from "./Loading";
+import ErrorBoundary from 'antd/es/alert/ErrorBoundary';
 import '../css/JobDetail.css'; // File CSS để style
+import { useAuth } from '../Contexts/AuthContext';
 
 function JobDetail() {
     const { id } = useParams(); // Lấy `id` từ URL
@@ -13,9 +16,21 @@ function JobDetail() {
     const [job, setJob] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const { isAuthenticated } = useAuth();
+  
 
     const handleApplyClick = () => {
-      setIsPopupOpen(true);
+        if (!isAuthenticated) {
+            // Nếu chưa đăng nhập, chuyển đến trang login
+            navigate('/login', { 
+                state: { 
+                    returnUrl: `/JobDetail/${id}` // Lưu lại trang hiện tại để sau khi đăng nhập có thể quay lại
+                } 
+            });
+            return;
+        }
+        // Nếu đã đăng nhập, mở form apply
+        setIsPopupOpen(true);
     };
   
     const handleClosePopup = () => {
@@ -47,11 +62,11 @@ function JobDetail() {
   }, [id]);
 
     if (loading) {
-        return <div>Đang tải thông tin công việc...</div>;
+        return <Loading/>;
     }
 
     if (!job) {
-        return <div>Không tìm thấy công việc!</div>;
+        return <ErrorBoundary/>;
     }
 
     return (
@@ -67,7 +82,7 @@ function JobDetail() {
                 <div className="job-info">
                   <div className="info-item">Mức lương: {job.minSalary} - {job.maxSalary} triệu</div>
                   <div className="info-item">Địa điểm: {job.province}</div>
-                  <div className="info-item">Kinh nghiệm: 5 năm</div>
+                  <div className="info-item">Kinh nghiệm: {job.level}</div>
                 </div>
                 <div className="button">
                   <button className="apply-btn" onClick={handleApplyClick}>Ứng tuyển ngay</button>
@@ -77,7 +92,7 @@ function JobDetail() {
               {isPopupOpen && <ApplicationForm onClose={handleClosePopup} />}
               <div className="job-details">
                 <h3>Chi tiết tin tuyển dụng</h3>
-                <div className="job-description">
+                {/* <div className="job-description">
                   <h4>Mô tả công việc</h4>
                   <p>- Tiếp cận khách hàng để nắm bắt yêu cầu từ khách hàng từ giai đoạn đầu chưa hợp đồng. Từ đó phân tích, đánh giá nhu cầu/mong muốn và tư vấn xây dựng giải pháp thực hiện tới khách hàng.</p>
                   <p>- Chủ trì tổ chức triển khai dự án.</p>
@@ -118,7 +133,7 @@ function JobDetail() {
                 </div>
                 <div className="job-location">
                   <h4>Địa điểm làm việc</h4>
-                  <p>- Hà Nội: 107a, Nguyễn Phong Sắc, Cầu Giấy, Hà Nội, Cầu Giấy</p>
+                  <p>- {job.province}: {job.address}</p>
                 </div>
                 <div className="job-time">
                   <h4>Thời gian làm việc</h4>
@@ -128,7 +143,10 @@ function JobDetail() {
                   <h4>Cách thức ứng tuyển</h4>
                   <p>Ứng viên nộp hồ sơ trực tuyến bằng cách bấm Ứng tuyển ngay dưới đây.</p>
                 </div>
-                <p>Hạn nộp hồ sơ: 30/11/2024</p>
+                <p>Hạn nộp hồ sơ: 30/11/2024</p> */}
+                <p>{job.description && job.description.split('\n').map((line, index) => (
+                    <span key={index}>{line}<br /></span>
+                ))}</p>
 
 
               </div>
@@ -139,23 +157,25 @@ function JobDetail() {
               <div className="company-info">
                 <h3>Thông tin công ty</h3>
                 <p>{job.companyName}</p>
-                <p>Quy mô: 100-499 nhân viên</p>
-                <p>Lĩnh vực: IT - Phần mềm</p>
-                <p>Địa điểm: Tầng 5A, Tòa Lâm Viên, Số 107A Nguyễn Phong Sắc, Dịch Vọng Hậu, Cầu Giấy, Hà Nội</p>
+                {/* <p>Quy mô: 100-499 nhân viên</p> */}
+                <p>Lĩnh vực: {job.companyField}</p>
+                <p>Địa điểm: {job. address}</p>
+                <p>Email: {job.emails}</p>
+                <p>Số điện thoại: {job.phoneNumbers}</p>
               </div>
 
               <div className="general-info">
                 <h3>Thông tin chung</h3>
-                <p>Cấp bậc: Nhân viên</p>
-                <p>Kinh nghiệm: 5 năm</p>
+                <p>Hình thức: {job.schedule}</p>
+                <p>Level: {job.level}</p>
+                <p>Số lượng tuyển: {job.numberOfApplicants}</p>
               </div>
 
               <div className="specialty-tags">
-                <h4>Vị trí chuyên môn</h4>
-                <span className="tag">Công nghệ Thông tin</span>
-                <span className="tag">Product Management</span>
-                <h4>Khu vực</h4>
-                <span className="tag">Hà Nội</span>
+                <h3>Yêu cầu</h3>
+                <p className="tag">Loại hình: {job.jobType} </p>
+                <p className='tag'>Kỹ năng: {job.skills}</p>
+                <p className="tag">Khu vực: {job.ward}, {job.city}, {job.province}</p>
               </div>
 
               <div className="recommended-jobs">

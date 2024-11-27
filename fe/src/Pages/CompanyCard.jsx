@@ -6,7 +6,7 @@ import {Card,
     CardTitle,
     CardDescription,
     CardContent,
-    CardFooter} from '../Jsx/card';
+    CardFooter} from '../components/card';
 const CompanyCard = ({ company, onClick }) => {
     const renderRating = (rating) => {
       return (

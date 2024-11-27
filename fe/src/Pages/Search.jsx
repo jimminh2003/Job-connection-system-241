@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search as SearchIcon, MapPin, Building, Briefcase, Calendar, Users } from 'lucide-react';
-import { Card, CardContent } from '../Jsx/card';
+import { Card, CardContent } from '../components/card';
 import debounce from 'lodash/debounce';
 import { motion } from "framer-motion";
 import JobTrendChart from './JobChart';
