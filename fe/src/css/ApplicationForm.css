@@ -1,5 +1,5 @@
 /* Overlay for the pop-up */
-.popup-overlay {
+.popup-apply-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
 }
 
 /* Pop-up content container */
-.popup-content {
+.popup-apply-overlay .popup-content {
   background: white;
   padding: 40px;
   width: 650px;
@@ -26,7 +26,7 @@
 }
 
 /* Close button */
-.close-btn {
+.popup-apply-overlay .close-btn {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -37,12 +37,12 @@
   color: #666;
 }
 
-.close-btn:hover {
+.popup-apply-overlay .close-btn:hover {
   color: #333;
 }
 
 /* Informational text for required fields */
-.required-info {
+.popup-apply-overlay .required-info {
     font-size: 8px;
     color: red;
     margin-bottom: 20px;
@@ -53,18 +53,18 @@
   }
   
   /* Red asterisks for required fields */
-  label .required {
+  .popup-apply-overlay  label .required {
     color: red;
     font-weight: bold;
   }
   /* Red asterisk in the required-info text */
-.required-info .asterisk {
+  .popup-apply-overlay .required-info .asterisk {
     color: rgb(237, 67, 67);
   }
   
 
 /* Pop-up title */
-.popup-content h3 {
+.popup-apply-overlay .popup-content h3 {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 28px;
@@ -74,7 +74,7 @@
 }
 
 /* Required information note */
-.popup-content .required-info {
+.popup-apply-overlay .popup-content .required-info {
   font-size: 14px;
   color: #777;
   margin-bottom: 20px;
@@ -82,7 +82,7 @@
 }
 
 /* Labels */
-.popup-content form label {
+.popup-apply-overlay .popup-content form label {
   display: block;
   font-size: 16px;
   color: #333;
@@ -91,13 +91,13 @@
   font-weight: bold;
 }
 
-    .intro {
+.popup-apply-overlay .intro {
         font-size: 12px;
         font-weight:lighter;
     }
 
 /* Larger file upload field */
-input[type="file"] {
+.popup-apply-overlay input[type="file"] {
   width: 100%;
   padding: 40px;
   font-size: 16px;
@@ -108,10 +108,10 @@ input[type="file"] {
 }
 
 /* Input fields */
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-textarea {
+.popup-apply-overlay input[type="text"],
+.popup-apply-overlay input[type="email"],
+.popup-apply-overlay input[type="tel"],
+.popup-apply-overlay textarea {
   width: 100%;
   padding: 12px;
   font-size: 16px;
@@ -123,20 +123,20 @@ textarea {
   transition: border-color 0.3s ease;
 }
 
-textarea {
+.popup-apply-overlay textarea {
     height:200px;
 } 
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="tel"]:focus,
-textarea:focus {
+.popup-apply-overlay input[type="text"]:focus,
+.popup-apply-overlay input[type="email"]:focus,
+.popup-apply-overlay input[type="tel"]:focus,
+.popup-apply-overlay textarea:focus {
   border-color: #42b7ce;
   outline: none;
 }
 
 /* Error messages */
-.error {
+.popup-apply-overlay .error {
   color: red;
   font-size: 12px;
   margin-top: 4px;
@@ -145,20 +145,20 @@ textarea:focus {
 }
 
 /* Red asterisks for required fields */
-label span.required {
+.popup-apply-overlay label span.required {
   color: red;
   font-weight: bold;
 }
 
 /* Buttons */
-.button-group {
+.popup-apply-overlay .button-group {
   display: flex;
   justify-content: space-between;
   margin-top: 25px;
 }
 
-.cancel-btn,
-.submit-btn {
+.popup-apply-overlay .cancel-btn,
+.popup-apply-overlay .submit-btn {
   padding: 12px 24px;
   font-size: 16px;
   border-radius: 6px;
@@ -166,33 +166,33 @@ label span.required {
   transition: background-color 0.3s ease;
 }
 
-.cancel-btn {
+.popup-apply-overlay .cancel-btn {
   background-color: #ddd;
   border: none;
   color: #555;
 }
 
-.submit-btn {
+.popup-apply-overlay .submit-btn {
   background-color: var(--secondColor);
   color: white;
   border: none;
 }
 
-.submit-btn:hover {
+.popup-apply-overlay .submit-btn:hover {
   background-color: var(--thirdColor);
 }
 
-.cancel-btn:hover {
+.popup-apply-overlay .cancel-btn:hover {
   background-color: #bbb;
 }
 
 /* Adjust spacing between form fields for better aesthetics */
-.popup-content form label + input,
-.popup-content form label + textarea {
+.popup-apply-overlay .popup-content form label + input,
+.popup-apply-overlay .popup-content form label + textarea {
   margin-top: 5px;
 }
 
-.popup-content label,
-.popup-content .required-info {
+.popup-apply-overlay .popup-content label,
+.popup-apply-overlay .popup-content .required-info {
   margin-bottom: 15px;
 }

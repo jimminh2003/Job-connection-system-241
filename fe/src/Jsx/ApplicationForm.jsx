@@ -48,7 +48,7 @@ const ApplicationForm = ({ onClose }) => {
   };
 
   return (
-    <div className="popup-overlay">
+    <div className="popup-apply-overlay">
       <div className="popup-content">
         <button className="close-btn" onClick={onClose}>X</button>
         <h3>Ứng Tuyển</h3>

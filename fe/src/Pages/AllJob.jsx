@@ -1,6 +1,8 @@
 // AllJob.jsx
 import React, { useState, useEffect } from 'react';
 import Navbar from '../Jsx/navbar';
+import AppNavbar from '../Jsx/AppNavbar';
+import CompanyNavbar from '../Jsx/CompanyNavbar';
 import AppContainer from './AppContainer';
 import Footer from '../Jsx/Footer';
 import TokenManager from '../utils/tokenManager';
@@ -8,11 +10,32 @@ import TokenManager from '../utils/tokenManager';
 const AllJob = () => {
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState(null); 
+  const [role, setRole] = useState(null); // State để lưu role
+  const [userId, setUserId] = useState(null); // State để lưu userId
+  const [userInfo, setUserInfo] = useState(null);
+  const token = TokenManager.getToken();
+
   const [savedJobs, setSavedJobs] = useState(() => {
     const saved = localStorage.getItem('savedJobs');
     return saved ? JSON.parse(saved) : [];
   });
   
+  useEffect(() => {
+      if (token) {
+        setRole(token.role?.toLowerCase()); // Lấy role từ token
+        setUserId(token.id); // Lấy userId từ token
+      }
+    }, [token]);
+
+    const renderNavbar = () => {
+      if (role === 'applicant') {
+        return <AppNavbar />;
+      } else if (role === 'company') {
+        return <CompanyNavbar />;
+      } else {
+        return <Navbar />;
+      }
+    };
   // Thêm state cho phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 8; // Số công việc trên mỗi trang
@@ -50,7 +73,7 @@ const AllJob = () => {
 
   return (
     <>
-      <Navbar />
+      {renderNavbar()}
       <div className="container mx-auto px-1 py-8 max-w-full">
         {/* <h1 className="text-2xl font-bold mb-6">All Available Jobs</h1> */}
         <AppContainer 

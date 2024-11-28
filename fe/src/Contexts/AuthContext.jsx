@@ -72,7 +72,7 @@ useEffect(() => {
 }, [authState.isAuthenticated]);
 
   useEffect(() => {
-    const publicRoutes = ['/login', '/register', '/alljob', '/alljob/:id', '/allcompany', '/allcompany/:id'];
+    const publicRoutes = ['/login', '/register', '/alljob', '/alljob/:id', '/allcompany', '/allcompany/:id', '/JobDetail/:id'];
     
     // Chỉ kiểm tra khi chưa xác thực và không ở public route
     if (!authState.isAuthenticated && !publicRoutes.some(route => {

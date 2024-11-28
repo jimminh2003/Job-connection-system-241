@@ -20,6 +20,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '../Jsx/Footer';
 import Navbar from '../Jsx/navbar';
+import AppNavbar from '../Jsx/AppNavbar';
+import CompanyNavbar from '../Jsx/CompanyNavbar';
 import TokenManager from '../utils/tokenManager';
 
 const AllCompany = () => {
@@ -35,11 +37,31 @@ const AllCompany = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [bookmarkedCompanies, setBookmarkedCompanies] = useState(new Set());
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [role, setRole] = useState(null); // State để lưu role
+  const [userId, setUserId] = useState(null); // State để lưu userId
+  const [userInfo, setUserInfo] = useState(null);
+  const token = TokenManager.getToken();
   const searchRef = useRef(null);
   const locationRef = useRef(null);
   const itemsPerPage = 6;
   const navigate = useNavigate();
   // Fetch companies data
+  useEffect(() => {
+    if (token) {
+      setRole(token.role?.toLowerCase()); // Lấy role từ token
+      setUserId(token.id); // Lấy userId từ token
+    }
+  }, [token]);
+  const renderNavbar = () => {
+    if (role === 'applicant') {
+      return <AppNavbar />;
+    } else if (role === 'company') {
+      return <CompanyNavbar />;
+    } else {
+      return <Navbar />;
+    }
+  };
+
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
@@ -134,7 +156,7 @@ const AllCompany = () => {
 
   return (
     <>
-    <Navbar/>
+    {renderNavbar()}
     <div className="w-full max-w-[2300px] mx-auto px-4 py-8  bg-gradient-to-br from-slate-100 to-blue-100">
       <div className="w-full max-w-[2300px] mx-auto">
         <motion.div 

@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import '../css/ApplicantProfile.css'
 import Navbar from './navbar';
+import AppNavbar from './AppNavbar';
+import CompanyNavbar from './CompanyNavbar';
 import Footer from './Footer';
+import { useAuth } from "../Contexts/AuthContext";
+import TokenManager from "../utils/tokenManager";
 
 const ApplicantProfile = () => {
   const [activeTab, setActiveTab] = useState('Thông tin');
   const [name, setName] = useState('Học Đăng');
   const [phone, setPhone] = useState('');
+  const [userInfo, setUserInfo] = useState(null);
+  const [role, setRole] = useState(null); // State để lưu role
+  const [userId, setUserId] = useState(null); // State để lưu userId
+
+  const token = TokenManager.getToken();
+useEffect(() => {
+  if (token) {
+    setRole(token.role?.toLowerCase()); // Lấy role từ token
+    setUserId(token.id); // Lấy userId từ token
+  }
+}, [token]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -17,14 +32,24 @@ const ApplicantProfile = () => {
     alert("Thông tin đã được cập nhật!");
   };
 
+  const renderNavbar = () => {
+    if (role === 'applicant') {
+      return <AppNavbar />;
+    } else if (role === 'company') {
+      return <CompanyNavbar />;
+    } else {
+      return <Navbar />;
+    }
+  };
+
   return (
     <div>
-      <Navbar/>
+      {renderNavbar()}
       <div id="applicant-profile-container">
         {/* Sidebar */}
         <div className="sidebar">
           <ul>
-            {['Thông tin', 'Quản lý việc làm', 'Thông báo', 'Hồ sơ', 'Đăng tuyển việc làm', 'Đổi mật khẩu', 'Xem thông tin', 'Đăng xuất'].map((item) => (
+            {['Thông tin', 'Thông báo', 'Đăng tuyển việc làm', 'Đổi mật khẩu', 'Đăng xuất'].map((item) => (
               <li
                 key={item}
                 className={activeTab === item ? 'active' : ''}

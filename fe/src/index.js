@@ -64,6 +64,10 @@ const router = createBrowserRouter([
         path: "register/*",
         element: <Register />
       },
+      {
+        path: "JobDetail/:id",
+        element: <JobDetail />
+      },
       { 
         element: <RoleBasedRoute allowedRoles={['applicant']} />,        
         children: [
@@ -95,6 +99,10 @@ const router = createBrowserRouter([
           {
             path: "CompanyProfile/:id",
             element: <CompanyProfile />
+          },
+          {
+            path: "CompanyProfile/:tab",
+            element: <CompanyProfile />
           }
         ]
       },
@@ -104,15 +112,6 @@ const router = createBrowserRouter([
           {
             path: "dashboard",
             element: <Dashboard />
-          }
-        ]
-      },
-      {
-        element: <PrivateRoute />,
-        children: [
-          {
-            path: "JobDetail/:id",
-            element: <JobDetail />
           }
         ]
       }

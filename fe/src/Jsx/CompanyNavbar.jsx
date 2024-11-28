@@ -1,66 +1,20 @@
 import React, {useState, useEffect} from "react";
-import axios from 'axios';
 import '../css/AppNavBar.css';
 // import { useNavigate } from 'react-router-dom';
 // import { useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { useAuth } from "../Contexts/AuthContext";
-import TokenManager from "../utils/tokenManager";
+import { Link, useNavigate  } from 'react-router-dom';
 
-function AppNavbar() {  
+function CompanyNavbar() {  
+    const navigate = useNavigate(); // Hook điều hướng
 
-    const [userInfo, setUserInfo] = useState(null);
-    const { handleLogout, isAuthenticated } = useAuth();
-    
-    useEffect(() => {
-    const fetchUserInfo = async () => {
-        try {
-            const token = TokenManager.getToken();
-            if (!token) return;
-            const role = token.role.toLowerCase();
-            const userId = token.id; // Lấy userId từ token
-            
-
-            let apiUrl = "";
-
-            // Chọn API dựa trên role
-            switch (role) {
-                case "applicant":
-                    apiUrl = `/applicants/${userId}`;
-                    break;
-                case "company":
-                    apiUrl = `/companies/${userId}`;
-                    break;
-                case "admin":
-                    apiUrl = `/admin/${userId}`;
-                    break;
-                case "user":
-                    apiUrl = `/users/${userId}`;
-                    break;
-                default:
-                    throw new Error("Invalid role");
-            }
-
-            const response = await axios.get(apiUrl, {
-                headers: {
-                    Authorization: `Bearer ${token.value}`,
-                },
-            });
-
-            setUserInfo(response.data);
-        } catch (error) {
-            console.error("Error fetching user info:", error);
-        }
+    const handleNavigate = (tab) => {
+        navigate(`/CompanyProfile/${tab}`); // Điều hướng với tham số tab
     };
-
-    fetchUserInfo();
-}, []);
-
-    const onLogoutClick = () => {
-        const confirmLogout = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
-        if (confirmLogout) {
-            handleLogout();
-        }
+    
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/');
+        window.location.reload();
     };
     return (
         <div className="headernav">
@@ -122,6 +76,7 @@ function AppNavbar() {
                 <div className="nav__notification">
                     {/* <i className="fa-solid fa-bell"></i> */}
                     <img
+                        onClick={() => handleNavigate('Thông báo')}
                         src='https://png.pngtree.com/png-clipart/20200224/original/pngtree-bell-alarm-line-icon-vector-png-image_5247801.jpg'
                         className='bell-notifi'
                     />
@@ -129,7 +84,6 @@ function AppNavbar() {
 
                 <div className="nav__avatar">
                     <img 
-                        
                         src="https://meatworld.info/wp-content/uploads/avatar-trang-16.jpg" 
                         alt="Học Đăng"
                         className="avatar-icon"
@@ -144,26 +98,36 @@ function AppNavbar() {
                     <li>
                         <i className="fa-solid fa-user-cog"></i>
                         {/* <a onClick={handleProfile}>Cài đặt thông tin cá nhân</a> */}
-                        <Link to="/ApplicantProfile">Cài đặt thông tin cá nhân</Link>
+                        <a onClick={() => handleNavigate('Thông tin công ty')}>Cài đặt thông tin cá nhân</a>
                     </li>
                     <li>
                         <i className="fa-solid fa-crown"></i>
                         <a href="/">Nâng cấp tài khoản VIP</a>
                     </li>
+                    
+                    <li>
+                        <i className="fa-solid fa-crown"></i>
+                        <a onClick={() => handleNavigate('Quản lý việc làm')}>Quản lý việc làm</a>
+                    </li>
 
                     <li>
                         <i className="fa-solid fa-bell"></i>
-                        <a href="/">Thông Báo</a>
+                        <a onClick={() => handleNavigate('Thông báo')}>Thông Báo</a>
+                    </li>
+
+                    <li>
+                        <i className="fa-solid fa-bell"></i>
+                        <a onClick={() => handleNavigate('Đăng tuyển việc làm')}>Đăng tuyển việc làm</a>
                     </li>
 
                     <li>
                         <i className="fa-solid fa-key"></i>
-                        <a href="/">Đổi mật khẩu</a>
+                        <a onClick={() => handleNavigate('Đổi mật khẩu')}>Đổi mật khẩu</a>
                     </li>
 
                     <li className="logout">
                         <i className="fa-solid fa-sign-out-alt"></i>
-                        <a onClick={onLogoutClick}>Đăng xuất</a>
+                        <a onClick={handleLogout}>Đăng xuất</a>
                     </li>
                     </ul>
                 </div>
@@ -173,4 +137,4 @@ function AppNavbar() {
       );
 }
 
-export default AppNavbar;
+export default CompanyNavbar;

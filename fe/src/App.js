@@ -7,7 +7,7 @@ function App() {
   return (
     // <AuthProvider>
     <>
-      <MainNavbar />
+      {/* <MainNavbar /> */}
       <div className="app">
         {/* Add your header, navigation, or any other common components here */}
         <Outlet />

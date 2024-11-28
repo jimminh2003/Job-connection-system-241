@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "../css/CompanyPostJob.css";
-import TokenManager from "../utils/tokenManager";
+import {useNavigate  } from 'react-router-dom';
+import TokenManager from '../utils/tokenManager';
+
 
 const CompanyPostJob = () => {
+  const navigate = useNavigate(); // Hook điều hướng
+  
+  const [role, setRole] = useState(null); // State để lưu role
+  const [userId, setUserId] = useState(null); // State để lưu userId
+  const [userInfo, setUserInfo] = useState(null);
+  const token = TokenManager.getToken();
   const [fields, setFields] = useState([]); // Dữ liệu từ API
   const [selectedField, setSelectedField] = useState(null); // Lĩnh vực đã chọn
   const [selectedJobType, setSelectedJobType] = useState(null); // Công việc đã chọn
@@ -30,43 +38,38 @@ const CompanyPostJob = () => {
   const [description, setDescription] = useState("");
   const [numOfAppli, setNumOfAppli] = useState("");
 
-  // Gọi API để lấy dữ liệu
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = TokenManager.getToken();
-        // Fetch fields
-        const fieldsResponse = await fetch("/fields", {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!fieldsResponse.ok) {
-          throw new Error(`HTTP error! status: ${fieldsResponse.status}`);
-        }
-        const fieldsData = await fieldsResponse.json();
-        setFields(fieldsData);
+    if (token) {
+      setRole(token.role?.toLowerCase()); // Lấy role từ token
+      setUserId(token.id); // Lấy userId từ token
+    }
+  }, [token]);
 
-       
-        const provincesResponse = await fetch("/provinces", {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!provincesResponse.ok) {
-          throw new Error(`HTTP error! status: ${provincesResponse.status}`);
+  useEffect(() => {
+    fetch("/fields")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const provincesData = await provincesResponse.json();
-        setProvinces(provincesData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+        return response.json();
+      })
+      .then((data) => {
+        setFields(data); // Lưu toàn bộ dữ liệu lĩnh vực
+      })
+      .catch((error) => console.error("Error fetching fields:", error));
 
-    fetchData();
+    //danh sách tỉnh
+    fetch("/locations")
+      .then((response) => response.json())
+      .then((data) => {
+        setProvinces(data);
+        console.log("Locations loaded:", data); 
+      })
+      .catch((error) => console.error("Error fetching locations:", error));
   }, []);
+
 
   // JobTyoe:
    // Xử lý khi chọn lĩnh vực
@@ -141,12 +144,17 @@ const CompanyPostJob = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handlePostJob = () => {
+    // Hàm để gọi API đăng tuyển
     // Kiểm tra giá trị rỗng hoặc không hợp lệ
     if (!jobTitle || !description || !schedule || !level || !selectedWard || !selectedJobType || selectedSkills.length === 0) {
       alert("Vui lòng điền đầy đủ thông tin!");
       return;
     }
+    setShowConfirmPopup(true); // Đóng pop-up sau khi xác nhận
+  };
+
+  const handleSubmit = () => {
   
     // Chuẩn bị dữ liệu
     const jobPostingData = {
@@ -165,20 +173,16 @@ const CompanyPostJob = () => {
         const skill = skills.find((s) => s.id === parseInt(skillId));
         return skill ? skill.name : null;
       }).filter((skillName) => skillName !== null), // Loại bỏ null nếu không tìm thấy kỹ năng
-      companyId: 2, // Giá trị cố định hoặc lấy từ tài khoản công ty đăng nhập
+      companyId: userId, // Giá trị cố định hoặc lấy từ tài khoản công ty đăng nhập
     };
   
     console.log("Dữ liệu gửi đi:", jobPostingData);
   
-    const token = TokenManager.getToken();
-fetch("/jobpostings", {
-  method: "POST",
-  headers: { 
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json' 
-  },
-  body: JSON.stringify(jobPostingData),
-})
+    fetch("/jobpostings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(jobPostingData),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -188,6 +192,8 @@ fetch("/jobpostings", {
       .then((data) => {
         console.log("Đăng tuyển thành công:", data);
         alert("Đăng tuyển thành công!");
+        setShowConfirmPopup(false); // Đóng pop-up sau khi xác nhận
+        navigate(`/JobDetail/${data.id}`);
       })
       .catch((error) => {
         console.error("Lỗi khi đăng tuyển:", error);
@@ -318,6 +324,7 @@ fetch("/jobpostings", {
           {selectedSkills.map((skillId, index) => (
             <div key={index} className="skill-row">
               <select
+                className="select-skills"
                 value={skillId}
                 onChange={(e) => handleSkillChange(e.target.value, index)}
                 disabled={!selectedJobType} // Disable kỹ năng nếu chưa chọn công việc
@@ -399,13 +406,45 @@ fetch("/jobpostings", {
       <div className="form-group">
         <label>Mô tả công việc</label>
         <textarea
-          rows="5" 
+          rows="15" 
           placeholder="Nhập chi tiết bao gồm: Mô tả công việc, Yêu cầu ứng viên, Quyền lợi, Địa điểm làm việc, Thời gian làm việc, Cách thưc ứng tuyển. Mỗi ý là 1 gạch đầu dòng"
           value={description}
           onChange={(e) => setDescription(e.target.value)} 
           ></textarea>
       </div>
-      <button onClick={handleSubmit} className="post-btn">Đăng Tuyển</button>
+      <button
+        onClick={handlePostJob}
+        className="post-btn"
+      >
+        Đăng tuyển
+      </button>
+
+      {/* Pop-up xác nhận */}
+      {showConfirmPopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h2>Xác nhận đăng tuyển</h2>
+            <p>Bạn có chắc chắn muốn đăng tuyển công việc này?</p>
+            <div className="popup-buttons">
+              {/* Nút Hủy */}
+              <button
+                onClick={() => setShowConfirmPopup(false)}
+                className="cancel-btn"
+              >
+                Hủy
+              </button>
+
+              {/* Nút Xác nhận */}
+              <button
+                onClick={handleSubmit}
+                className="confirm-btn"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
