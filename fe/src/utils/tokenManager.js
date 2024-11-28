@@ -1,23 +1,22 @@
 import CryptoJS from 'crypto-js';
-
-// Khóa bí mật để mã hóa - nên được lưu trữ an toàn, ví dụ qua biến môi trường
+import { jwtDecode } from 'jwt-decode';  
+let memoryStorage = {};
 const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_SECRET || 'default-secret-key';
 
-// Khóa lưu trữ
-export const STORAGE_KEYS = {
-    TOKEN: 'secure_access_token',
-    REFRESH_TOKEN: 'secure_refresh_token',
-    USER_INFO: 'secure_user_info',
-    USER_ROLE: 'secure_user_role'
+const STORAGE_KEYS = {
+    AUTH_TOKEN: 'auth_token',
+    USER_ROLE: 'user_role',
+    USER_ID: 'user_id'
 };
 
+
+////////////////////////// đúng không thể sai 
 export const TokenManager = {
-    // Mã hóa dữ liệu trước khi lưu
-    encrypt: (data) => {
+   
+   encrypt: (data) => {
         return CryptoJS.AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString();
     },
 
-    // Giải mã dữ liệu
     decrypt: (encryptedData) => {
         try {
             const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
@@ -27,101 +26,140 @@ export const TokenManager = {
             return null;
         }
     },
-
-    // Lưu token với mã hóa và thời gian hết hạn
-    setToken: (token,role, expiresIn) => {
-        const tokenData = {
-            value: token,
-            role: role,
-            expires: new Date().getTime() + expiresIn * 1000
-        };
-        
-        // Mã hóa toàn bộ dữ liệu token
-        const encryptedTokenData = TokenManager.encrypt(tokenData);
-        localStorage.setItem(STORAGE_KEYS.TOKEN, encryptedTokenData);
-        TokenManager.setUserRole(role);
-    },
-
-    // Lấy và kiểm tra token
-    setUserRole:(role)=>{
-        const encryptedRole=TokenManager.encrypt(role);
-        localStorage.setItem(STORAGE_KEYS.USER_ROLE, encryptedRole);
-    },
-    getUserRole:()=>{
-        const encryptedRole=localStorage.getItem(STORAGE_KEYS.USER_ROLE);
-        return encryptedRole?TokenManager.decrypt(encryptedRole):null;
-    },
-    hasRole:(role)=>{
-        const userRole=TokenManager.getUserRole();
-        return userRole?.toLowerCase() === role.toLowerCase();
-    },
+    hasRole: (role) => TokenManager.getUserRole()?.toLowerCase() === role.toLowerCase(),
     canAccess: (path) => {
         const userRole = TokenManager.getUserRole();
         if (!userRole) return false;
-
-        // Kiểm tra quyền truy cập dựa trên path và role
-        if (path.startsWith('/admin') && userRole === 'admin') return true;
-        if (path.startsWith('/applicants') && userRole === 'applicant') return true;
-        if (path.startsWith('/companies') && userRole === 'company') return true;
-
-        return false;
+    
+      
+        switch(userRole.toLowerCase()) {
+            case 'admin':
+                return path.startsWith('/dashboard');
+                
+            case 'applicant':
+                return path.startsWith('/ApplicantProfile') || 
+                       path.startsWith('/saved-jobs');
+                
+            case 'company':
+                return path.startsWith('/CompanyProfile');
+                
+            default:
+                return path.startsWith('/');
+        }
     },
+    // Cập nhật các phương thức để sử dụng memoryStorage
+    // 
+    setToken: (role,token,id ) => {
+        console.log('TokenManager: Setting token with role:', role);
+        try {
+            if (!token || !role) {
+                throw new Error('Token và role không được để trống');
+            }
+            const validRoles = ['admin', 'applicant', 'company'];
+            if (!validRoles.includes(role.toLowerCase())) {
+                throw new Error('Role không hợp lệ');
+            }
+            const decoded = jwtDecode(token);
+            const tokenData = {               
+                role: role,
+                value: token,
+                id: id,
+                expires: decoded.exp * 1000
+            };
+            const encryptedData = TokenManager.encrypt(tokenData);
+            memoryStorage.token = encryptedData;////// token sẽ lưu caid cần mã hóa 
+            TokenManager.setUserRole(role);
+            TokenManager.setUserId(id);
+            localStorage.setItem('auth_token', encryptedData);
+            // Lưu role
+        } catch (error) {
+            console.error('Error setting token:', error);
+            throw new Error('Invalid token format');
+        }
+    },
+
+    setUserRole: (role) => {
+        //memoryStorage.userRole = TokenManager.encrypt(role);
+        memoryStorage.role = role;/// user role để lưu role 
+    },
+
+    getUserRole: () => memoryStorage.role || TokenManager.getToken()?.role,
+
+    
+
     clearAuth: () => {
-        localStorage.removeItem(STORAGE_KEYS.TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.USER_INFO);
-        localStorage.removeItem(STORAGE_KEYS.USER_ROLE);
+        memoryStorage = {};
+        localStorage.removeItem('auth_token');
     },
 
     getToken: () => {
-        const encryptedTokenData = localStorage.getItem(STORAGE_KEYS.TOKEN);
-        if (!encryptedTokenData) return null;
+        // Ưu tiên lấy từ memoryStorage
+        try {
+            // Lấy token từ memory hoặc localStorage
+            const encryptedTokenData = memoryStorage.token || localStorage.getItem('auth_token');
+            if (!encryptedTokenData) return null;
 
-        const tokenData = TokenManager.decrypt(encryptedTokenData);
-        
-        // Kiểm tra token hết hạn
-        if (!tokenData || new Date().getTime() > tokenData.expires) {
-            TokenManager.removeToken();
+            const tokenData = TokenManager.decrypt(encryptedTokenData);
+            if (!tokenData) {
+                TokenManager.clearAuth();
+                return null;
+            }
+
+            // Kiểm tra token hết hạn
+            const decoded = jwtDecode(tokenData.value);
+            const currentTime = Date.now() / 1000;
+            
+            if (decoded.exp < currentTime) {
+                // Token đã hết hạn
+                TokenManager.clearAuth();
+                return null;
+            }
+
+            // Đồng bộ lại memoryStorage nếu cần
+            if (!memoryStorage.token) {
+                memoryStorage.token = encryptedTokenData;
+                memoryStorage.role = tokenData.role;
+                memoryStorage.id = tokenData.id;
+                memoryStorage.expires = decoded.exp * 1000;
+            }
+
+            return tokenData;
+        } catch (error) {
+            console.error('Error in getToken:', error);
+            TokenManager.clearAuth();
             return null;
         }
-
-        return tokenData.value;
     },
 
-    // Xóa token
     removeToken: () => {
-        localStorage.removeItem(STORAGE_KEYS.TOKEN);
+        delete memoryStorage.token; 
+        delete memoryStorage.id;
+        delete memoryStorage.role;
     },
 
-    // Kiểm tra token có hiệu lực
-    isTokenValid: () => {
-        return !!TokenManager.getToken();
+    setUserId: (id) => {
+        // memoryStorage.userInfo = TokenManager.encrypt(userInfo);
+        memoryStorage.id = id;// gồm role và id 
     },
 
-    
-    // Quản lý thông tin người dùng
-    setUserInfo: (userInfo) => {
-        const encryptedUserInfo = TokenManager.encrypt(userInfo);
-        localStorage.setItem(STORAGE_KEYS.USER_INFO, encryptedUserInfo);
-    },
+    getUserId: () => memoryStorage.id || TokenManager.getToken()?.id,
 
-    getUserInfo: () => {
-        const encryptedUserInfo = localStorage.getItem(STORAGE_KEYS.USER_INFO);
-        return encryptedUserInfo ? TokenManager.decrypt(encryptedUserInfo) : null;
-    },
-    
-    
     isTokenExpired: () => {
-        const encryptedTokenData = localStorage.getItem(STORAGE_KEYS.TOKEN);
-        if (!encryptedTokenData) return true;
-        const tokenData = TokenManager.decrypt(encryptedTokenData);
-        return !tokenData || new Date().getTime() > tokenData.expires;
-    },
+        try {
+            const tokenData = TokenManager.getToken();
+            if (!tokenData?.value) return true;
+            
+            const decodedToken = jwtDecode(tokenData.value);
+            const currentTime = Date.now() / 1000; // Chuyển về giây để so sánh với exp
+            
+            // So sánh thời gian hiện tại với thời gian hết hạn từ token
+            return decodedToken.exp < currentTime;
+        } catch (error) {
+            console.error("Error checking token expiration:", error);
+            return true;
+        }
+    }
    
 };
-export const USER_ROLES = {
-    ADMIN: 'admin',
-    APPLICANT: 'applicant',
-    COMPANY: 'company'
-};
+
 export default TokenManager;

@@ -73,7 +73,7 @@ const router = createBrowserRouter([
           },
           {
             path: "ApplicantProfile/:id",
-            element: <CompanyProfile />
+            element: <ApplicantProfile/>
           },          
           {
             path: "saved-jobs",

@@ -14,28 +14,24 @@ class AuthService {
   // Auth API calls
   async login(credentials) {
     try {
-        console.log('Login credentials:', credentials); // Log credentials gửi đi
+      const response = await api.post('/login', credentials);
+      const {  role, token, id} = response.data;
 
-        const response = await api.post('/login', credentials);
-        console.log('Server response:', response.data); // Log response từ server
+      if (!token || !role) {
+        throw new Error('Invalid server response: missing token or role');
+      }
 
-        const { token, user, expiresIn } = response.data; // Không cần nhận refreshToken từ server
-        
-        if (!token || !user || !user.role) {
-            console.error('Invalid server response format:', response.data);
-            throw new Error('Invalid response from server');
-        }
+      // Lưu token, role và user ID
+      this.tokenManager.setToken(role,token,id); 
+     
 
-        // Lưu access token và thông tin người dùng
-        this.tokenManager.setToken(token, user.role, expiresIn || 3600); // expiresIn mặc định là 1h nếu server không trả về
-        this.tokenManager.setUserInfo(user);
-
-        return { 
-            success: true, 
-            token,
-            user,
-            message: 'Đăng nhập thành công'
-        };
+      return {
+        success: true,
+        role,
+        token,       
+        id,
+        message: 'Đăng nhập thành công',
+      };
     } catch (error) {
         console.error('Login error:', error);
         if (error.response) {
@@ -85,8 +81,9 @@ class AuthService {
   }
   isAuthenticated() {
     const token = TokenManager.getToken();
-    const user = TokenManager.getUserInfo();
-    return !!(token && user);
+    const id = TokenManager.getUserId();
+    const role = TokenManager.getUserRole();
+    return !!(token && id && role);
   }
   
   // Đăng ký company
@@ -103,35 +100,47 @@ class AuthService {
     }
   }
 
-  async refreshToken() {
-      try {
+  // async refreshToken() {
+  //     try {
         
-        const response = await api.post('/refresh');/// chưa viết nè 
-        const { token } = response.data;
+  //       const response = await api.post('/refresh');/// chưa viết nè 
+  //       const { token } = response.data;
 
-        if (!token) {
-            throw new Error('Invalid response from server');
-        }
+  //       if (!token) {
+  //           throw new Error('Invalid response from server');
+  //       }
 
-        this.tokenManager.setToken(token, 'user_role_placeholder', 3600); 
-        return { success: true, token };
-    } catch (error) {
-        return handleApiError(error, 'Làm mới token thất bại');
-    }
-  }
+  //       this.tokenManager.setToken(token, 'user_role_placeholder', 3600); 
+  //       return { success: true, token };
+  //   } catch (error) {
+  //       return handleApiError(error, 'Làm mới token thất bại');
+  //   }
+  // }
   
    logout() {
     this.tokenManager.clearAuth();
   }
 
-  async verifyToken() {
-    try {
-      const response = await api.get('/api/auth/verify');/////////////// chưa viết nè 
-      return { success: true, data: response.data };
-    } catch (error) {
-      return handleApiError(error, 'Token không hợp lệ');
-    }
-  }
+  // async verifyToken() {
+  //   try {
+  //     const response = await api.get('/api/auth/verify');/////////////// chưa viết nè 
+  //     return { success: true, data: response.data };
+  //   } catch (error) {
+  //     return handleApiError(error, 'Token không hợp lệ');
+  //   }
+  // }
+  // async handleApi(endpoint, data, errorMessage) {
+  //   try {
+  //     const response = await api.post(endpoint, data);
+  //     return {
+  //       success: true,
+  //       data: response.data,
+  //       message: `${errorMessage} thành công`,
+  //     };
+  //   } catch (error) {
+  //     return handleApiError(error, `${errorMessage} thất bại`);
+  //   }
+  // }
 }
 
 const authService = new AuthService();

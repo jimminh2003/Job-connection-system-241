@@ -1,15 +1,66 @@
 import React, {useState, useEffect} from "react";
+import axios from 'axios';
 import '../css/AppNavBar.css';
 // import { useNavigate } from 'react-router-dom';
 // import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { useAuth } from "../Contexts/AuthContext";
+import TokenManager from "../utils/tokenManager";
 
-function AppNavbar() {  
+function AppNavbar() {
+    const [userInfo, setUserInfo] = useState(null);
+    const { handleLogout, isAuthenticated } = useAuth();
+    useEffect(() => {
+    const fetchUserInfo = async () => {
+        try {
+            const token = TokenManager.getToken();
+            if (!token) return;
+            const role = token.role.toLowerCase();
+            const userId = token.id; // Lấy userId từ token
+            
 
-    // const navigate = useNavigate();
-    // const handleProfile = () => {
-    //     navigate('/ApplicantProfile');
-    // };
+            let apiUrl = "";
+
+            // Chọn API dựa trên role
+            switch (role) {
+                case "applicant":
+                    apiUrl = `/applicants/${userId}`;
+                    break;
+                case "company":
+                    apiUrl = `/companies/${userId}`;
+                    break;
+                case "admin":
+                    apiUrl = `/admin/${userId}`;
+                    break;
+                case "user":
+                    apiUrl = `/users/${userId}`;
+                    break;
+                default:
+                    throw new Error("Invalid role");
+            }
+
+            const response = await axios.get(apiUrl, {
+                headers: {
+                    Authorization: `Bearer ${token.value}`,
+                },
+            });
+
+            setUserInfo(response.data);
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+        }
+    };
+
+    fetchUserInfo();
+}, []);
+
+const onLogoutClick = () => {
+    const confirmLogout = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
+    if (confirmLogout) {
+        handleLogout();
+    }
+};
+
     return (
         <div className="headernav">
         <div className="nav">
@@ -84,15 +135,37 @@ function AppNavbar() {
                     {/* <i className="fa-solid fa-angle-down">v</i> */}
                     <ul className="dropdown-menu">
                     <div className='infor-application'>
-                        <h4>Học Đăng</h4>
-                        <p>acmlone1@gmail.com</p>
-
-                    </div>
-                    <li>
-                        <i className="fa-solid fa-user-cog"></i>
-                        {/* <a onClick={handleProfile}>Cài đặt thông tin cá nhân</a> */}
-                        <Link to="/ApplicantProfile">Cài đặt thông tin cá nhân</Link>
-                    </li>
+            {userInfo?.role === 'applicant' ? (
+                <>
+                    <h4>{`${userInfo?.firstName} ${userInfo?.lastName}`}</h4>
+                    <p>{userInfo?.email}</p>
+                </>
+            ) : userInfo?.role === 'company' ? (
+                <>
+                    <h4>{userInfo?.name}</h4>
+                    <p>{userInfo?.email}</p>
+                </>
+            ) : (
+                <>
+                    <h4>Người dùng</h4>
+                    <p>{userInfo?.email}</p>
+                </>
+            )}
+        </div>
+        <li>
+    <i className="fa-solid fa-user-cog"></i>
+    {userInfo?.role === 'applicant' ? (
+        <Link to={`/ApplicantProfile/${userInfo.id}`}>Cài đặt thông tin cá nhân</Link>
+    ) : userInfo?.role === 'company' ? (
+        <Link to={`/CompanyProfile/${userInfo.id}`}>Cài đặt thông tin công ty</Link>
+    ) : (
+        <Link to="/profile">Cài đặt thông tin cá nhân</Link>
+    )}
+</li>
+                    <li className="logout">
+                                        <i className="fa-solid fa-sign-out-alt"></i>
+                                        <button onClick={onLogoutClick}>Đăng xuất</button>
+                                    </li>
                     <li>
                         <i className="fa-solid fa-crown"></i>
                         <a href="/upgrade">Nâng cấp tài khoản VIP</a>
@@ -102,19 +175,21 @@ function AppNavbar() {
                         <i className="fa-solid fa-bell"></i>
                         <a href="/notifications">Thông Báo</a>
                     </li>
-
-                    <li>
-                        <i className="fa-solid fa-key"></i>
-                        <a href="/change-password">Đổi mật khẩu</a>
-                    </li>
-
-                    <li className="logout">
-                        <i className="fa-solid fa-sign-out-alt"></i>
-                        <a href="/logout">Đăng xuất</a>
-                    </li>
                     </ul>
-                </div>
+                    </div>
+                    {isAuthenticated ? (
+                    <>
+                        {/* Nội dung cho người dùng đã đăng nhập */}
+                    </>
+                ) : (
+                    <div className="auth-buttons">
+                        <Link to="/login" className="login-btn">Đăng nhập</Link>
+                        <Link to="/register" className="register-btn">Đăng ký</Link>
+                    </div>
+                )}
             </div>
+                    
+                    
         </div>
     </div>
       );

@@ -2,18 +2,75 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, userService } from '../services';
 import { useNavigate , useLocation } from 'react-router-dom';
 import TokenManager from '../utils/tokenManager';
+import { jwtDecode } from 'jwt-decode';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     isAuthenticated: false,
-    user: null,
+    id : null,
     loading: true,
     error: null,
     role:null
   });
   const navigate = useNavigate();
   const location = useLocation();
+  useEffect(() => {
+    const initializeAuth = () => {
+        const tokenData = TokenManager.getToken();
+        if (tokenData) {
+            setAuthState({
+                isAuthenticated: true,
+                id: tokenData.id,
+                role: tokenData.role,
+                loading: false,
+                error: null,
+            });
+        } else {
+            setAuthState({
+                isAuthenticated: false,
+                id: null,
+                role: null,
+                loading: false,
+                error: null,
+            });
+        }
+    };
+
+    initializeAuth();
+}, []);
+useEffect(() => {
+  let warningTimeout;
+
+  const setupExpirationWarning = () => {
+      const tokenData = TokenManager.getToken();
+      if (!tokenData?.value) return;
+      
+      // Không cần jwtDecode nữa vì tokenData đã có thông tin
+      const timeLeft = tokenData.expires - Date.now();
+      
+      if (timeLeft > 0) {
+          const warningTime = timeLeft - (60 * 1000); // Cảnh báo trước 1 phút
+          if (warningTime > 0) {
+              warningTimeout = setTimeout(() => {
+                  alert('Phiên làm việc của bạn sắp hết hạn. Vui lòng đăng nhập lại.');
+              }, warningTime);
+          }
+      }
+  };
+
+  if (authState.isAuthenticated) {
+      setupExpirationWarning();
+  }
+
+  // Cleanup function
+  return () => {
+      if (warningTimeout) {
+          clearTimeout(warningTimeout);
+      }
+  };
+}, [authState.isAuthenticated]);
+
   useEffect(() => {
     const publicRoutes = ['/login', '/register', '/alljob', '/alljob/:id', '/allcompany', '/allcompany/:id'];
     
@@ -33,121 +90,161 @@ export const AuthProvider = ({ children }) => {
       }));
     }
   }, [location.pathname, authState.isAuthenticated]);
+  
+  // useEffect(() => {
+    // let warningTimeout;
 
-  const updateAuthState = (updates) => {
-    setAuthState((prev) => ({
-      ...prev,
-      user: updates.user,
-      role: updates.role,
-      isAuthenticated: true
-    }));
-  };
+    // const setupExpirationWarning = () => {
+    //   const tokenData = TokenManager.getToken();
+    //   if (!tokenData) return;
+
+    //   const timeLeft = tokenData.expires - Date.now();
+    //   const warningTime = timeLeft - (60 * 1000); // Cảnh báo trước 1 phút
+
+    //   if (warningTime > 0) {
+    //     warningTimeout = setTimeout(() => {
+    //       alert('Phiên làm việc của bạn sắp hết hạn. Vui lòng đăng nhập lại.');
+    //     }, warningTime);
+    //   }
+    // };
+
+    // if (authState.isAuthenticated) {
+    //   setupExpirationWarning();
+    // }
+
+    // return () => {
+    //   if (warningTimeout) {
+    //     clearTimeout(warningTimeout);
+    //   }
+    // };
+  // }, [authState.isAuthenticated]);
+
+  // const updateAuthState = (updates) => {
+  //   setAuthState((prev) => ({
+  //     ...prev,
+  //     id,
+  //     role: updates.role,
+  //     isAuthenticated: true
+  //   }));
+  // };
 
   const checkAuthStatus = async () => {
     try {
       const token = TokenManager.getToken();
+      
       if (!token) {
-        // Thay vì throw error, chỉ cần cập nhật state
-        updateAuthState({
+        setAuthState(prev => ({
+          ...prev,
           isAuthenticated: false,
           loading: false,
-          user: null,
+          id: null,
           role: null
-        });
+        }));
         return;
       }
-      const userInfo = TokenManager.getUserInfo();
+  
+      const id = TokenManager.getUserId();
       const role = TokenManager.getUserRole();
-      // Kiểm tra token hợp lệ với backend nếu cần
-      // const user = await authService.validateToken(token);
-      updateAuthState({
-        isAuthenticated: true,
-        loading: false,
-        user: userInfo,
-        role: role
-      });
+      console.log('Retrieved user info and role:', { id, role });
+  
+      // updateAuthState({
+      //   isAuthenticated: true,
+      //   loading: false,
+      //   user: userInfo,
+      //   role: roleid
+      // });
     } catch (error) {
-      updateAuthState({
-        isAuthenticated: false,
-        loading: false,
-        user: null,
-        role:null,
-        error: error.message
-      });
+      console.error('Auth status check error:', error);
+      // ...
     }
   };
 
   const handleLogin = async (credentials) => {
-    updateAuthState({ loading: true, error: null });
+    console.log('Login started with credentials:', credentials);
+    
+    // Set loading state
+    setAuthState(prev => ({
+      ...prev,
+      loading: true,
+      error: null
+    }));
+  
     try {
       const result = await authService.login(credentials);
-      if (result.success) {
-        const { token, user } = result;
-        const role = user.role; // Đảm bảo role luôn tồn tại
-        if (!role) {
-          throw new Error('Vai trò của người dùng không xác định');
-        }
+      console.log('Login API response:', result);
   
-        TokenManager.setToken(token, role, result.expiresIn);
-        TokenManager.setUserInfo(user);
-  
-        updateAuthState({
-          isAuthenticated: true,
-          user,
-          role,
-          error: null
-        });
-        switch (role) {
-          case 'admin':
-            navigate('/dashboard'); // Thay vì /admin
-            break;
-          case 'applicant':
-            navigate('/ApplicantProfile'); // Thay vì /applicants
-            break;
-          case 'company':
-            navigate('/CompanyProfile'); // Thay vì /companies
-            break;
-          default:
-            navigate('/');
-        }
-        
-        return { success: true };
+      
+      if (!result || !result.token || !result.role || !result.id) {
+        throw new Error('Invalid response format');
       }
+  
+      
+      
+  
+      // Lưu token và user info
+      TokenManager.setToken(result.role, result.token, result.id);
+      // TokenManager.setUserId(result.id);
+      // TokenManager.setUserRole(result.role);
+      
+  
+      // Update auth state
+      setAuthState(prev => ({
+        ...prev,
+        isAuthenticated: true,
+        id: result.id,
+        role: result.role,
+        loading: false,
+        error: null
+      }));
+  
+      // Redirect based on role
+      if (result.role === 'applicant') {
+        navigate('/ApplicantProfile');
+      } else if (result.role === 'admin') {
+        navigate('/dashboard');
+      } else if (result.role === 'company') {
+        navigate('/CompanyProfile');
+      }
+  
     } catch (error) {
-      updateAuthState({ error: error.message });
-      return { 
-        success: false, 
-        error: error.message || 'Đăng nhập thất bại'
-      };
-    } finally {
-      updateAuthState({ loading: false });
+      console.error('Login error:', error);
+      
+      setAuthState(prev => ({
+        ...prev,
+        isAuthenticated: false,
+        id : null,
+        role: null,
+        loading: false,
+        error: 'Đăng nhập thất bại. Vui lòng thử lại.'
+      }));
     }
   };
 
-  const handleLogout = async (shouldRedirect = true) => {
-    updateAuthState({ loading: true });
+  const handleLogout = async () => {
     try {
-      await authService.logout();
+      // Xóa token và thông tin người dùng
       TokenManager.clearAuth();
-      updateAuthState({
+      
+      // Cập nhật state
+      setAuthState({
         isAuthenticated: false,
-        user: null,
+        id: null,
         role: null,
+        loading: false,
         error: null
       });
-     
-        navigate('/login');
+
+      // Chuyển hướng về trang login
+      navigate('/login');
       
     } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      updateAuthState({
-       
-        loading: false
-        
-      });
+      console.error('Lỗi đăng xuất:', error);
+      setAuthState(prev => ({
+        ...prev,
+        error: 'Đăng xuất thất bại. Vui lòng thử lại.'
+      }));
     }
-  };
+};
   const hasRole = (requiredRole) => {
     return authState.role === requiredRole;
   };

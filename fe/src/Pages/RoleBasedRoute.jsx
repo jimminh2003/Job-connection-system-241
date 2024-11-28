@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../Contexts/AuthContext';
-import TokenManager from '../utils/tokenManager';
+import PropTypes from 'prop-types';
 
 const RoleBasedRoute = ({ allowedRoles }) => {
-  const { isAuthenticated, userRole, loading } = useAuth();
+  const { isAuthenticated, role, loading } = useAuth();
 
   if (loading) {
     return (
@@ -17,11 +17,17 @@ const RoleBasedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!allowedRoles.includes(userRole)) {
+  if (!role || !allowedRoles?.some((allowedRole) => 
+    allowedRole?.toLowerCase() === role?.toLowerCase())
+  ) {
     return <Navigate to="/unauthorized" replace />;
   }
 
   return <Outlet />;
+};
+
+RoleBasedRoute.propTypes = {
+  allowedRoles: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
 export default RoleBasedRoute;
