@@ -1,26 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import '../css/ApplicationForm.css';
-import { Button, Flex } from 'antd';
+import TokenManager from '../utils/tokenManager';
 
-const ApplicationForm = ({ onClose }) => {
+const ApplicationForm = ({ onClose, jobPostingId }) => {
+  const [role, setRole] = useState(null); 
+  const [userId, setUserId] = useState(null);
   const [formData, setFormData] = useState({
-    fullName: '',
     email: '',
     phoneNumber: '',
     introduction: '',
     resume: null,
   });
   const [errors, setErrors] = useState({});
-  
+  const [isLoading, setIsLoading] = useState(false); // State quản lý loading
+  const token = TokenManager.getToken();
+
   useEffect(() => {
-    // Set a timeout to clear errors after 5 seconds (5000 ms)
+    if (token) {
+      setRole(token.role?.toLowerCase());
+      setUserId(token.id);
+    }
+  }, [token]);
+
+  useEffect(() => {
     if (Object.keys(errors).length > 0) {
       const timer = setTimeout(() => {
         setErrors({});
       }, 3000);
-      return () => clearTimeout(timer); // Clear timeout if component unmounts
+      return () => clearTimeout(timer);
     }
-  }, [errors]); // Only run when errors change
+  }, [errors]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -32,70 +41,112 @@ const ApplicationForm = ({ onClose }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.fullName) newErrors.fullName = "Full Name is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    if (!formData.email) newErrors.email = "Email là bắt buộc.";
+    if (!formData.phoneNumber) newErrors.phoneNumber = "Số điện thoại là bắt buộc.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted", formData);
-      onClose();
+      setIsLoading(true); // Bắt đầu loading
+      try {
+        const requestBody = {
+          applicantId: userId,
+          jobPostingId: jobPostingId,
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
+          resume: formData.resume ? formData.resume.name : '',
+          description: formData.introduction,
+        };
+
+        const response = await fetch('/applications', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token.value}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to apply: ${response.status}`);
+        }
+
+        const data = await response.json();
+        alert('Ứng tuyển thành công!');
+        onClose();
+      } catch (error) {
+        alert('Đã xảy ra lỗi, vui lòng thử lại!');
+      } finally {
+        setIsLoading(false); // Kết thúc loading
+      }
     }
   };
 
   return (
     <div className="popup-apply-overlay">
       <div className="popup-content">
-        <button className="close-btn" onClick={onClose}>X</button>
+        <button className="close-btn" onClick={onClose} disabled={isLoading}>X</button>
         <h3>Ứng Tuyển</h3>
-        <p className="required-info">
-            <span className="asterisk">(*): Thông tin bắt buộc</span>
-        </p>
+        {isLoading && <p className="loading-text">Đang xử lý...</p>} {/* Hiển thị trạng thái loading */}
         <form onSubmit={handleSubmit}>
           <label>
             Tải lên CV từ máy tính, chọn hoặc kéo thả
-            <input type="file" name="resume" accept="application/pdf" onChange={handleChange} />
-          </label>
-
-          <label>
-            Họ Và Tên<span className="required">*</span>:
-            <input type="text" name="fullName" placeholder='Họ và tên' value={formData.fullName} onChange={handleChange} />
-            {errors.fullName && <span className="error">{errors.fullName}</span>}
+            <input
+              type="file"
+              name="resume"
+              accept="application/pdf"
+              onChange={handleChange}
+              disabled={isLoading} // Chặn chỉnh sửa khi đang loading
+            />
           </label>
 
           <label>
             Email<span className="required">*</span>:
-            <input type="email" name="email" placeholder='Email' value={formData.email} onChange={handleChange} />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={isLoading} // Chặn chỉnh sửa khi đang loading
+            />
             {errors.email && <span className="error">{errors.email}</span>}
           </label>
 
           <label>
             Số Điện Thoại<span className="required">*</span>:
-            <input type="tel" name="phoneNumber" placeholder='Số điện thoại' value={formData.phoneNumber} onChange={handleChange} />
+            <input
+              type="tel"
+              name="phoneNumber"
+              placeholder="Số điện thoại"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              disabled={isLoading} // Chặn chỉnh sửa khi đang loading
+            />
             {errors.phoneNumber && <span className="error">{errors.phoneNumber}</span>}
           </label>
 
           <label>
             <p>Thư Giới Thiệu</p>
-            <p className='intro'>
-              Một thư giới thiệu ngắn gọn, chỉn chu sẽ giúp bạn trở nên chuyên nghiệp và gây ấn tượng hơn với nhà tuyển dụng.
-            </p>
-            <textarea name="introduction" placeholder='Giới thiệu ngắn gọn về bản thân, nêu rõ mong muốn, lý do bạn muốn ứng tuyển công việc này'
-                  value={formData.introduction} onChange={handleChange}></textarea>
+            <textarea
+              name="introduction"
+              placeholder="Giới thiệu ngắn gọn về bản thân..."
+              value={formData.introduction}
+              onChange={handleChange}
+              disabled={isLoading} // Chặn chỉnh sửa khi đang loading
+            ></textarea>
           </label>
 
           <div className="button-group">
-            <button type="button" onClick={onClose} className="cancel-btn">Cancel</button>
-            <button type="submit" className="submit-btn">Submit Application</button>
-            {/* <Flex vertical gap="small" style={{ width: '100%' }}>
-              <Button type="primary" block>
-                Primary
-              </Button>
-            </Flex> */}
+            <button type="button" onClick={onClose} className="cancel-btn" disabled={isLoading}>
+              Cancel
+            </button>
+            <button type="submit" className="submit-btn" disabled={isLoading}>
+              {isLoading ? 'Đang gửi...' : 'Submit Application'}
+            </button>
           </div>
         </form>
       </div>

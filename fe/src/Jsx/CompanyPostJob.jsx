@@ -48,7 +48,7 @@ const CompanyPostJob = () => {
   }, [token]);
 
   useEffect(() => {
-    fetch("/fields")
+    fetch("/public/fields")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -61,7 +61,7 @@ const CompanyPostJob = () => {
       .catch((error) => console.error("Error fetching fields:", error));
 
     //danh sách tỉnh
-    fetch("/locations")
+    fetch("/public/locations")
       .then((response) => response.json())
       .then((data) => {
         setProvinces(data);
@@ -165,7 +165,7 @@ const CompanyPostJob = () => {
       minSalary: parseInt(minSalary, 10) || 0,
       maxSalary: parseInt(maxSalary, 10) || 0,
       allowance: parseInt(allowance, 10) || 0,
-      numberOfApplicants: parseInt(numOfAppli, 10) || 1,
+      numberOfApplicants: numOfAppli ,
       wardId: parseInt(selectedWard, 10),
       jobTypeId: parseInt(selectedJobType, 10),
       skills: selectedSkills.map((skillId) => {
@@ -178,9 +178,13 @@ const CompanyPostJob = () => {
   
     console.log("Dữ liệu gửi đi:", jobPostingData);
   
-    fetch("/jobpostings", {
+    fetch("/companies/jobpostings", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Authorization': `Bearer ${token.value}`,
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
       body: JSON.stringify(jobPostingData),
     })
       .then((response) => {
@@ -244,7 +248,12 @@ const CompanyPostJob = () => {
       </div>
       <div className="form-group">
         <label>Số lượng tuyển</label>
-        <input type="number" placeholder="Nhập số lượng tuyển" />
+        <input
+         type="number" placeholder="Nhập số lượng tuyển" 
+         
+         value={numOfAppli}
+         onChange={(e) => setNumOfAppli(e.target.value)}
+        />
       </div>
       <div className="form-group">
         <label>Lịch làm việc</label>

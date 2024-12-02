@@ -20,6 +20,7 @@ function Job_Home() {
     const [currentPage, setCurrentPage] = useState(0);
     const [jobPage, setJobPage] = useState(1);
     const [posts, setPosts] = useState([]);
+    const [totalPages, setTotalPages] = useState(0); // Tổng số trang
     const [isLoading, setIsLoading] = useState(true); // Trạng thái tải dữ liệu
 
     const [savedJobs, setSavedJobs] = useState(() => {
@@ -41,22 +42,24 @@ function Job_Home() {
 
     useEffect(() => {
         const fetchJobs = async () => {
-            setIsLoading(true); // Bắt đầu tải
+            setIsLoading(true);
             try {
-                const response = await fetch('/jobpostings');
+                const response = await fetch(`/public/jobpostings?page=${jobPage}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                setPosts(data);
+                setPosts(data.listResult || []); // Cập nhật danh sách công việc
+                setTotalPages(data.totalPage || 1); // Lấy tổng số trang từ API
             } catch (error) {
                 console.error('Error fetching jobs:', error);
             } finally {
-                setIsLoading(false); 
+                setIsLoading(false);
             }
         };
         fetchJobs();
-    }, []);
+    }, [jobPage]); // Tải lại khi trang thay đổi
+    
 
     const allValues = {
         'nganh-nghe': ['Kinh doanh', 'Phiên dịch', 'Báo chí', 'Viễn thông', 'Game', 'IT'],
@@ -108,19 +111,25 @@ function Job_Home() {
     // const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
     // const totalPages = Math.ceil(jobs.length / jobsPerPage);
     // const currentJobs = posts.slice(indexOfFirstJob, indexOfLastJob);
-    const currentJobs = posts.length > 0 
-    ? posts.slice(indexOfFirstJob, indexOfLastJob)
-    : [];
-    const totalPages = Math.ceil(posts.length / jobsPerPage);
+    const currentJobs = posts.length > 0 ? posts : [];
+    // const totalPages = Math.ceil(posts.length / jobsPerPage);
 
 
-    const paginate = (pageNumber) => setJobPage(pageNumber);
+    const paginate = (pageNumber) => {
+        console.log(`Navigating to page: ${pageNumber}`); // Debug
+        setJobPage(pageNumber);
+    };
+    
+
+    const handleAllJob = () => {
+        navigate(`/alljob`);
+    }
 
     return (
         <div id="jobhome-container">
         <div className="header">
-            <h1>Việc làm tốt nhất</h1>
-            <button className="view-all-btn" onClick={() => alert('Chuyển sang trang khác')}>Xem tất cả</button>
+            <h1>Việc làm mới nhất</h1>
+            <button className="view-all-btn" onClick={handleAllJob}>Xem tất cả</button>
         </div>
 
         <div className="job-list-container">
@@ -141,7 +150,8 @@ function Job_Home() {
                             </div>
                             <div className="job-content">
                                 <img
-                                    src={job.companyImage ? require(`../images/${job.companyImage}`) : DefaultImage}
+                                    // src={job.companyImage ? require(`../images/${job.companyImage}`) : DefaultImage}
+                                    src={DefaultImage}
                                     alt={`${job.companyName || "Công ty"} logo`}
                                     className="job-logo"
                                 />
@@ -155,7 +165,7 @@ function Job_Home() {
                                     <p className="job-salary" title={job.minSalary}>
                                         <span className="icon-and-text">
                                             <DollarSign size={16} />
-                                            {job.minSalary} - {job.maxSalary}
+                                            {job.minSalary} - {job.maxSalary} triệu
                                         </span>
                                     </p>
                                     <p className="job-location" title={job.province}>
@@ -173,7 +183,8 @@ function Job_Home() {
                 )}
             </div>
 
-            <div className="pagination">
+             {/* Pagination */}
+             <div className="pagination">
                 {Array.from({ length: totalPages }, (_, index) => (
                     <button
                         key={index + 1}

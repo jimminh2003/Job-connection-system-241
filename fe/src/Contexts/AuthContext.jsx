@@ -54,6 +54,7 @@ useEffect(() => {
           if (warningTime > 0) {
               warningTimeout = setTimeout(() => {
                   alert('Phiên làm việc của bạn sắp hết hạn. Vui lòng đăng nhập lại.');
+                  handleLogout();
               }, warningTime);
           }
       }

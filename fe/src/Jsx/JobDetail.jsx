@@ -83,7 +83,7 @@ function JobDetail() {
   
       const fetchJobDetails = async () => {
           try {
-              const response = await fetch(`/jobpostings/${id}`);
+              const response = await fetch(`/public/jobpostings/${id}`);
               if (!response.ok) {
                   throw new Error(`Failed to fetch job details: ${response.status}`);
               }
@@ -153,7 +153,7 @@ function JobDetail() {
                   <button className="save-btn">Lưu tin</button>
                 </div>
               </div>
-              {isPopupOpen && <ApplicationForm onClose={handleClosePopup} />}
+              {isPopupOpen && <ApplicationForm onClose={handleClosePopup} jobPostingId={id} />}
               <div className="job-details">
                 <h3>Chi tiết tin tuyển dụng</h3>
                 <p>{job.description && job.description.split('\n').map((line, index) => (

@@ -12,7 +12,8 @@ import JobDetail from './Jsx/JobDetail';
 import CompanyProfile from './Jsx/CompanyProfile';
 import ApplicantProfile from './Jsx/ApplicantProfile';
 import AllJob from "./Pages/AllJob";
-import SavedJobs from "./Pages/SavedJobs";
+// import SavedJobs from "./Pages/SavedJobs";
+
 import ErrorBoundary from "./Pages/ErrorBoudary";
 import CompanyDetail from './Pages/CompanyDetail';
 import AllCompany from './Pages/Allcompany';
@@ -78,15 +79,19 @@ const router = createBrowserRouter([
           {
             path: "ApplicantProfile/:id",
             element: <ApplicantProfile/>
-          },          
-          {
-            path: "saved-jobs",
-            element: <SavedJobs />
           },
           {
-            path: "saved-jobs/:id",
-            element: <SavedJobs />
-          }
+            path: "ApplicantProfile/:tab",
+            element: <ApplicantProfile/>
+          },
+          // {
+          //   path: "saved-jobs",
+          //   element: <SavedJobs />
+          // },
+          // {
+          //   path: "saved-jobs/:id",
+          //   element: <SavedJobs />
+          // }
         ]
       },
       {

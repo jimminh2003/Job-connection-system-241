@@ -1,55 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import '../css/ApplicantProfile.css'
+import { useParams } from 'react-router-dom';
+import '../css/CompanyProfile.css'; // Sử dụng lại className và CSS từ CompanyProfile
 import Navbar from './navbar';
 import AppNavbar from './AppNavbar';
-import CompanyNavbar from './CompanyNavbar';
 import Footer from './Footer';
+import ApplicantInfo from './ApplicantInfo';
+import Notifications from './Notifications';
+import ChangePassword from './ChangePassword';
+import AppSavedJob from './AppSavedJob';
+import JobApplied from './JobApplied';
 import { useAuth } from "../Contexts/AuthContext";
 import TokenManager from "../utils/tokenManager";
 
 const ApplicantProfile = () => {
-  const [activeTab, setActiveTab] = useState('Thông tin');
-  const [name, setName] = useState('Học Đăng');
-  const [phone, setPhone] = useState('');
-  const [userInfo, setUserInfo] = useState(null);
-  const [role, setRole] = useState(null); // State để lưu role
-  const [userId, setUserId] = useState(null); // State để lưu userId
+  const { tab } = useParams();
+  const [activeTab, setActiveTab] = useState(tab || 'Thông tin cá nhân');
+
+  const [role, setRole] = useState(null); 
+  const [userId, setUserId] = useState(null);
 
   const token = TokenManager.getToken();
-useEffect(() => {
-  if (token) {
-    setRole(token.role?.toLowerCase()); // Lấy role từ token
-    setUserId(token.id); // Lấy userId từ token
-  }
-}, [token]);
+
+  useEffect(() => {
+    if (token) {
+      setRole(token.role?.toLowerCase());
+      setUserId(token.id);
+    }
+  }, [token]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
-  const handleUpdate = () => {
-    // Xử lý cập nhật thông tin hoặc hiển thị thông báo thành công
-    alert("Thông tin đã được cập nhật!");
-  };
-
   const renderNavbar = () => {
     if (role === 'applicant') {
       return <AppNavbar />;
-    } else if (role === 'company') {
-      return <CompanyNavbar />;
     } else {
       return <Navbar />;
     }
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'Thông tin cá nhân':
+        return <ApplicantInfo userId={userId} />;
+      case 'Thông báo':
+        return <Notifications />;
+      case 'Tin quan tâm':
+        return <AppSavedJob />;
+      case 'Bài đã ứng tuyển':
+        return <JobApplied />;
+      case 'Đổi mật khẩu':
+        return <ChangePassword />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div>
-      {renderNavbar()}
-      <div id="applicant-profile-container">
-        {/* Sidebar */}
+      <AppNavbar/>
+      <div id="company-profile-container">
         <div className="sidebar">
           <ul>
-            {['Thông tin', 'Thông báo', 'Đăng tuyển việc làm', 'Đổi mật khẩu', 'Đăng xuất'].map((item) => (
+            {['Thông tin cá nhân', 'Thông báo', 'Tin quan tâm', 'Bài đã ứng tuyển', 'Đổi mật khẩu'].map((item) => (
               <li
                 key={item}
                 className={activeTab === item ? 'active' : ''}
@@ -58,99 +72,12 @@ useEffect(() => {
                 {item}
               </li>
             ))}
+            <li onClick={() => alert('Đăng xuất')} className="logout">Đăng xuất</li>
           </ul>
         </div>
-
-        {/* Main Content */}
-        <div className="content">
-          {activeTab === 'Thông tin' && ( 
-            <div className='content-info'>
-              <h3>Cài Đặt Thông Tin Cá Nhân</h3>
-
-                <div>
-                    <label>Họ Và Tên</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <label>Số Điện Thoạt</label>
-                    <input
-                        type="text"
-                        placeholder="Nhập số điện thoại"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <label>Email</label>
-                    <input type="text" value="abc@gmail.com" disabled  />
-                </div>
-
-            {/* Update Button */}
-            <button className="update-btn" onClick={handleUpdate}>Cập nhật</button>
-            </div>
-          )}
-
-          {activeTab === 'Quản lý việc làm' &&(
-            <div>
-              <h2>Các Bài Đã Đăng</h2>
-            </div>
-             
-          )}
-
-          {activeTab === 'Thông báo' && (
-            <div>
-              <h2>Thông báo</h2>
-              <p>There is no record in transaction list</p>
-            </div>
-          )}
-
-          {activeTab === 'Hồ sơ' &&(
-            <div>
-              <h2>Hồ Sơ</h2>
-            </div>
-             
-          )}
-
-          {activeTab === 'Đăng tuyển việc làm' &&(
-            <div>
-              <h2>Đăng Bài Tuyển Dụng</h2>
-            </div>
-             
-          )}
-
-          {activeTab === 'Đổi mật khẩu' &&(
-            <div className='change-pass'>
-              <h2>Đổi Mật Khẩu</h2>
-              <label>Mật Khẩu Cũ</label>
-              <input type="text" defaultValue="********" />
-
-              <label>Mật Khẩu Mới</label>
-              <input type="text" defaultValue="********" />
-
-              <label>Xác Nhận Mật Khẩu</label>
-              <input type="text" defaultValue="********" />
-
-            </div>
-             
-          )}
-
-          {activeTab === 'Xem thông tin' &&(
-            <div>
-              <h2>Xem Thông Tin</h2>
-            </div>
-             
-          )}
-
-          {activeTab === 'Đăng xuất' && <h2>Logout Content</h2>}
-        </div>
+        <div className="content">{renderContent()}</div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };
