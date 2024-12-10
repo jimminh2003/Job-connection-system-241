@@ -142,19 +142,19 @@ const AllJob = () => {
           limit: 9 
         };      
         const hasActiveFilters = ['title', 'schedule', 'level', 'yoe', 'salary', 'allowance','sortByTime','minOfApplicants',
-          'companyName', 'province', 'city', 'ward', 'skills'].some(filter => {
+          'companyName', 'province', 'city', 'ward', 'skills', 'jobType'].some(filter => {
            const value = searchParams.get(filter);
            return value?.trim();
          });
          
          ['title', 'schedule', 'level', 'yoe', 'salary', 'allowance','sortByTime',
-          'companyName', 'province', 'city', 'ward', 'skills'].forEach(filter => {
+          'companyName', 'province', 'city', 'ward', 'skills', 'jobType'].forEach(filter => {
            const value = searchParams.get(filter);
            if (value?.trim()) {
-             params[filter] = filter === 'skills' 
-             ? value.split(',').map(skill => decodeURIComponent(skill.trim())).join(',')
-             : value.trim();
-           }
+            params[filter] = filter === 'skills' && value !== null
+              ? value.split(',').map(skill => decodeURIComponent(skill.trim())).join(',')
+              : value.trim();
+          }
          });
 
          const queryString = new URLSearchParams(params).toString();
