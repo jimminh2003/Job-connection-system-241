@@ -76,7 +76,7 @@ function Job_Home() {
         } else {
             console.warn("Invalid job ID");
         }
-        console.log('Fetching URL:', `/jobpostings/jobId}`);
+        console.log('Fetching URL:', `/jobpostings/${jobId}`);
 
     };
     

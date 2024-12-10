@@ -197,7 +197,7 @@ const CompanyPostJob = () => {
         console.log("Đăng tuyển thành công:", data);
         alert("Đăng tuyển thành công!");
         setShowConfirmPopup(false); // Đóng pop-up sau khi xác nhận
-        navigate(`/JobDetail/${data.id}`);
+        navigate(`/JobDetail/${data.data.id}`);
       })
       .catch((error) => {
         console.error("Lỗi khi đăng tuyển:", error);

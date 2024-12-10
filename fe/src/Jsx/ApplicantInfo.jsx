@@ -4,6 +4,7 @@ import ConfirmModal from './ConfirmModal';
 import TokenManager from '../utils/tokenManager';
 import Loading from './Loading'
 import '../css/ApplicantInfo.css';
+import LoadInfo from './LoadingInfo';
 
 const ApplicantInfo = ({ userId }) => {
   const [applicantInfo, setApplicantInfo] = useState(null);
@@ -13,6 +14,16 @@ const ApplicantInfo = ({ userId }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);  // State loading
   const token = TokenManager.getToken();
+
+  
+  const [locations, setLocations] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [isAddressProcessed, setIsAddressProcessed] = useState(false);
+  const [initialProvince, setInitialProvince] = useState('');
+  const [initialCity, setInitialCity] = useState('');
+  const [initialDistrict, setInitialDistrict] = useState('');
 
 
   useEffect(() => {
@@ -31,7 +42,7 @@ const ApplicantInfo = ({ userId }) => {
           setEditableInfo({
             ...data,
             skills: data.skills || [], // Đảm bảo có skills mặc dù có thể không có
-            emails: data.emails || [{ email: '' }], // Đảm bảo có emails
+            emails: data.emails || [],//[{ email: '' }], // Đảm bảo có emails
             phoneNumbers: data.phoneNumbers || [{ phoneNumber: '' }], // Đảm bảo có phoneNumbers
             certifications: data.certifications || [] // Đảm bảo có certifications
           });
@@ -47,9 +58,38 @@ const ApplicantInfo = ({ userId }) => {
       .catch((error) => console.error('Error fetching skills options:', error));
   }, [userId]);
 
+  
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch('/public/locations');
+        const data = await response.json();
+        setLocations(data);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+  useEffect(() => {
+    if (applicantInfo?.fullAddress && !isAddressProcessed) { // Kiểm tra nếu companyInfo có fullAddress và chưa xử lý
+      const addressParts = applicantInfo.fullAddress.split(',').map(part => part.trim());
+      if (addressParts.length === 4) {
+        setSelectedDistrict(addressParts[1]);
+        setSelectedCity(addressParts[2]);
+        setSelectedProvince(addressParts[3]);
+        setInitialProvince(addressParts[3]); // Lưu lại tỉnh ban đầu
+        setInitialCity(addressParts[2]);     // Lưu lại thành phố ban đầu
+        setInitialDistrict(addressParts[1]); // Lưu lại huyện ban đầu
+      }
+      setIsAddressProcessed(true); // Đánh dấu đã xử lý địa chỉ
+    }
+  }, [applicantInfo?.fullAddress, isAddressProcessed]); // Chỉ chạy khi fullAddress thay đổi và chưa xử lý
+
 
   if (!applicantInfo) {
-    return <div>Đang tải thông tin...</div>;
+    return <LoadInfo text="Đang tải thông tin" />;
   }
   
   const handleSkillChange = (e, index) => {
@@ -82,10 +122,10 @@ const ApplicantInfo = ({ userId }) => {
   const addEmail = () => {
     setEditableInfo((prevState) => ({
       ...prevState,
-      emails: [...prevState.emails, { email: '' }],
+      emails: [...prevState.emails, ''], // Thêm chuỗi rỗng vào mảng emails
     }));
   };
-
+  
   const removeEmail = (index) => {
     const updatedEmails = [...editableInfo.emails];
     updatedEmails.splice(index, 1);
@@ -94,14 +134,14 @@ const ApplicantInfo = ({ userId }) => {
       emails: updatedEmails,
     }));
   };
-
+  
   const addPhone = () => {
     setEditableInfo((prevState) => ({
       ...prevState,
-      phoneNumbers: [...prevState.phoneNumbers, { phoneNumber: '' }],
+      phoneNumbers: [...prevState.phoneNumbers, ''], // Thêm chuỗi rỗng vào mảng phoneNumbers
     }));
   };
-
+  
   const removePhone = (index) => {
     const updatedPhones = [...editableInfo.phoneNumbers];
     updatedPhones.splice(index, 1);
@@ -110,6 +150,7 @@ const ApplicantInfo = ({ userId }) => {
       phoneNumbers: updatedPhones,
     }));
   };
+  
 
   const addCertification = () => {
     setEditableInfo((prevState) => ({
@@ -118,11 +159,11 @@ const ApplicantInfo = ({ userId }) => {
         ...prevState.certifications,
         { 
           name: '', 
-          level: '', 
-          description: '', 
-          proof: '', 
-          startDate: '', 
-          endDate: '' 
+          level: '',
+          description: '',
+          proof: '',
+          startDate: '',
+          endDate: ''
         }
       ],
     }));
@@ -157,10 +198,10 @@ const ApplicantInfo = ({ userId }) => {
     dob,
     emails,
     phoneNumbers,
-    address,
+    specificAddress,
     description,
     skills,
-    applicantJobtypeEntities,
+    jobTypes,
     certifications,
   } = editableInfo;
 
@@ -181,6 +222,13 @@ const ApplicantInfo = ({ userId }) => {
   // Hàm gửi dữ liệu thay đổi lên server
   const handleUpdate = () => {
     setIsLoading(true); // Bật loading khi bắt đầu cập nhật
+
+    const selectedWard = locations
+      .find((province) => province.name === selectedProvince)
+      ?.cities.find((city) => city.name === selectedCity)
+      ?.wards.find((ward) => ward.name === selectedDistrict);
+    const wardId = selectedWard ? selectedWard.id : null;
+
     const updatedData = {
       id: userId,
       username: editableInfo.username,
@@ -189,11 +237,12 @@ const ApplicantInfo = ({ userId }) => {
       lastName: editableInfo.lastName,
       description: editableInfo.description,
       isPublic: true,  // Trả về true
-      address: editableInfo.address,
+      ward: wardId,
+      specificAddress: editableInfo.specificAddress,
       image: editableInfo.image,  // Giữ nguyên hình ảnh
-      phoneNumbers: editableInfo.phoneNumbers.map(phone => phone.phoneNumber),  // Đảm bảo chỉ lấy số điện thoại
+      phoneNumbers: editableInfo.phoneNumbers,  // Đảm bảo chỉ lấy số điện thoại
       dob: editableInfo.dob,
-      emails: editableInfo.emails.map(email => email.email),  // Đảm bảo chỉ lấy email
+      emails: editableInfo.emails,  // Đảm bảo chỉ lấy email
       notificationIds: applicantInfo.notificationIds,  // Giữ nguyên notificationIds
       blockedUserIds: applicantInfo.blockedUserIds,  // Giữ nguyên blockedUserIds
       skillIds: editableInfo.skills.map(skill => skill.id),  // Lấy ID kỹ năng từ dữ liệu đã chọn
@@ -203,7 +252,8 @@ const ApplicantInfo = ({ userId }) => {
         description: cert.description,
         proof: cert.proof,
         startDate: cert.startDate,
-        endDate: cert.endDate
+        endDate: cert.endDate,
+        applicantId: userId,
       })),
     };
   
@@ -221,6 +271,10 @@ const ApplicantInfo = ({ userId }) => {
         setEditableInfo(response.data);  // Cập nhật editableInfo để UI phản ánh ngay
         setIsEditing(false);  // Tắt chế độ chỉnh sửa
         setIsLoading(false);  // Tắt loading khi cập nhật thành công
+        
+        setInitialProvince(applicantInfo.province); // Khôi phục tỉnh ban đầu
+        setInitialCity(applicantInfo.city);         // Khôi phục thành phố ban đầu
+        setInitialDistrict(applicantInfo.ward); // Khôi phục huyện ban đầu
         alert('Cập nhật thành công!');
       })
       .catch((error) => {
@@ -242,7 +296,33 @@ const ApplicantInfo = ({ userId }) => {
   // Hàm hủy thay đổi và thoát chế độ chỉnh sửa
   const handleCancel = () => {
     setEditableInfo(applicantInfo);  // Khôi phục lại dữ liệu ban đầu
+    setSelectedProvince(initialProvince); // Khôi phục tỉnh ban đầu
+    setSelectedCity(initialCity);         // Khôi phục thành phố ban đầu
+    setSelectedDistrict(initialDistrict); // Khôi phục huyện ban đầu
     setIsEditing(false);  // Tắt chế độ chỉnh sửa
+  };
+
+  const handleProvinceChange = (e) => {
+    const newProvince = e.target.value;
+    console.log("Selected Province:", newProvince); // Debug
+    setSelectedProvince(newProvince); // Cập nhật tỉnh
+    setSelectedCity(''); // Reset thành phố
+    setSelectedDistrict(''); // Reset huyện
+  };
+  
+
+  const handleCityChange = (e) => {
+    const newCity = e.target.value;
+    console.log("Selected City:", newCity); // Debug
+    setSelectedCity(newCity); // Cập nhật thành phố
+    setSelectedDistrict(''); // Reset huyện
+  };
+  
+
+  const handleDistrictChange = (e) => {
+    const newDistrict = e.target.value;
+    console.log("Selected District:", newDistrict); // Debug
+    setSelectedDistrict(newDistrict); // Cập nhật huyện
   };
 
   return (
@@ -289,11 +369,11 @@ const ApplicantInfo = ({ userId }) => {
               <div key={index} className="info-row">
                 <input
                   type="text"
-                  value={email.email || ''}
+                  value={email || ''}
                   disabled={!isEditing}
                   onChange={(e) => {
                     const updatedEmails = [...editableInfo.emails];
-                    updatedEmails[index].email = e.target.value;
+                    updatedEmails[index] = e.target.value;
                     setEditableInfo((prevState) => ({
                       ...prevState,
                       emails: updatedEmails,
@@ -325,11 +405,11 @@ const ApplicantInfo = ({ userId }) => {
               <div key={index} className="info-row">
                 <input
                   type="text"
-                  value={phone.phoneNumber || ''}
+                  value={phone || ''}
                   disabled={!isEditing}
                   onChange={(e) => {
                     const updatedPhones = [...editableInfo.phoneNumbers];
-                    updatedPhones[index].phoneNumber = e.target.value;
+                    updatedPhones[index] = e.target.value;
                     setEditableInfo((prevState) => ({
                       ...prevState,
                       phoneNumbers: updatedPhones,
@@ -352,13 +432,75 @@ const ApplicantInfo = ({ userId }) => {
             )}
           </div>
         </div>
+         
+            <div className='info-row'>
+                <p><strong>Tỉnh:</strong></p>
+                <div className="skills-container">
+                <select
+                  className="input-field-skill"
+                  value={selectedProvince || ''}
+                  onChange={handleProvinceChange}
+                  disabled={!isEditing}
+                >
+                  <option value=''>Chọn Tỉnh</option>
+                  {locations.map((province) => (
+                    <option key={province.id} value={province.name}>
+                      {province.name}
+                    </option>
+                  ))}
+                </select>
+                </div>
+              </div>
+
+              <div className='info-row'>
+                <p><strong>Quận:</strong></p>
+                <div className="skills-container">
+                  <select
+                    className="input-field-skill"
+                    value={selectedCity || ''}
+                    onChange={handleCityChange}
+                    disabled={!isEditing || !selectedProvince}
+                  >
+                    <option value=''>Chọn Quận</option>
+                    {locations
+                      .find((province) => province.name === selectedProvince)?.cities.map((city) => (
+                        <option key={city.id} value={city.name}>
+                          {city.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className='info-row'>
+              <p><strong>Phường:</strong></p>
+                <div className="skills-container">
+                  <select
+                    className="input-field-skill"
+                    value={selectedDistrict || ''}
+                    onChange={handleDistrictChange}
+                    disabled={!isEditing}
+                  >
+                    <option value=''>Chọn Phường</option>
+                    {locations
+                      .find((province) => province.name === selectedProvince)?.cities
+                      .find((city) => city.name === selectedCity)?.wards.map((ward) => (
+                        <option key={ward.id} value={ward.name}>
+                          {ward.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+
 
         <div className="info-row">
           <p><strong>Địa chỉ:</strong></p>
           <input
             type="text"
             name="address"
-            value={address || ''}
+            value={specificAddress || ''}
             disabled={!isEditing}
             onChange={handleInputChange}
           />
@@ -411,10 +553,10 @@ const ApplicantInfo = ({ userId }) => {
           <p><strong>Cấp độ:</strong></p>
           <input
             type="text"
-            name="applicantJobtypeEntities"
+            name="jobtypes"
             value={
-              applicantJobtypeEntities?.length > 0
-                ? applicantJobtypeEntities.map((jobType) => jobType.level).join(', ')
+              jobTypes?.length > 0
+                ? jobTypes.map((jobType) => jobType.level).join(', ')
                 : ''
             }
             disabled={!isEditing}

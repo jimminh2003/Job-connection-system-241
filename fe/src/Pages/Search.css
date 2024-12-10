@@ -1,0 +1,41 @@
+/* Spinner.css hoặc tệp CSS của bạn */
+input::placeholder {
+    font-weight: bold; /* Đặt chữ đậm cho placeholder */
+    color: #555; /* Màu sắc của placeholder (tùy chọn) */
+    opacity: 0.8; /* Độ mờ của placeholder */
+    font-size: 1rem; /* Kích thước chữ */
+    transition: color 0.3s ease; /* Hiệu ứng chuyển màu khi focus */
+}
+
+input:focus::placeholder {
+    color: #007BFF; /* Màu sắc khi input được focus */
+    opacity: 1; /* Độ mờ khi focus */
+}
+/* Spinner.css hoặc tệp CSS của bạn */
+select {
+    appearance: none; /* Ẩn kiểu mặc định của trình duyệt */
+    background-color: #f0f0f0; /* Màu nền cho select */
+    border: 1px solid #ccc; /* Đường viền */
+    border-radius: 5px; /* Bo góc */
+    padding: 10px; /* Padding cho select */
+    font-size: 1rem; /* Kích thước chữ */
+    color: #333; /* Màu chữ */
+    transition: border-color 0.3s ease; /* Hiệu ứng chuyển màu đường viền */
+}
+
+select:focus {
+    border-color: #007BFF; /* Đổi màu đường viền khi focus */
+    outline: none; /* Ẩn outline mặc định */
+}
+
+/* Tùy chỉnh cho các option */
+select option {
+    background-color: #fff; /* Màu nền cho option */
+    color: #333; /* Màu chữ cho option */
+}
+
+/* Tùy chỉnh cho option khi hover */
+select option:hover {
+    background-color: #007BFF; /* Màu nền khi hover */
+    color: #fff; /* Màu chữ khi hover */
+}

@@ -147,13 +147,13 @@
   cursor: pointer;
 }
 
-.post-job.cancel-btn {
-  background: #f44336;
+.post-job .cancel-btn {
+  background: #f44336  ;
   color: white;
 }
 
-.post-job.confirm-btn {
-  background: #4caf50;
+.post-job .confirm-btn {
+  background: #4caf50  ;
   color: white;
 }
 

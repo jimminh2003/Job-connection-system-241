@@ -61,7 +61,7 @@ const CompanyProfile = () => {
   };
 
   return (
-    <div>
+    <div className='pprofile-container'>
       {renderNavbar()}
       <div id="company-profile-container">
         <div className="sidebar">
@@ -80,7 +80,9 @@ const CompanyProfile = () => {
         </div>
         <div className="content">{renderContent()}</div>
       </div>
-      <Footer />
+      <div className='foot'>
+        <Footer />
+      </div>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import '../css/JobApplied.css'
 import axios from 'axios';
 import TokenManager from "../utils/tokenManager";
 import { useHistory, useNavigate } from 'react-router-dom';
-
+import LoadInfo from './LoadingInfo';
 
 const JobApplied = () => {
   const [applications, setApplications] = useState([]);
@@ -48,10 +48,10 @@ const JobApplied = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadInfo text="Đang tải bài đăng" />;
   }
   if (!applications || applications.length === 0) {
-    return <div>Không có đơn ứng tuyển nào.</div>;
+    return <LoadInfo text="Không có bài nào" />;
   }
 
   if (error) return <div>{error}</div>;

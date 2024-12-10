@@ -23,6 +23,9 @@ import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './Pages/Dashboard';
 import Unauthorized from './Pages/Unauthorized';
 import RoleBasedRoute from './Pages/RoleBasedRoute';
+import RegisterApplicant from './Pages/Auth/RegisterApplicant';
+import RegisterCompany from './Pages/Auth/RegisterCompany';
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -63,7 +66,15 @@ const router = createBrowserRouter([
       },
       {
         path: "register/*",
-        element: <Register />
+        element: <Register />,
+      },
+      {
+        path: "register-applicant",
+        element: <RegisterApplicant />
+      },
+      {
+        path: "register-company",
+        element: <RegisterCompany />
       },
       {
         path: "JobDetail/:id",

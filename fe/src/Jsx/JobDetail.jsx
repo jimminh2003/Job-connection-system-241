@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Heart,
   MapPin,
-  Calendar,
   DollarSign,
   Globe,
   Layers, //cap bac
@@ -13,7 +11,7 @@ import {
   ReceiptText , //so luong tuyen
   ClipboardType,
   Tag,
-
+  Loader ,
 } from "lucide-react";
 import Navbar from './navbar';
 import Footer from './Footer';
@@ -26,16 +24,21 @@ import { useAuth } from '../Contexts/AuthContext';
 import AppNavbar from './AppNavbar';
 import CompanyNavbar from './CompanyNavbar';
 import TokenManager from "../utils/tokenManager";
+import Loadingedit from '../images/Load_info.gif'
 
 function JobDetail() {
     const { id } = useParams(); // Lấy `id` từ URL
     const navigate = useNavigate(); // Điều hướng trở lại danh sách công việc
     const [job, setJob] = useState(null);
+    const [editedJob, setEditedJob] = useState({});
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const { isAuthenticated } = useAuth();
     const [role, setRole] = useState(null); // State để lưu role
     const [userId, setUserId] = useState(null); // State để lưu userId
+    const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const token = TokenManager.getToken();
     useEffect(() => {
@@ -56,20 +59,18 @@ function JobDetail() {
       }
     };
 
-
     const handleApplyClick = () => {
-      if (!isAuthenticated) {
-        // Nếu chưa đăng nhập, chuyển đến trang login
-        navigate('/login', { 
-            state: { 
-                returnUrl: `/JobDetail/${id}` // Lưu lại trang hiện tại để sau khi đăng nhập có thể quay lại
-            } 
-        });
+      if (role !== 'applicant') {
+        setIsWarningPopupOpen(true);
         return;
       }
-    // Nếu đã đăng nhập, mở form apply
       setIsPopupOpen(true);
     };
+
+    const handleWarningPopupClose = () => {
+      setIsWarningPopupOpen(false);
+    };
+    
   
     const handleClosePopup = () => {
       setIsPopupOpen(false);
@@ -89,6 +90,7 @@ function JobDetail() {
               }
               const data = await response.json();
               setJob(data);
+              setEditedJob(data); // Initialize editedJob with current job details
           } catch (error) {
               console.error('Error fetching job details:', error);
           } finally {
@@ -98,15 +100,86 @@ function JobDetail() {
   
       fetchJobDetails();
   }, [id]);
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
 
+  const handleModalClose = () => {
+    setIsEditModalOpen(false);
+  };
+  const handleChange = (e) => {
+    setEditedJob({
+      ...editedJob,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = async () => {
+    const jobData = {
+        id: id, // Giữ nguyên id của công việc
+        title: editedJob.title || "",
+        description: (editedJob.description || ""), // Đảm bảo mô tả công việc sử dụng ký tự \\n thay vì \n
+        schedule: (editedJob.schedule || "").toUpperCase().replace(/[^A-Z]/g, ""),
+        level: (editedJob.level || "").toUpperCase(),
+        minSalary: editedJob.minSalary || 0,
+        maxSalary: editedJob.maxSalary || 0,
+        image: editedJob.image || "", // Đảm bảo có ảnh, nếu không thì để rỗng hoặc giá trị mặc định
+        numberOfApplicants: editedJob.numberOfApplicants || 0,
+        allowance: editedJob.allowance || 0,
+        //wardId: editedJob.wardId || 0, // Giữ wardId
+        companyId: userId || 0,
+        //jobTypeId: editedJob.jobTypeId || 0, // Giữ jobTypeId
+        skills: [
+          "AngularJS",
+          "ReactJS",
+          "NodeJS"
+        ] || [], // Mảng kỹ năng
+        status: editedJob.status,
+    };
+
+    setIsLoading(true); // Bắt đầu quá trình loading
+
+    try {
+        const response = await fetch('http://localhost:8080/companies/jobpostings', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token.value}`,
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(jobData), // Gửi jobData thay vì editedJob
+        });
+
+        if (response.ok) {
+            alert('Cập nhật công việc thành công!');
+            setIsEditModalOpen(false);
+            // Optionally redirect or refresh job details
+            window.location.reload();
+        } else {
+            alert('Có lỗi xảy ra khi cập nhật công việc.');
+        }
+    } catch (error) {
+        console.error('Error updating job:', error);
+    }finally {
+      setIsLoading(false); // Kết thúc quá trình loading
+    }
+};
+
+
+  const handleSaveOrEdit = () => {
+    if (userId === job.companyId) {
+      // Nếu userId trùng với companyId, chuyển sang chế độ "Sửa"
+      setIsEditModalOpen(true);
+    } else {
+      // Nếu không, lưu tin
+      alert("Đã lưu tin!");
+    }
+  };
     if (loading) {
         return <Loading/>;
     }
-
     if (!job) {
         return <ErrorBoundary/>;
     }
-
     return (
          <div>
         {renderNavbar()}
@@ -150,7 +223,9 @@ function JobDetail() {
                 </div>
                 <div className="button">
                   <button className="apply-btn" onClick={handleApplyClick}>Ứng tuyển ngay</button>
-                  <button className="save-btn">Lưu tin</button>
+                  <button className="save-btn" onClick={handleSaveOrEdit}>
+                    {userId === job.companyId ? "Sửa" : "Lưu tin"}
+                  </button>
                 </div>
               </div>
               {isPopupOpen && <ApplicationForm onClose={handleClosePopup} jobPostingId={id} />}
@@ -163,6 +238,31 @@ function JobDetail() {
 
               </div>
             </div>
+            {isWarningPopupOpen && (
+              <div className="popup-overlay">
+                <div className="ppopup-content">
+                  <h3>Thông báo</h3>
+                  <p>Bạn cần là Ứng viên mới có thể ứng tuyển công việc này. Vui lòng đăng nhập!</p>
+                  <div className="popup-buttons">
+                    <button
+                      className="popup-close"
+                      onClick={handleWarningPopupClose}
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      className="popup-login"
+                      onClick={() => navigate('/login', {
+                        state: { returnUrl: `/JobDetail/${id}` },
+                      })}
+                    >
+                      Đăng nhập
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
 
             {/* Right Column */}
             <div className="right-column">
@@ -283,6 +383,78 @@ function JobDetail() {
             </div>
           </div>
         </div>
+         {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="detail-modal-overlay">
+          <div className="detail-modal-content">
+            <h3>Sửa thông tin công việc</h3>
+            {isLoading ? (
+            <div className="loading-spinner"><Loader  size={80} /></div> // Hoặc thay thế bằng biểu tượng quay từ thư viện như lucide-react
+          ) : (
+            <>
+            <label>
+              Tiêu đề:
+              <input
+                type="text"
+                name="title"
+                value={editedJob.title || ''}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Mức lương tối thiểu:
+              <input
+                type="number"
+                name="minSalary"
+                value={editedJob.minSalary || ''}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Mức lương tối đa:
+              <input
+                type="number"
+                name="maxSalary"
+                value={editedJob.maxSalary || ''}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Trợ cấp:
+              <input
+                type="text"
+                name="allowance"
+                value={editedJob.allowance || ''}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Số lượng tuyển:
+              <input
+                type="number"
+                name="numberOfApplicants"
+                value={editedJob.numberOfApplicants || ''}
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Mô tả công việc:
+              <textarea
+                name="description"
+                value={editedJob.description || ''}
+                onChange={handleChange}
+                rows="12" 
+              />
+            </label>
+            </>
+      )}
+            <div className="detail-modal-buttons">
+              <button className="detail-close-btn" onClick={handleModalClose}>Hủy</button>
+              <button className="detail-save-btn" onClick={handleSubmit}>Lưu</button>
+            </div>
+          </div>
+        </div>
+      )}
         <Footer/>
       </div>
     );

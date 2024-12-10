@@ -268,3 +268,186 @@
   word-wrap: break-word;
   margin-bottom: 7px;
 }
+
+
+#job-detail-container .popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+#job-detail-container .ppopup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+#job-detail-container .popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#job-detail-container .popup-close,
+#job-detail-container .popup-login {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#job-detail-container .popup-close {
+  background: #f9f9f9;
+}
+
+#job-detail-container .popup-close:hover {
+  background: #ccc;
+}
+
+#job-detail-container .popup-login {
+  background: var(--secondColor);
+  color: white;
+}
+
+
+#job-detail-container .popup-login:hover {
+  background: var(--thirdColor);
+  color: white;
+}
+/* Modal Overlay */
+.detail-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Modal Content */
+.detail-modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 1000px;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease;
+  max-height: 1000px;
+  overflow-y: scroll;
+}
+
+/* Modal Title */
+.detail-modal-content h3 {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Modal Form */
+.detail-modal-content label {
+  font-size: 16px;
+  color: #555;
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.detail-modal-content input,
+.detail-modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.detail-modal-content textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+/* Modal Buttons */
+.detail-modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.detail-modal-buttons button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.detail-modal-buttons .detail-cancel-btn {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.detail-modal-buttons .detail-cancel-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.detail-modal-buttons .detail-save-btn {
+  padding: 10px 20px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.detail-modal-buttons .detail-save-btn:hover {
+  background-color: #0b7dda;
+}
+
+/* Close Button */
+.detail-modal-content .detail-close-btn {
+  
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background-color: #f44336;
+  color: #fff;  
+}
+
+.detail-modal-content .detail-close-btn:hover {
+  color: #e74c3c;
+}
+.detail-modal-content .loading-spinner {
+  align-items: center;
+  text-align: center;
+  size: 80px;
+}
+
+/* Animation for Modal */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -1,6 +1,7 @@
   import React, { useState, useEffect } from 'react';
   import '../css/CompanyInfo.css';
   import TokenManager from '../utils/tokenManager';
+  import LoadInfo from './LoadingInfo';
 
   const CompanyInfo = () => {
     const [role, setRole] = useState(null);
@@ -15,7 +16,11 @@
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState('');
     const [fields, setFields] = useState([]); // State for fields
-    
+    const [isAddressProcessed, setIsAddressProcessed] = useState(false);
+    const [initialProvince, setInitialProvince] = useState('');
+    const [initialCity, setInitialCity] = useState('');
+    const [initialDistrict, setInitialDistrict] = useState('');
+    const [isSaving, setIsSaving] = useState(false); // Trạng thái đang lưu
 
     useEffect(() => {
       if (token) {
@@ -34,13 +39,20 @@
             },
             credentials: 'include',
           });
+
           const data = await response.json();
-          // Check if fields is a string, and convert to array if needed
-          if (typeof data.fields === 'string') {
-            data.fields = data.fields.split(',').map((field) => field.trim()); // Convert to array
+           // Chuyển đổi fields từ array object sang array string
+           if(data) {
+
+            if (Array.isArray(data.fields)) {
+              data.fields = data.fields.map((field) => field.name); // Lấy name của từng field
+            }
+            setCompanyInfo(data);
+            setInitialCompanyInfo(data); // Save initial data for restoration on cancel
+           }
+           else {
+            console.error('API returned null data');
           }
-          setCompanyInfo(data);
-          setInitialCompanyInfo(data); // Save initial data for restoration on cancel
         } catch (error) {
           console.error("Error fetching company info:", error);
         }
@@ -77,17 +89,23 @@
       fetchFields();
     }, []); // Fetch fields when component mounts
 
-    
     useEffect(() => {
-      if (companyInfo && companyInfo.addresses?.length > 0) {
-        const addressParts = companyInfo.addresses[0]?.split(',').map(part => part.trim());
-        if (addressParts.length === 3) {
-          setSelectedDistrict(addressParts[0]); // Phường
-          setSelectedCity(addressParts[1]);    // Quận
-          setSelectedProvince(addressParts[2]); // Thành phố/Tỉnh
+      if (companyInfo?.fullAddress && !isAddressProcessed) { // Kiểm tra nếu companyInfo có fullAddress và chưa xử lý
+        const addressParts = companyInfo.fullAddress.split(',').map(part => part.trim());
+        if (addressParts.length === 4) {
+          setSelectedDistrict(addressParts[1]);
+          setSelectedCity(addressParts[2]);
+          setSelectedProvince(addressParts[3]);
+          setInitialProvince(addressParts[3]); // Lưu lại tỉnh ban đầu
+          setInitialCity(addressParts[2]);     // Lưu lại thành phố ban đầu
+          setInitialDistrict(addressParts[1]); // Lưu lại huyện ban đầu
         }
+        setIsAddressProcessed(true); // Đánh dấu đã xử lý địa chỉ
       }
-    }, [companyInfo]);
+    }, [companyInfo?.fullAddress, isAddressProcessed]); // Chỉ chạy khi fullAddress thay đổi và chưa xử lý
+    
+    
+    
 
     useEffect(() => {
       if (companyInfo && Array.isArray(companyInfo.fields)) {
@@ -102,36 +120,42 @@
     const handleSaveClick = async () => {
       // Lấy wardId từ địa chỉ đã chọn
       console.log("Saving company info...");
+      setIsSaving(true); // Đặt trạng thái "đang lưu"
       const selectedWard = locations
-        .find((province) => province.name === selectedProvince)
-        ?.cities.find((city) => city.name === selectedCity)
-        ?.wards.find((ward) => ward.name === selectedDistrict);
-      const wardId = selectedWard ? selectedWard.id : null;
+      .find((province) => province.name === selectedProvince)
+      ?.cities.find((city) => city.name === selectedCity)
+      ?.wards.find((ward) => ward.name === selectedDistrict);
+    const wardId = selectedWard ? selectedWard.id : null;
     
       // Lấy fieldIds từ danh sách ngành nghề đã chọn
-      const fieldIds = companyInfo.fields.map((fieldName) => {
-        const field = fields.find((field) => field.name === fieldName);
-        return field ? field.id : null; // Lấy id của ngành nghề đã chọn
-      }).filter(id => id !== null); // Lọc những id hợp lệ
+       // Chuyển fields từ danh sách tên ngành nghề sang danh sách ID
+      // const fieldIds = companyInfo.fields.map((fieldName) => {
+      //   const field = fields.find((field) => field.name === fieldName);
+      //   return field ? field.id : null;
+      // }).filter((id) => id !== null); // Loại bỏ các giá trị null
+       // Chuyển fields từ danh sách tên ngành nghề sang danh sách ID (fields sẽ là một array chứa objects với key 'id')
+  const updatedFields = companyInfo.fields.map((fieldName) => {
+    const field = fields.find((field) => field.name === fieldName);
+    return field ? { id: field.id, name: "sssss" } : null; // Tạo object { id: field.id }
+  }).filter((field) => field !== null); // Loại bỏ null
     
       const updatedCompanyInfo = {
         id: userId, // Sử dụng userId
-        username: 'username30', // Lấy username từ token nếu có
-        password: 'password30', // Lấy password từ token nếu có
+        username: companyInfo.username, 
+        password: companyInfo.password, // Lấy password từ token nếu có
+        isActive: companyInfo.isActive, // Luôn luôn là true
+        isPublic: companyInfo.isPublic,
+        isBanned: companyInfo.isBanned,
         name: companyInfo.name,
         taxCode: companyInfo.taxCode,
-        image: 'new-image.jpg', // Đặt tên hình ảnh cố định, hoặc bạn có thể thay bằng ảnh tải lên
-        addressWardIds: [
-          {
-            address: "1/2, đường Nguyễn Trãi", // Địa chỉ cố định
-            wardId: wardId, // wardId lấy từ lựa chọn
-          }
-        ],
-        rating: companyInfo.rating || "4.5", // Đặt rating mặc định nếu không có
-        fieldIds: fieldIds,
-        remainingPost: 2, // Ví dụ cho remainingPost
+        image: 'bg.jpg', // Đặt tên hình ảnh cố định, hoặc bạn có thể thay bằng ảnh tải lên
+        ward:  { id: wardId, name: "ssss" }, // wardId lấy từ lựa chọn
+        specificAddress: companyInfo.specificAddress,
+        
+        //rating: companyInfo.rating || "4.5", // Đặt rating mặc định nếu không có
+        fields: updatedFields,
+        remainingPost: companyInfo.remainingPost, // Ví dụ cho remainingPost
         description: companyInfo.description,
-        isActive: true, // Luôn luôn là true
         emails: companyInfo.emails,
         phoneNumbers: companyInfo.phoneNumbers,
       };
@@ -151,38 +175,51 @@
           console.log('Company info updated successfully!');
           setIsEditing(false);
           setInitialCompanyInfo(updatedCompanyInfo); // Cập nhật dữ liệu ban đầu
+          setInitialProvince(companyInfo.province); // Khôi phục tỉnh ban đầu
+          setInitialCity(companyInfo.city);         // Khôi phục thành phố ban đầu
+          setInitialDistrict(companyInfo.ward); // Khôi phục huyện ban đầu
         } else {
           console.error('Error updating company info:', response.statusText);
         }
       } catch (error) {
         console.error('Error during API request:', error);
+      }finally {
+        setIsSaving(false); // Hoàn thành cập nhật
       }
     };
     
 
     const handleExitClick = () => {
       setCompanyInfo(initialCompanyInfo); // Khôi phục dữ liệu ban đầu
+      setSelectedProvince(initialProvince); // Khôi phục tỉnh ban đầu
+      setSelectedCity(initialCity);         // Khôi phục thành phố ban đầu
+      setSelectedDistrict(initialDistrict); // Khôi phục huyện ban đầu
       setIsEditing(false);
     };
 
     const handleProvinceChange = (e) => {
-      console.log("Selected Province:", e.target.value);
-      setSelectedProvince(e.target.value); // Cập nhật province
-      setSelectedCity('');  // Reset city
-      setSelectedDistrict('');  // Reset district
+      const newProvince = e.target.value;
+      console.log("Selected Province:", newProvince); // Debug
+      setSelectedProvince(newProvince); // Cập nhật tỉnh
+      setSelectedCity(''); // Reset thành phố
+      setSelectedDistrict(''); // Reset huyện
     };
     
 
     const handleCityChange = (e) => {
-      console.log("Selected City:", e.target.value);
-      setSelectedCity(e.target.value); // Cập nhật city
-      setSelectedDistrict('');  // Reset district
+      const newCity = e.target.value;
+      console.log("Selected City:", newCity); // Debug
+      setSelectedCity(newCity); // Cập nhật thành phố
+      setSelectedDistrict(''); // Reset huyện
     };
+    
 
     const handleDistrictChange = (e) => {
-      console.log("Selected District:", e.target.value);
-      setSelectedDistrict(e.target.value); // Cập nhật district
+      const newDistrict = e.target.value;
+      console.log("Selected District:", newDistrict); // Debug
+      setSelectedDistrict(newDistrict); // Cập nhật huyện
     };
+    
 
     // Xử lý thay đổi ngành nghề
   const handleFieldChange = (index, value) => {
@@ -228,7 +265,7 @@
   };
 
     if (!companyInfo) {
-      return <div>Loading...</div>;
+      return <LoadInfo text="Đang tải thông tin công ty" />;
     }
 
     const { name, taxCode, description, emails, phoneNumbers } = companyInfo;
@@ -323,7 +360,7 @@
 
 
           <label>Ngành</label>
-          {Array.isArray(companyInfo.fields) && companyInfo.fields.map((field, index) => (
+          {Array.isArray(companyInfo?.fields) && companyInfo.fields.map((field, index) => (
           <div key={index} className="input-with-buttons">
             <select
               value={field || ''}
@@ -363,65 +400,80 @@
             </button>
           )}
 
-          <div className="location-info">
+            <div className="location-info">
             <div>
-              <label>Tỉnh</label>
-              <select
-                value={selectedProvince || ''} // Giá trị mặc định nếu chưa có
-                onChange={handleProvinceChange}
-                disabled={!isEditing}
-              >
-                <option value=''>Chọn Tỉnh</option>
-                {locations.map((province) => (
-                  <option key={province.id} value={province.name}>
-                    {province.name}
-                    
-                  </option>
-                ))}
-              </select>
-            </div>
+                <label>Tỉnh</label>
 
-            <div>
-              <label>Thành phố</label>
-              <select
-                value={selectedCity || ''} // Giá trị mặc định nếu chưa có
-                onChange={handleCityChange}
-                disabled={!isEditing || !selectedProvince}
-              >
-                <option value=''>Chọn Thành Phố</option>
-                {locations
-                  .find((province) => province.name === selectedProvince)?.cities.map((city) => (
-                    <option key={city.id} value={city.name}>
-                      {city.name}
+                <select
+                  value={selectedProvince || ''}
+                  onChange={handleProvinceChange}
+                  disabled={!isEditing}
+                >
+                  <option value=''>Chọn Tỉnh</option>
+                  {Array.isArray(locations) && locations.map((province) => (
+                    <option key={province.id} value={province.name}>
+                      {province.name}
                     </option>
                   ))}
-              </select>
+                </select>
+              </div>
+
+              <div>
+                <label>Quận</label>
+                <select
+                  value={selectedCity || ''}
+                  onChange={handleCityChange}
+                  disabled={!isEditing || !selectedProvince}
+                >
+                  <option value=''>Chọn Quận</option>
+                  {locations
+                    .find((province) => province.name === selectedProvince)?.cities.map((city) => (
+                      <option key={city.id} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div>
+                <label>Phường</label>
+                <select
+                  value={selectedDistrict || ''}
+                  onChange={handleDistrictChange}
+                  disabled={!isEditing}
+                >
+                  <option value=''>Chọn Phường</option>
+                  {locations
+                    .find((province) => province.name === selectedProvince)?.cities
+                    .find((city) => city.name === selectedCity)?.wards.map((ward) => (
+                      <option key={ward.id} value={ward.name}>
+                        {ward.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+
             </div>
 
-            <div>
-              <label>Huyện</label>
-              <select
-                value={selectedDistrict || ''} // Giá trị mặc định nếu chưa có
-                onChange={handleDistrictChange}
-                disabled={!isEditing || !selectedCity}
-              >
-                <option value=''>Chọn Huyện</option>
-                {locations
-                  .find((province) => province.name === selectedProvince)?.cities
-                  .find((city) => city.name === selectedCity)?.wards.map((ward) => (
-                    <option key={ward.id} value={ward.name}>
-                      {ward.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
+          <div className="specific-address">
+            <label>Địa chỉ cụ thể</label>
+            <input
+              type="text"
+              value={companyInfo.specificAddress || ''}
+              disabled={!isEditing}
+              onChange={(e) => setCompanyInfo({ ...companyInfo, specificAddress: e.target.value })}
+            />
           </div>
+
 
         </div>
 
         <div className="button-group">
-          <button className="update-btn" onClick={isEditing ? handleSaveClick : handleEditClick}>
-            {isEditing ? "Lưu" : "Chỉnh sửa"}
+          <button className="update-btn" onClick={isEditing ? handleSaveClick : handleEditClick} 
+            disabled={isSaving} // Vô hiệu hóa nút khi đang lưu
+          >
+             {isSaving ? "Đang lưu..." : isEditing ? "Lưu" : "Chỉnh sửa"}
           </button>
           {isEditing && (
             <button className="exit-btn" onClick={handleExitClick}>

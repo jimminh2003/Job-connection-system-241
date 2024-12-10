@@ -61,7 +61,7 @@ const ApplicationForm = ({ onClose, jobPostingId }) => {
           description: formData.introduction,
         };
 
-        const response = await fetch('/applications', {
+        const response = await fetch('/applicants/applications', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token.value}`,

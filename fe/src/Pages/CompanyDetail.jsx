@@ -6,7 +6,9 @@ import Navbar from '../Jsx/navbar';
 import TokenManager from '../utils/tokenManager';
 import AppNavbar from '../Jsx/AppNavbar';
 import CompanyNavbar from '../Jsx/CompanyNavbar';
+
 const token = TokenManager.getToken();
+
 const CompanyDetail = () => {
   const { id } = useParams();
   const [company, setCompany] = useState(null);
@@ -14,13 +16,15 @@ const CompanyDetail = () => {
   const [userId, setUserId] = useState(null);
   const [role, setRole] = useState(null);
   const [userRating, setUserRating] = useState(0);
-const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+
   useEffect(() => {
     if (token) {
-      setRole(token.role?.toLowerCase()); // Lấy role từ token
-      setUserId(token.id); // Lấy userId từ token
+      setRole(token.role?.toLowerCase());
+      setUserId(token.id);
     }
   }, [token]);
+
   const renderNavbar = () => {
     if (role === 'applicant') {
       return <AppNavbar />;
@@ -30,6 +34,7 @@ const [showRatingModal, setShowRatingModal] = useState(false);
       return <Navbar />;
     }
   };
+
   useEffect(() => {
     const fetchCompanyDetail = async () => {
       try {
@@ -39,7 +44,6 @@ const [showRatingModal, setShowRatingModal] = useState(false);
           'Access-Control-Allow-Origin': '*'
         };
   
-        
         if (token?.value) {
           headers['Authorization'] = `Bearer ${token.value}`;
         }
@@ -55,7 +59,14 @@ const [showRatingModal, setShowRatingModal] = useState(false);
         }
   
         const data = await response.json();
-        setCompany(data);
+        setCompany({
+          ...data,
+          jobPostings: data.jobPostings || [], // Ensure jobPostings is an array
+          addresses: data.addresses || [],
+          phoneNumbers: data.phoneNumbers || [],
+          emails: data.emails || [],
+          recruitQuantity: data.recruitQuantity || 0
+        });
       } catch (error) {
         console.error('Error fetching company details:', error);
         setCompany(null);
@@ -66,6 +77,7 @@ const [showRatingModal, setShowRatingModal] = useState(false);
   
     fetchCompanyDetail();
   }, [id]);
+
   const handleRateCompany = async (rating) => {
     try {
       const response = await fetch('/rate-company', {
@@ -111,7 +123,7 @@ const [showRatingModal, setShowRatingModal] = useState(false);
   return (
     <>
       {renderNavbar()}
-      <div className="w-full max-w-[2300px] mx-auto px-4 py-8">
+      <div className="w-full max-w-[1100px] mx-auto px-3 py-6">
         <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
           {/* Hero Section */}
           <div className="relative h-80 bg-gradient-to-r from-blue-600 to-purple-600"> {/* Tăng height */}
@@ -121,9 +133,9 @@ const [showRatingModal, setShowRatingModal] = useState(false);
               className="w-full h-full object-cover mix-blend-overlay"
             />
             <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
-              <h1 className="text-4xl font-bold text-white mb-4">
-                {company.name}
-              </h1>
+            <h1 className="text-3xl font-bold text-white mb-4" >
+  {company.name}
+</h1>
               <div className="flex items-center gap-3 mt-3">
                 <Award className="w-6 h-6 text-yellow-400" />
                 <span className="text-lg text-white font-medium">{company.fields}</span>
@@ -154,14 +166,14 @@ const [showRatingModal, setShowRatingModal] = useState(false);
                       <Users className="w-8 h-8 text-purple-500" />
                       <h3 className="text-2xl font-semibold text-gray-700">Đang tuyển</h3>
                     </div>
-                    <p className="text-4xl font-bold text-purple-600">{company.recruitQuantity}<span className="text-xl text-gray-600"> vị trí</span></p>
+                    <p className="text-2xl font-bold text-purple-600">{company.recruitQuantity}<span className="text-xl text-gray-600"> vị trí</span></p>
                   </div>
                 </div>
               </div>
   
               {/* Right Column - Contact Information */}
               <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
-                <h2 className="text-3xl font-bold mb-8 text-gray-800 border-b-2 border-purple-500 pb-3 flex items-center gap-3">
+                <h2 className="text-2xl font-bold mb-8 text-gray-800 border-b-2 border-purple-500 pb-3 flex items-center gap-3">
                   <Mail className="w-8 h-8 text-purple-500" />
                   Thông tin liên hệ
                 </h2>
@@ -224,14 +236,14 @@ const [showRatingModal, setShowRatingModal] = useState(false);
                   </div>
                   {/* Job Openings Section - Thêm vào sau phần main content */}
                   <div className="w-full bg-gray-50 mt-18">
-                  <div className="max-w-[2300px] mx-auto px-8 py-12"> {/* Tăng padding-x từ 4 lên 8 */}
-    <h2 className="text-4xl font-bold mb-12 text-gray-800 border-b-2 border-green-500 pb-4 flex items-center gap-3">
+  <div className="max-w-md mx-auto px-8 py-12">
+    <h2 className="text-2xl font-bold mb-12 text-gray-800 border-b-2 border-green-500 pb-4 flex items-center gap-3">
       <Users className="w-10 h-10 text-green-500" />
-      Vị trí đang tuyển dụng ({company.recruitQuantity} vị trí)
+      Vị trí đang tuyển dụng ({company?.recruitQuantity || 0} vị trí)
     </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 gap-8">
       {company.jobPostings && company.jobPostings.map((job) => (
-        <div key={job.id} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
+        <div key={job.id} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 max-w-md mx-auto py-4">
           <div className="flex justify-between items-start mb-6">
             <h3 className="text-2xl font-bold text-gray-800 flex-grow">{job.jobType}</h3>
             <span className="px-4 py-2 bg-green-100 text-green-700 rounded-full text-lg font-medium ml-4">

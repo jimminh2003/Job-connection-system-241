@@ -1,6 +1,55 @@
 import { useNavigate } from 'react-router-dom';
-const JobList = ({ jobs, loading, page, totalPages, onPageChange }) => {
+const format = (date, formatString) => {
+  const d = new Date(date);
+  const day = d.getDate().toString().padStart(2, '0');
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const year = d.getFullYear();
+  return formatString === 'dd/MM/yyyy' ? `${day}/${month}/${year}` : d.toLocaleDateString();
+};
+const JobList = ({ jobs, loading, pagination, onPageChange }) => {
     const navigate = useNavigate(); 
+    const isHotJob = (updatedAt) => {
+      const jobDate = new Date(updatedAt);
+      const currentDate = new Date();
+      const daysDifference = (currentDate - jobDate) / (1000 * 60 * 60 * 24);
+      return daysDifference <= 30;
+  };
+    const { currentPage, totalPages, totalItems } = pagination;
+    const renderPagination = () => {
+      // Chỉ render nếu có nhiều hơn 1 trang
+      if (totalPages <= 1) return null;
+  
+      return (
+        <div className="mt-6 flex flex-col items-center">
+          <div className="flex justify-center items-center gap-2 mb-2">
+          <button
+              onClick={() => onPageChange('prev')}
+              disabled={currentPage === 1}
+              className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        hover:bg-blue-100 transition-colors"
+            >
+              Trước
+            </button>
+            <span className="px-4 py-2 rounded-lg bg-blue-600 text-white">
+            {currentPage}/{totalPages}
+          </span>
+            <button
+              onClick={() => onPageChange('next')}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        hover:bg-blue-100 transition-colors"
+            >
+              Sau
+            </button>
+          </div>
+          <div className="text-gray-600 text-sm">
+            Tổng số {totalItems} kết quả
+          </div>
+        </div>
+      );
+    };
     if (loading) {
       return (
         <div className="space-y-4">
@@ -31,43 +80,57 @@ const JobList = ({ jobs, loading, page, totalPages, onPageChange }) => {
   
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
+          {/* Hiển thị số lượng kết quả */}
+          <div className="text-gray-600 mb-4 mt-4 text-center">
+            Hiển thị {jobs.length}/{totalItems} kết quả
+          </div>
+          
+          {/* Danh sách jobs */}
           {jobs.map(job => (
             <div 
               key={job.id} 
-              className="group bg-white p-6 rounded-xl shadow-md hover:shadow-xl 
-                transform hover:-translate-y-1 transition-all duration-300 ease-in-out
-                border border-gray-100 hover:border-blue-200"
+              className="group relative bg-white p-6 rounded-xl shadow-md 
+                transition-all duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-2xl 
+                border border-gray-100 hover:border-blue-200 
+                hover:bg-gradient-to-br hover:from-blue-50 hover:to-white"
             >
+              {isHotJob(job.updatedAt) && (
+                <span className="absolute top-2 left-2 bg-red-500 text-white 
+                  text-xs font-bold px-2.5 py-1 rounded-full animate-bounce "style={{marginTop:-10,marginLeft:-16}}>
+                  HOT
+                </span>
+              )}
               <div className="flex items-start justify-between">
               <div className="flex-grow min-w-0">
                 
               <h3 
-      className="text-xl font-bold bg-gradient-to-r from-indigo-700 to-indigo-900 
-        bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-blue-800
-        transition-all duration-300 truncate"
-      title={job.title} // Thêm tooltip khi hover
-    >
-      {job.title}
-    </h3>
+                    className="text-2xl font-extrabold bg-gradient-to-r from-indigo-700 to-indigo-900 
+                      bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-blue-800
+                      transition-all duration-300 truncate"
+                    title={job.title}
+                  >
+                    {job.title}
+                  </h3>
     
     {/* Company name với truncate */}
     <p 
       className="text-lg mt-1 font-semibold bg-gradient-to-r from-purple-600 to-purple-800 
-        bg-clip-text text-transparent group-hover:from-purple-500 group-hover:to-purple-700
-        transition-all duration-300 truncate"
-      title={job.companyName} // Thêm tooltip khi hover
-    >
+      bg-clip-text text-transparent group-hover:from-purple-500 group-hover:to-purple-700
+      transition-all duration-300 truncate"
+    title={job.companyName}
+  >
       {job.companyName}
     </p>
   </div>
   <div className="relative flex-shrink-0 ml-4">
     <img 
       src={job.companyImage} 
-      alt={job.companyName}
+      // alt={job.companyName}
       className="w-16 h-16 object-cover rounded-lg shadow-sm 
         group-hover:shadow-md transition-all duration-300
         transform group-hover:scale-110"
     />
+    
     {job.isHot && (
       <span className="absolute -top-2 -right-2 bg-red-500 text-white 
         text-xs font-bold px-2 py-1 rounded-full animate-pulse">
@@ -87,12 +150,12 @@ const JobList = ({ jobs, loading, page, totalPages, onPageChange }) => {
                   <p className="text-sm text-gray-600 hover:text-blue-500 
                     transition-colors duration-200 flex items-center">
                     <span className="w-5">🏢</span>
-                    <span className="ml-2">{job.province}, {job.city}</span>
+                    <span className="ml-2">{job.province}, {job.city}, {job.ward}</span>
                   </p>
                   <p className="text-sm text-gray-600 hover:text-blue-500 
                     transition-colors duration-200 flex items-center">
                     <span className="w-5">⭐</span>
-                    <span className="ml-2">Kinh nghiệm: {job.yoe} năm</span>
+                    <span className="ml-2">Kinh nghiệm: {job.yoe === null ? 'Không yêu cầu kinh nghiệm' : `${job.yoe} năm`}</span>
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -169,6 +232,9 @@ const JobList = ({ jobs, loading, page, totalPages, onPageChange }) => {
               )}
             </div>
           ))}
+          
+          {/* Phân trang */}
+          {renderPagination()}
         </div>
       );
     };
