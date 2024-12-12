@@ -33,7 +33,29 @@ const AllJob = () => {
   const [jobTypes, setJobTypes] = useState([]);
   const [selectedJobType, setSelectedJobType] = useState('');
   const [sortByTime, setSortByTime] = useState('desc');
- 
+  const [expandedSections, setExpandedSections] = useState({
+    location: false,
+    requirements: false,
+    compensation: false,
+    sort: false,
+    company: false,
+  });
+  const toggleSection = (sectionName) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }));
+  };
+  const calculateHeight = () => {
+    switch(expandedSections) {
+      case 'company': return 120;
+      case 'requirements': return 420;
+      case 'location': return 420;
+      case 'compensation': return 420;
+      case 'sort': return 120;
+      default: return 220;
+    }
+  };
   const [searchTitle, setSearchTitle] = useState('');
   const [schedule, setSchedule] = useState('');
   const [experienceLevel, setExperienceLevel] = useState('');
@@ -47,7 +69,7 @@ const AllJob = () => {
   const [skills, setSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [skillSearchTerm, setSkillSearchTerm] = useState('');
-  const [expandedSection, setExpandedSection] = useState(null);
+  
   // Pagination
   const [localPage, setLocalPage] = useState(() => {
     const pageFromUrl = searchParams.get('page');
@@ -141,49 +163,61 @@ const AllJob = () => {
           page: localPage,
           limit: 9 
         };      
-        const hasActiveFilters = ['title', 'schedule', 'level', 'yoe', 'salary', 'allowance','sortByTime','minOfApplicants',
-          'companyName', 'province', 'city', 'ward', 'skills', 'jobType'].some(filter => {
-           const value = searchParams.get(filter);
-           return value?.trim();
-         });
-         
-         ['title', 'schedule', 'level', 'yoe', 'salary', 'allowance','sortByTime',
-          'companyName', 'province', 'city', 'ward', 'skills', 'jobType'].forEach(filter => {
-           const value = searchParams.get(filter);
-           if (value?.trim()) {
-            params[filter] = filter === 'skills' && value !== null
-              ? value.split(',').map(skill => decodeURIComponent(skill.trim())).join(',')
-              : value.trim();
+  
+        // Prepare parameters for skills and job type
+        ['title', 'schedule', 'level', 'yoe', 'salary', 'allowance', 'sortByTime', 
+         'companyName', 'province', 'city', 'ward', 'jobType', 'skills'].forEach(filter => {
+          const value = searchParams.get(filter);
+          if (value?.trim()) {
+            params[filter] = filter === 'skills'
+              ? value.split(',').map(skill => decodeURIComponent(skill.trim()))
+              : filter === 'jobType'
+                ? decodeURIComponent(value.trim())
+                : decodeURIComponent(value.trim());
           }
-         });
-
-         const queryString = new URLSearchParams(params).toString();
-         const response = await axios({
-           method: 'GET',
-           url: hasActiveFilters 
-             ? `http://localhost:8080/public/jobpostings?${queryString}`
-             : `http://localhost:8080/public/jobpostings?page=${localPage}&limit=9`,
-           headers: {
-             'Content-Type': 'application/json',
-             ...(token?.value && { Authorization: `Bearer ${token.value}` })
-           },
-           withCredentials: true
-         });
+        });
+  
+        const hasActiveFilters = Object.keys(params).some(
+          key => key !== 'page' && key !== 'limit' && params[key]
+        );
+  
+        const queryString = new URLSearchParams(
+          Object.fromEntries(
+            Object.entries(params).map(([key, value]) => 
+              key === 'skills' || key === 'jobType' 
+                ? [key, Array.isArray(value) ? value.join(',') : value]
+                : [key, value]
+            )
+          )
+        ).toString();
+  
+        const response = await axios({
+          method: 'GET',
+          url: hasActiveFilters 
+            ? `http://localhost:8080/public/jobpostings?${queryString}`
+            : `http://localhost:8080/public/jobpostings?page=${localPage}&limit=9`,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token?.value && { Authorization: `Bearer ${token.value}` })
+          },
+          withCredentials: true
+        });
           
+        // Rest of the existing code remains the same
         if (response.data && response.data.listResult) {
           setJobs(response.data.listResult);
-            
+          
           const newTotalPages = response.data.totalPage || 0;
           const newTotalItems = response.data.totalItem || 0;
           const actualCurrentPage = response.data.currentPage || localPage;
-
+  
           setPagination({
             currentPage: actualCurrentPage,  
             maxPageItems: response.data.limit || 9,
             totalPages: newTotalPages,
             totalItems: newTotalItems
           });
-
+  
           if (actualCurrentPage !== localPage) {
             setLocalPage(actualCurrentPage);
             const params = new URLSearchParams(searchParams);
@@ -209,7 +243,7 @@ const AllJob = () => {
       }
       setLoading(false);
     };
-
+  
     fetchJobs();
   }, [localPage, searchParams]);
 
@@ -229,10 +263,16 @@ const AllJob = () => {
     if (yoe) params.set('yoe', yoe);
     if (companyName) params.set('companyName', companyName);
     if (allowance) params.set('allowance', allowance);
-    if (selectedJobType) params.set('jobType', selectedJobType);
-    if(minOfApplicants) params.set('minOfApplicants', minOfApplicants);
-    // Location filters
-    if (setSortByTime) params.set('sortByTime', sortByTime);
+    if (minOfApplicants) params.set('minOfApplicants', minOfApplicants);
+  
+    // Ensure jobType is correctly encoded
+    if (selectedJobType) {
+      params.set('jobType', encodeURIComponent(selectedJobType));
+    } else {
+      params.delete('jobType'); // Remove jobType if no job type is selected
+    }
+  
+    if (sortByTime) params.set('sortByTime', sortByTime);
     if (selectedProvince) params.set('province', selectedProvince);
     if (selectedCity) params.set('city', selectedCity);
     if (selectedWard) params.set('ward', selectedWard);
@@ -240,6 +280,8 @@ const AllJob = () => {
     // Skills filter
     if (selectedSkills.length > 0) {
       params.set('skills', selectedSkills.map(skill => encodeURIComponent(skill)).join(','));
+    } else {
+      params.delete('skills'); // Remove skills if no skills are selected
     }
   
     setSearchParams(params);
@@ -293,44 +335,131 @@ const AllJob = () => {
 
 
       <div className="h-auto bg-gradient-to-b from-blue-50 via-white to-blue-50">
-        <div className="container max-w-7xl mx-auto px-4 py-8 mt-10">
-          <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto mb-6">
+        <div className="container max-w-7xl mx-auto px-4 py-8 mt-20">
+        <div className={`w-full h-[${calculateHeight()}px] bg-gradient-to-br from-thirdColor to-themeColor text-white shadow-2xl rounded-none p-6 border-l-7 border-blue-700 transition-all duration-500 hover:shadow-3xl hover:scale-105 hover:border-purple-600 from-blue-300 via-blue-400 to-purple-170`}>
             {/* Main Search Bar */}
 
 
+            <div className="mb-6 relative">
+  <div className="relative shadow-lg">
+    <input 
+      type="text"
+      placeholder="Nhập tên công việc bạn muốn tìm"
+      className="w-full p-4 pl-14 pr-36 text-lg border-0 rounded-full 
+      bg-white text-gray-800 
+      focus:ring-4 focus:ring-blue-200 
+      transition duration-300 ease-in-out
+      placeholder-gray-400
+      hover:shadow-xl
+      transform hover:scale-[1.01]"
+      value={searchTitle}
+      onChange={(e) => setSearchTitle(e.target.value)}
+    />
+    
+    {/* Icon search với animation */}
+    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+      <svg 
+        className="h-7 w-7 text-blue-500 transition-transform duration-300 
+        group-hover:rotate-12 group-focus:rotate-12"
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth={2} 
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
+        />
+      </svg>
+    </div>
 
-            <div className="mb-6">
-              <div className="relative">
-                <input 
-                  type="text"
-                  placeholder="Nhập tên công việc, vị trí hoặc từ khóa"
-                  className="w-full p-4 pl-10 text-lg border-2 border-blue-500 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  value={searchTitle}
-                  onChange={(e) => setSearchTitle(e.target.value)}
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
+    {/* Nút filter và search thông minh */}
+    <div className="absolute inset-y-0 right-0 flex items-center pr-2 space-x-2">
+      {/* Filter chip */}
+      {searchTitle && (
+        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+          <span>{searchTitle}</span>
+          <button 
+            onClick={() => setSearchTitle('')}
+            className="ml-2 text-blue-500 hover:text-blue-700"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+    
+    
+    </div>
+  </div>
+
+  {/* Gợi ý tìm kiếm nhanh */}
+  <div className="mt-3 flex flex-wrap gap-2 opacity-70 hover:opacity-100 transition-opacity">
+  <span className="text-sm text-red-500">Gợi ý:</span>
+  {[
+    'Kỹ sư phần mềm', 
+    'Nhà thiết kế đồ họa', 
+    'Chuyên viên marketing kỹ thuật số', 
+    'Nhân viên kinh doanh',
+    'Quản trị hệ thống',
+    'Chuyên viên SEO',
+   
+    'Quản lý truyền thông xã hội'
+   
+  ].map(tag => (
+    <button
+      key={tag}
+      className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs 
+      hover:bg-blue-100 hover:text-blue-800 transition duration-300"
+      onClick={() => setSearchTitle(tag)}
+    >
+      {tag}
+    </button>
+
+    ))}
+  </div>
+</div>
 
             {/* Filter Sections */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 gap-5">
               {/* Location Column */}
+              <div className="space-y-2">
+    <div 
+      className="filter-header cursor-pointer p-2 bg-gray-50 rounded-lg"
+      onClick={() => toggleSection('company')}
+    >
+      <div className="flex justify-between items-center">
+        <span className="font-medium text-gray-700 mx-auto">Tên Công Ty</span>
+        {expandedSections.company ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+      </div>
+    </div>
+    
+    {expandedSections.company && (
+      <div className="p-2 space-y-2 bg-white rounded-lg">
+        <input 
+          type="text"
+          placeholder="Nhập tên công ty"
+          className="w-full p-2 rounded border"
+          value={companyName}
+          onChange={(e) => setCompanyName(e.target.value)}
+        />
+      </div>
+    )}
+  </div>
               <div className="space-y-2">
                 <div 
                   className="filter-header cursor-pointer p-2 bg-gray-50 rounded-lg"
-                  onClick={() => setExpandedSection(expandedSection === 'location' ? null : 'location')}
+                  // onClick={() => setExpandedSection(expandedSection === 'location' ? null : 'location')}
+                  onClick={() => toggleSection('location')}
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Địa điểm</span>
-                    {expandedSection === 'location' ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+                    <span className="font-medium text-gray-700 mx-auto">Địa điểm</span>
+                    {expandedSections.location ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
                   </div>
                 </div>
                 
-                {expandedSection === 'location' && (
+                {expandedSections.location && (
                   <div className="p-2 space-y-2 border-blue-200 bg-blue-50 focus:border-blue-500 focus:ring-1 focus:ring-blue-300 transition duration-200 rounded-lg shadow-sm">
                     <select 
                       className="w-full p-2 rounded border"
@@ -342,6 +471,7 @@ const AllJob = () => {
                         <option key={prov.id} value={prov.name}>{prov.name}</option>
                       ))}
                     </select>
+                    <label className="block text-sm font-medium text-gray-700">Quận/Huyện</label>
                     <select 
                     className="w-full p-2 rounded border"
                     onChange={(e) => setSelectedCity(e.target.value)} 
@@ -355,7 +485,7 @@ const AllJob = () => {
                       </option>
                     ))}
                   </select>
-  
+                  <label className="block text-sm font-medium text-gray-700">Phường/Xã</label>
                   <select 
                     className="w-full p-2 rounded border"
                     onChange={(e) => setSelectedWard(e.target.value)} 
@@ -378,15 +508,15 @@ const AllJob = () => {
               <div className="space-y-2">
             <div 
               className="filter-header cursor-pointer p-2 bg-gray-50 rounded-lg"
-              onClick={() => setExpandedSection(expandedSection === 'requirements' ? null : 'requirements')}
+              onClick={() => toggleSection('requirements')}
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">Yêu cầu công việc</span>
-                {expandedSection === 'requirements' ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+                <span className="font-medium text-gray-700 mx-auto">Yêu cầu</span>
+                {expandedSections.requirements ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
               </div>
             </div>
             
-            {expandedSection === 'requirements' && (
+            {expandedSections.requirements && (
               <div className="p-2 space-y-2 bg-white rounded-lg">
                 <select 
                   className="w-full p-2 rounded border"
@@ -402,20 +532,20 @@ const AllJob = () => {
                   <option value="MANAGER">Quản lý</option>
                   <option value="DIRECTOR">Giám đốc</option>
                 </select>
-
+                <label className="block text-sm font-medium text-gray-700">Số năm kinh nghiệm</label>
                 <input 
                   type="number"
                   placeholder="Số năm kinh nghiệm"
-                  className="w-full p-2 rounded border"
+                  className="w-full p-2 rounded border text-gray-500"
                   value={yoe}
                   min="0"
                   onChange={(e) => setYoe(Math.max(0, Number(e.target.value)).toString())}
                 />
-
+                <label className="block text-sm font-medium text-gray-700">Số lượng đơn tuyển</label>
                 <input 
                   type="number"
-                  placeholder="Số lượng đơn tối thiểu"
-                  className="w-full p-2 rounded border"
+                  placeholder="Số lượng đơn tuyển"
+                  className="w-full p-2 rounded border text-gray-500"
                   value={minOfApplicants}
                   min="0"
                   onChange={(e) => setMinOfApplicants(Math.max(0, Number(e.target.value)).toString())}
@@ -428,15 +558,15 @@ const AllJob = () => {
               <div className="space-y-2">
             <div 
               className="filter-header cursor-pointer p-2 bg-gray-50 rounded-lg"
-              onClick={() => setExpandedSection(expandedSection === 'compensation' ? null : 'compensation')}
+              onClick={ () => toggleSection('compensation')}
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">Chế độ & Đãi ngộ</span>
-                {expandedSection === 'compensation' ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+                <span className="font-medium text-gray-700 mx-auto">Đãi ngộ</span>
+                {expandedSections.compensation ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
               </div>
             </div>
             
-            {expandedSection === 'compensation' && (
+            {expandedSections.compensation && (
               <div className="p-2 space-y-2 bg-white rounded-lg">
                 <select 
                   className="w-full p-2 rounded border"
@@ -451,19 +581,30 @@ const AllJob = () => {
                   <option value="CONTRACT">Theo hợp đồng</option>
                 </select>
 
-                <input 
+                {/* <input 
                   type="number"
                   placeholder="Mức lương (Triệu VNĐ)"
                   className="w-full p-2 rounded border"
                   value={salaryRange}
                   min="0"
                   onChange={(e) => setSalaryRange(Math.max(0, Number(e.target.value)).toString())}
-                />
-
+                /> */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">Mức lương</label>
+                  <input 
+                    type="number"
+                    placeholder="Nhập mức lương ($)"
+                    className="w-full p-2 rounded border text-gray-500"
+                    value={salaryRange}
+                    min="0"
+                    onChange={(e) => setSalaryRange(Math.max(0, Number(e.target.value)).toString())}
+                  />
+                </div>
+                <label className="block text-sm font-medium text-gray-700">Phụ cấp</label>
                 <input 
                   type="number"
-                  placeholder="Phụ cấp (Triệu VNĐ)"
-                  className="w-full p-2 rounded border"
+                  placeholder="Phụ cấp ($)"
+                  className="w-full p-2 rounded border text-gray-500"
                   value={allowance}
                   min="0"
                   onChange={(e) => setAllowance(Math.max(0, Number(e.target.value)).toString())}
@@ -478,17 +619,16 @@ const AllJob = () => {
           <div className="space-y-2">
             <div 
               className="filter-header cursor-pointer p-2 bg-gray-50 rounded-lg"
-              onClick={() => setExpandedSection(expandedSection === 'sort' ? null : 'sort')}
+              onClick={() => toggleSection('sort')}
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium">Sắp xếp</span>
-                {expandedSection === 'sort' ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+                <span className="font-medium text-gray-700 mx-auto">Sắp xếp</span>
+                {expandedSections.sort ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
               </div>
             </div>
               {/* Skills Column */}
 
-             
-              {expandedSection === 'sort' && (
+              {expandedSections.sort && (
               <div className="p-2 space-y-2 bg-white rounded-lg">
                 <select 
                   className="w-full p-2 rounded border"
@@ -511,14 +651,17 @@ const AllJob = () => {
 
             {/* Search and Reset Buttons */}
             <div className="flex justify-center space-x-4 mt-6">
+            <button 
+  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full 
+  hover:from-blue-700 hover:to-blue-800 transition-all duration-300 
+  transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  onClick={handleSearch}
+>
+  Tìm Kiếm
+</button>
               <button 
-                className="px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition duration-300"
-                onClick={handleSearch}
-              >
-                Tìm Kiếm
-              </button>
-              <button 
-                className="px-8 py-3 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition duration-300"
+                className="px-8 py-3 bg-gray-600 text-white rounded-full hover:bg-gray-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 
+  transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 transition duration-300"
                 onClick={handleClearAllFilters}
               >
                 Đặt Lại
@@ -527,49 +670,74 @@ const AllJob = () => {
           </div>
         </div>
 
-
-          <div className="flex flex-col md:flex-row gap-6">
-
+       
 
 
+          
+<div className="container mx-auto px-4">
+      <div className="flex flex-col md:flex-row gap-4 items-start"> {/* Thay đổi layout */}
+        <div className="w-full md:w-1/4 mt-20"> {/* Sidebar filter */}
+  {/* Job Type Section */}
+  <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+      <h3 className="font-semibold text-gray-800">Loại công việc</h3>
+    </div>
+    <div className="p-4">
+      <div className="relative">
+        <select 
+          className="w-full p-3 rounded-lg border border-gray-300 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 
+                     text-gray-700 appearance-none"
+          value={selectedJobType}
+          onChange={(e) => setSelectedJobType(e.target.value)}
+        >
+          <option value="" className="text-gray-500">Tất cả loại công việc</option>
+          {jobTypes.map((type) => (
+            <option key={type.id} value={type.name} className="text-gray-700">
+              {type.name}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 
-        {/* Left Sidebar */}
-        <div className="w-full md:w-64 space-y-4 mx-auto mr-3">
-          {/* Job Type Section */}
-          <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="font-medium mb-3">Loại công việc</h3>
-            <select 
-              className="w-full p-2 rounded border"
-              value={selectedJobType}
-              onChange={(e) => setSelectedJobType(e.target.value)}
-            >
-              <option value="">Tất cả loại công việc</option>
-              {jobTypes.map((type) => (
-                <option key={type.id} value={type.name}>{type.name}</option>
-              ))}
-            </select>
-          </div>
-
-
-
-
-          {/* Skills Section */}
-          <div className="bg-white rounded-lg shadow p-4">
-      <h3 className="font-medium mb-3">Kỹ năng</h3>
-      <input
-        type="text"
-        placeholder="Tìm kiếm kỹ năng..."
-        value={skillSearchTerm}
-        onChange={(e) => setSkillSearchTerm(e.target.value)}
-        className="w-full p-2 rounded border mb-3"
-      />
-      <div className="max-h-60 overflow-y-auto space-y-2">
+  <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+      <h3 className="font-semibold text-gray-800">Kỹ năng</h3>
+    </div>
+    <div className="p-4">
+      <div className="relative mb-4">
+        <input
+          type="text"
+          placeholder="Tìm kiếm kỹ năng..."
+          value={skillSearchTerm}
+          onChange={(e) => setSkillSearchTerm(e.target.value)}
+          className="w-full p-3 pl-10 rounded-lg border border-gray-300 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 
+                     text-gray-700"
+        />
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
+      <div className="max-h-64 overflow-y-auto space-y-2 custom-scrollbar">
         {skills
           .filter(skill => skill.name.toLowerCase().includes(skillSearchTerm.toLowerCase()))
           .map((skill) => (
-            <div key={skill.id} className="flex items-center">
+            <div 
+              key={skill.id} 
+              className="flex items-center hover:bg-gray-50 p-2 rounded-md transition-colors duration-200"
+            >
               <input
                 type="checkbox"
                 id={`skill-${skill.id}`}
@@ -581,17 +749,39 @@ const AllJob = () => {
                       : [...prev, skill.name]
                   );
                 }}
-                className="mr-2"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mr-3"
               />
-              <label htmlFor={`skill-${skill.id}`} className="text-sm">{skill.name}</label>
+              <label 
+                htmlFor={`skill-${skill.id}`} 
+                className="text-sm text-gray-700 cursor-pointer select-none"
+              >
+                {skill.name}
+              </label>
             </div>
           ))}
       </div>
     </div>
   </div>
-
+  </div>
+  {/* Thêm style cho scrollbar tùy chỉnh (nếu cần) */}
+<style jsx>{`
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+`}</style>
   {/* Job List Section */}
-  <div className="w-full md:w-3/4">
+  <div className="w-full md:flex-1"> {/* Job List */}
     <JobList
       jobs={jobs}
       loading={loading}
@@ -600,7 +790,7 @@ const AllJob = () => {
     />
   
 
-
+ </div>
 
       
           </div>

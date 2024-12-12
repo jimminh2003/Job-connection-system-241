@@ -181,6 +181,24 @@ const JobList = ({ jobs, loading, pagination, onPageChange }) => {
     
               {/* Skills với animation */}
               <div className="mt-4">
+  <div className="flex flex-wrap gap-2">
+    {job.skills && typeof job.skills === 'string' ? (
+      job.skills.split(',').map((skill, index) => (
+        <span 
+          key={index}
+          className="px-3 py-1 text-sm font-medium rounded-full
+            bg-blue-50 text-blue-600 hover:bg-blue-100
+            transition-all duration-200 hover:scale-105
+            cursor-default"
+        >
+          {skill.trim()}
+        </span>
+      ))
+    ) : (
+      <span>No skills available</span>
+    )}
+     {/* Skills với animation */}
+     {/* <div className="mt-4">
                 <div className="flex flex-wrap gap-2">
                   {job.skills.split(',').map((skill, index) => (
                     <span 
@@ -192,7 +210,7 @@ const JobList = ({ jobs, loading, pagination, onPageChange }) => {
                     >
                       {skill.trim()}
                     </span>
-                  ))}
+                  ))} */}
                 </div>
               </div>
     
