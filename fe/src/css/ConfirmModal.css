@@ -1,4 +1,4 @@
-.modal-overlay {
+.modal-load-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -9,41 +9,46 @@
     justify-content: center;
     align-items: center;
   }
+
+
+  .modal-load-overlay p {
+    font-size: 22px;
+  }
   
-  .modal-overlay .modal-content {
+  .modal-load-overlay .modal-load-content {
     background: #fff;
     padding: 20px;
     border-radius: 8px;
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
     text-align: center;
   }
   
-  .modal-overlay .button-container {
+  .modal-load-overlay .button-load-container {
     display: flex;
     justify-content: space-around;
     margin-top: 20px;
   }
   
-  .modal-overlay.cancel-btn,
-  .modal-overlay.confirm-btn {
+  .modal-load-overlay .cancel-load-btn,
+  .modal-load-overlay .confirm-load-btn {
     padding: 10px 20px;
     cursor: pointer;
     border: none;
     border-radius: 4px;
   }
   
-  .modal-overlay .cancel-btn {
+  .modal-load-overlay .cancel-load-btn {
     background-color: #f44336;
     color: #fff;
   }
   
-  .modal-overlay .confirm-btn {
+  .modal-load-overlay .confirm-load-btn {
     background-color: #4caf50;
     color: #fff;
   }
   
-  .modal-overlay .update-btn {
+  .modal-load-overlay .update-load-btn {
     padding: 10px 20px;
     background-color: #2196F3;
     color: white;
@@ -52,7 +57,7 @@
     cursor: pointer;
   }
   
-  .modal-overlay .update-btn:hover {
+  .modal-load-overlay .update-load-btn:hover {
     background-color: #0b7dda;
   }
   

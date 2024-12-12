@@ -18,7 +18,7 @@
   justify-content: flex-start; /* Điều chỉnh căn giữa hoặc kéo các job về bên trái */
   align-items: center;
   height: 100%; /* Đảm bảo container chiếm đủ không gian */
-  min-height: 300px; /* Chiều cao tối thiểu để dễ nhìn */
+  min-height: 400px; /* Chiều cao tối thiểu để dễ nhìn */
   position: relative; /* Đảm bảo các phần tử con căn chỉnh chính xác */
   background-color: white; /* Màu nền cho container */
 
@@ -37,9 +37,9 @@
   z-index: 1;
 }
 
-.loading-gif {
-  width: 500px; /* Kích thước GIF */
-  height: 300px;
+#jobhome-container .loading-gif {
+  width: 90%; /* Kích thước GIF */
+  height: auto;
 }
 
 

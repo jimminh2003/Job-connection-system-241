@@ -11,6 +11,7 @@ const ApplicantInfo = ({ userId }) => {
   const [isEditing, setIsEditing] = useState(false);  // Trạng thái chỉnh sửa
   const [editableInfo, setEditableInfo] = useState({});  // Dữ liệu có thể chỉnh sửa
   const [skillsOptions, setSkillsOptions] = useState([]); // List of skill options
+  const [jobTypesOptions, setJobTypesOptions] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);  // State loading
   const token = TokenManager.getToken();
@@ -49,6 +50,13 @@ const ApplicantInfo = ({ userId }) => {
         })
         .catch((error) => console.error('Error fetching applicant info:', error));
     }
+    //fetich jobtype options
+    axios
+    .get('/public/jobtypes')
+    .then((response) => {
+      setJobTypesOptions(response.data);
+    })
+    .catch((error) => console.error('Error fetching job types options:', error));
  // Fetch skill options
     axios
       .get('/public/skills')
@@ -91,6 +99,33 @@ const ApplicantInfo = ({ userId }) => {
   if (!applicantInfo) {
     return <LoadInfo text="Đang tải thông tin" />;
   }
+  const handleJobTypeChange = (index, field, value) => {
+    const updatedJobTypes = [...editableInfo.jobTypes];
+    updatedJobTypes[index] = {
+      ...updatedJobTypes[index],
+      [field]: value,
+    };
+    setEditableInfo((prevState) => ({
+      ...prevState,
+      jobTypes: updatedJobTypes,
+    }));
+  };
+  // Hàm thêm một job type mới
+const handleAddJobType = () => {
+  setEditableInfo((prevState) => ({
+    ...prevState,
+    jobTypes: [...prevState.jobTypes, { name: '', level: '' }],
+  }));
+};
+
+// Hàm xóa một job type
+const handleRemoveJobType = (index) => {
+  setEditableInfo((prevState) => ({
+    ...prevState,
+    jobTypes: prevState.jobTypes.filter((_, i) => i !== index),
+  }));
+};
+
   
   const handleSkillChange = (e, index) => {
     const updatedSkills = [...editableInfo.skills];
@@ -246,6 +281,11 @@ const ApplicantInfo = ({ userId }) => {
       notificationIds: applicantInfo.notificationIds,  // Giữ nguyên notificationIds
       blockedUserIds: applicantInfo.blockedUserIds,  // Giữ nguyên blockedUserIds
       skillIds: editableInfo.skills.map(skill => skill.id),  // Lấy ID kỹ năng từ dữ liệu đã chọn
+      jobTypes: editableInfo.jobTypes.map((jobType) => ({
+        id: jobType.id,
+        name: jobType.name,
+        level: jobType.level,
+      })),
       certifications: editableInfo.certifications.map(cert => ({
         name: cert.name,
         level: cert.level,
@@ -434,8 +474,8 @@ const ApplicantInfo = ({ userId }) => {
         </div>
          
             <div className='info-row'>
-                <p><strong>Tỉnh:</strong></p>
-                <div className="skills-container">
+              <p><strong>Tỉnh:</strong></p>
+              <div className="skills-container">
                 <select
                   className="input-field-skill"
                   value={selectedProvince || ''}
@@ -449,8 +489,8 @@ const ApplicantInfo = ({ userId }) => {
                     </option>
                   ))}
                 </select>
-                </div>
               </div>
+            </div>
 
               <div className='info-row'>
                 <p><strong>Quận:</strong></p>
@@ -549,20 +589,59 @@ const ApplicantInfo = ({ userId }) => {
           </div>
         </div>
 
-        <div className="info-row">
-          <p><strong>Cấp độ:</strong></p>
-          <input
-            type="text"
-            name="jobtypes"
-            value={
-              jobTypes?.length > 0
-                ? jobTypes.map((jobType) => jobType.level).join(', ')
-                : ''
-            }
-            disabled={!isEditing}
-            onChange={handleInputChange}
-          />
-        </div>
+        {editableInfo.jobTypes && (
+          <div className="info-row">
+            <p><strong>Cấp độ công việc:</strong></p>
+            <div className="jobtype-container">
+              {editableInfo.jobTypes.map((jobType, index) => (
+                <div key={index} className="jobtype-row">
+                  <select
+                    value={jobType.name || ''}
+                    disabled={!isEditing}
+                    onChange={(e) => handleJobTypeChange(index, 'name', e.target.value)}
+                  >
+                    <option value="">Chọn loại công việc</option>
+                    {jobTypesOptions.map((option) => (
+                      <option key={option.id} value={option.name}>{option.name}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={jobType.level || ''}
+                    disabled={!isEditing}
+                    onChange={(e) => handleJobTypeChange(index, 'level', e.target.value)}
+                  >
+                    <option value="">Chọn cấp bậc</option>
+                    <option value="INTERN">INTERN</option>
+                    <option value="FRESHER">FRESHER</option>
+                    <option value="JUNIOR">JUNIOR</option>
+                    <option value="SENIOR">SENIOR</option>
+                    <option value="LEAD">LEAD</option>
+                    <option value="MANAGER">MANAGER</option>
+                    <option value="DIRECTOR">DIRECTOR</option>
+                  </select>
+
+                  {isEditing && (
+                    <>
+                      <button
+                        className="remove-jobtype-btn"
+                        onClick={() => handleRemoveJobType(index)}
+                      >-
+                      </button>
+                    </>
+                  )}
+                </div>
+              ))}
+              {isEditing && (
+                <button
+                  className="add-jobtype-btn"
+                  onClick={() => handleAddJobType()}
+                >+
+                </button>
+            )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="certifications-section">
@@ -618,7 +697,7 @@ const ApplicantInfo = ({ userId }) => {
                 {isEditing && (
                   <button
                     onClick={() => removeCertification(index)}
-                    className="remove-cert-btn"
+                    className="remove-skill-btn"
                   >
                     -
                   </button>
@@ -629,7 +708,7 @@ const ApplicantInfo = ({ userId }) => {
             <div>Chưa có chứng nhận nào.</div>
           )}
           {isEditing && (
-            <button onClick={addCertification} className="add-cert-btn">+</button>
+            <button onClick={addCertification} className="add-skill-btn">+</button>
           )}
         </div>
 

@@ -37,6 +37,7 @@
   border-radius: 4px;
   font-size: 14px;
   color: #333;
+  font-weight: normal;
   transition: border-color 0.3s;
 }
 

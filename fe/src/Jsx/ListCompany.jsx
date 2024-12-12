@@ -1,26 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../css/ListCompany.css';
+import loadinggif from '../images/Evitare loader.gif';
+import logo from '../images/logo2.png'
+import { useNavigate } from 'react-router-dom';
+
 
 function ListCompany() {
-  const companies = [
-    { logo: '🏢', name: 'Company A', industry: 'Tech', jobs: 120 },
-    { logo: '🏭', name: 'Company B', industry: 'Manufacturing', jobs: 85 },
-    { logo: '🏦', name: 'Company C', industry: 'Finance', jobs: 40 },
-    { logo: '💻', name: 'Company D', industry: 'Software', jobs: 70 },
-    { logo: '🚀', name: 'Company E', industry: 'Aerospace', jobs: 95 },
-    { logo: '🏗️', name: 'Company F', industry: 'Construction', jobs: 110 },
-    { logo: '📦', name: 'Company G', industry: 'Logistics', jobs: 60 },
-    { logo: '🍔', name: 'Company H', industry: 'Food', jobs: 55 },
-    { logo: '📱', name: 'Company I', industry: 'Telecom', jobs: 45 },
-    { logo: '✈️', name: 'Company J', industry: 'Aviation', jobs: 130 },
-    { logo: '🛒', name: 'Company K', industry: 'Retail', jobs: 90 },
-    { logo: '🔬', name: 'Company L', industry: 'Research', jobs: 35 },
-  ];
-
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 9; // Mỗi trang hiển thị 9 công ty
-  const totalPages = Math.ceil(companies.length / itemsPerPage);
   const [currentPage, setCurrentPage] = useState(0);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    // Gọi API
+    const fetchCompanies = async () => {
+      try {
+        const response = await fetch('/public/companies');
+        const data = await response.json();
+        // Lọc công ty có `recruitQuantity` > 20
+        const filteredCompanies = data.filter((company) => company.recruitQuantity > 0);
+        setCompanies(filteredCompanies);
+      } catch (error) {
+        console.error('Error fetching companies:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
+  const totalPages = Math.ceil(companies.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
   const currentItems = companies.slice(startIndex, startIndex + itemsPerPage);
 
@@ -28,46 +39,73 @@ function ListCompany() {
   const handlePreviousPage = () => setCurrentPage((prevPage) => (prevPage - 1 + totalPages) % totalPages);
   const handlePageClick = (pageIndex) => setCurrentPage(pageIndex);
 
+  const handleAllCompany = () => {
+        navigate(`/allcompany`);
+    }
+  // if (loading) {
+  //   return (
+  //     <div className="loading-container">
+  //       <img src={loadinggif} alt="Loading..." />
+  //     </div>
+  //   );
+  // }
+
   return (
     <div>
       <div id="list-company-container">
         {/* Dòng đầu tiên */}
         <div className="header">
           <h2>Các Công Ty Lớn</h2>
-          <button className="view-all-btn" onClick={() => alert('Chuyển sang trang khác')}>
+          <button className="view-all-btn" onClick={handleAllCompany}>
             Xem tất cả
           </button>
         </div>
 
         {/* Flexbox chứa các công ty */}
         <div className="company-flexbox-container">
-          <button className="carousel-control left" onClick={handlePreviousPage}>
-            &lt;
-          </button>
-
-          <div className="company-list">
-            {currentItems.map((company, index) => (
-              <div className="company-card" key={index}>
-              {/* Phần trên: logo + thông tin */}
-              <div className="card-top">
-                <div className="company-logo">{company.logo}</div>
-                <div className="company-info">
-                  <h3>{company.name}</h3>
-                  <p>{company.industry}</p>
-                </div>
-              </div>
-            
-              {/* Phần dưới: số lượng việc làm */}
-              <div className="card-bottom">
-                <p>Việc làm: {company.jobs}</p>
-              </div>
-            </div>
-            ))}
+        {loading ? ( // Hiển thị khi đang tải
+          <div className="loading-container">
+              <img src={loadinggif} alt="Loading..." className="loading-company" />
           </div>
+        ) : currentItems.length > 0 ? ( // Hiển thị danh sách công việc
+          <>
+            <button className="carousel-control left" onClick={handlePreviousPage}>
+              &lt;
+            </button>
 
-          <button className="carousel-control right" onClick={handleNextPage}>
-            &gt;
-          </button>
+            <div className="company-list">
+              {currentItems.map((company) => (
+                <div className="company-card" key={company.id}>
+                  {/* Phần trên: logo (hoặc hình đại diện) + thông tin */}
+                  <div className="card-top">
+                    <div className="company-logo">
+                      <img src={logo} alt={company.name} />
+                    </div>
+                    <div className="company-info">
+                      <h3 title={company.name}>
+                        {company.name.length > 50 ? `${company.name.substring(0, 50)}...` : company.name}
+                      </h3>
+                      <p>{company.fields.join(', ')}</p>
+                    </div>
+                  </div>
+
+                  {/* Phần dưới: số lượng tuyển dụng */}
+                  <div className="card-bottom">
+                    <p>Số việc làm: {company.recruitQuantity}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="carousel-control right" onClick={handleNextPage}>
+              &gt;
+            </button>
+          </>
+        ) : (
+          <p>Không có công ty nào...</p>
+        )}
+
+
         </div>
 
         {/* Dấu chấm biểu thị các trang */}

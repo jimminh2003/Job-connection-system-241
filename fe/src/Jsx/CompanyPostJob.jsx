@@ -33,6 +33,7 @@ const CompanyPostJob = () => {
   const [minSalary, setMinSalary] = useState("");
   const [maxSalary, setMaxSalary] = useState("");
   const [allowance, setAllowance] = useState("");
+  const [yoe, setYoe] = useState("");
   const [level, setLevel] = useState("");
   const [schedule, setSchedule] = useState("");
   const [description, setDescription] = useState("");
@@ -165,6 +166,7 @@ const CompanyPostJob = () => {
       minSalary: parseInt(minSalary, 10) || 0,
       maxSalary: parseInt(maxSalary, 10) || 0,
       allowance: parseInt(allowance, 10) || 0,
+      yoe: parseInt(yoe, 10) || 0,
       numberOfApplicants: numOfAppli ,
       wardId: parseInt(selectedWard, 10),
       jobTypeId: parseInt(selectedJobType, 10),
@@ -223,7 +225,7 @@ const CompanyPostJob = () => {
         <label>Mức lương tối thiểu</label>
         <input
           type="number"
-          placeholder="Nhập mức lương tối thiểu (VND)"
+          placeholder="Nhập mức lương tối thiểu (triệu VND)"
           value={minSalary}
           onChange={(e) => setMinSalary(e.target.value)}
         />
@@ -232,7 +234,7 @@ const CompanyPostJob = () => {
         <label>Mức lương tối đa</label>
         <input
           type="number"
-          placeholder="Nhập mức lương tối đa (VND)"
+          placeholder="Nhập mức lương tối đa (triệu VND)"
           value={maxSalary}
           onChange={(e) => setMaxSalary(e.target.value)}
         />
@@ -241,7 +243,7 @@ const CompanyPostJob = () => {
         <label>Trợ cấp (nếu có)</label>
         <input
           type="number"
-          placeholder="Nhập trợ cấp (VND)"
+          placeholder="Nhập trợ cấp (triệu VND)"
           value={allowance}
           onChange={(e) => setAllowance(e.target.value)}
         />
@@ -287,6 +289,16 @@ const CompanyPostJob = () => {
       </div>
 
 
+      <div className="form-group">
+        <label>Kinh nghiệm</label>
+        <input
+         type="number" placeholder="Nhập yêu cầu kinh nghiệm (năm)" 
+         
+         value={yoe}
+         onChange={(e) => setYoe(e.target.value)}
+        />
+      </div>
+
       {/* Lĩnh vực */}
       <div className="form-group">
         <label>Lĩnh vực</label>
@@ -325,7 +337,7 @@ const CompanyPostJob = () => {
         <label>
           Kỹ năng
           <button type="button" onClick={addSkillSelect} className="add-skill-btn">
-            Thêm kỹ năng
+            +
           </button>
         </label>
         
@@ -347,7 +359,7 @@ const CompanyPostJob = () => {
               </select>
               {index > 0 && (
                 <button type="button" onClick={() => removeSkill(index)} className="remove-btn">
-                  Xóa
+                  -
                 </button>
               )}
             </div>

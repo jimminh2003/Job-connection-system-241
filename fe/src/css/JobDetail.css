@@ -348,7 +348,7 @@
   width: 100%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.3s ease;
-  max-height: 1000px;
+  max-height: 900px;
   overflow-y: scroll;
 }
 
@@ -380,7 +380,7 @@
 }
 
 .detail-modal-content textarea {
-  height: 120px;
+  /* height: 120px; */
   resize: vertical;
 }
 
@@ -437,9 +437,13 @@
   color: #e74c3c;
 }
 .detail-modal-content .loading-spinner {
-  align-items: center;
-  text-align: center;
-  size: 80px;
+  margin-left: 25%;
+  position: relative;
+}
+.detail-modal-content .loading-spinner .loading-p {
+  margin-top: 10%;
+  margin-left: 18%;
+  animation: pulse 1.5s infinite;
 }
 
 /* Animation for Modal */

@@ -13,6 +13,7 @@ import {
   Tag,
   Loader ,
 } from "lucide-react";
+import SpinLoad from '../images/spin-load.gif'
 import Navbar from './navbar';
 import Footer from './Footer';
 import ApplicationForm from "./ApplicationForm";
@@ -216,8 +217,8 @@ function JobDetail() {
                       <Layers size={16} />
                     </span>
                     <div className="info-text">
-                      <div className="top">Cấp bậc</div>
-                      <div className="bottom">{job.level}</div>
+                      <div className="top">Kinh nghiệm</div>
+                      <div className="bottom">{!job.yoe ? "Không yêu cầu" : `${job.yoe} năm`}</div>
                     </div>
                   </div>
                 </div>
@@ -389,11 +390,15 @@ function JobDetail() {
           <div className="detail-modal-content">
             <h3>Sửa thông tin công việc</h3>
             {isLoading ? (
-            <div className="loading-spinner"><Loader  size={80} /></div> // Hoặc thay thế bằng biểu tượng quay từ thư viện như lucide-react
+            <div className="loading-spinner">
+              <img src={SpinLoad}  size={200}/>
+            
+              <p className='loading-p'>Đang sửa thông tin công việc...</p>
+            </div> // Hoặc thay thế bằng biểu tượng quay từ thư viện như lucide-react
           ) : (
             <>
             <label>
-              Tiêu đề:
+              <strong>Tiêu đề:</strong>
               <input
                 type="text"
                 name="title"
@@ -402,7 +407,7 @@ function JobDetail() {
               />
             </label>
             <label>
-              Mức lương tối thiểu:
+              <strong>Mức lương tối thiểu:</strong>
               <input
                 type="number"
                 name="minSalary"
@@ -411,7 +416,7 @@ function JobDetail() {
               />
             </label>
             <label>
-              Mức lương tối đa:
+              <strong>Mức lương tối đa:</strong>
               <input
                 type="number"
                 name="maxSalary"
@@ -420,7 +425,7 @@ function JobDetail() {
               />
             </label>
             <label>
-              Trợ cấp:
+              <strong>Trợ cấp:</strong>
               <input
                 type="text"
                 name="allowance"
@@ -429,7 +434,7 @@ function JobDetail() {
               />
             </label>
             <label>
-              Số lượng tuyển:
+              <strong>Số lượng tuyển:</strong>
               <input
                 type="number"
                 name="numberOfApplicants"
@@ -438,7 +443,7 @@ function JobDetail() {
               />
             </label>
             <label>
-              Mô tả công việc:
+              <strong>Mô tả công việc:</strong>
               <textarea
                 name="description"
                 value={editedJob.description || ''}
@@ -449,8 +454,8 @@ function JobDetail() {
             </>
       )}
             <div className="detail-modal-buttons">
-              <button className="detail-close-btn" onClick={handleModalClose}>Hủy</button>
-              <button className="detail-save-btn" onClick={handleSubmit}>Lưu</button>
+              <button className="detail-close-btn" disabled={isLoading} onClick={handleModalClose}>Hủy</button>
+              <button className="detail-save-btn" disabled={isLoading} onClick={handleSubmit}>Lưu</button>
             </div>
           </div>
         </div>

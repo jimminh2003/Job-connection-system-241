@@ -2,6 +2,7 @@
   import '../css/CompanyInfo.css';
   import TokenManager from '../utils/tokenManager';
   import LoadInfo from './LoadingInfo';
+  import ConfirmModal from './ConfirmModal';
 
   const CompanyInfo = () => {
     const [role, setRole] = useState(null);
@@ -21,6 +22,7 @@
     const [initialCity, setInitialCity] = useState('');
     const [initialDistrict, setInitialDistrict] = useState('');
     const [isSaving, setIsSaving] = useState(false); // Trạng thái đang lưu
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
       if (token) {
@@ -173,6 +175,7 @@
     
         if (response.ok) {
           console.log('Company info updated successfully!');
+          alert('Cập nhật thông tin thành công!')
           setIsEditing(false);
           setInitialCompanyInfo(updatedCompanyInfo); // Cập nhật dữ liệu ban đầu
           setInitialProvince(companyInfo.province); // Khôi phục tỉnh ban đầu
@@ -180,6 +183,7 @@
           setInitialDistrict(companyInfo.ward); // Khôi phục huyện ban đầu
         } else {
           console.error('Error updating company info:', response.statusText);
+          alert('Cập nhật thông tin thất bại!')
         }
       } catch (error) {
         console.error('Error during API request:', error);
@@ -188,7 +192,15 @@
       }
     };
     
-
+    const handleConfirmEdit = () => {
+      handleSaveClick();  // Gọi hàm handlesave khi xác nhận
+      setIsModalVisible(false);  // Đóng pop-up
+    };
+  
+    const handleCancelEdit = () => {
+      setIsModalVisible(false);  // Đóng pop-up mà không cập nhật
+    };
+  
     const handleExitClick = () => {
       setCompanyInfo(initialCompanyInfo); // Khôi phục dữ liệu ban đầu
       setSelectedProvince(initialProvince); // Khôi phục tỉnh ban đầu
@@ -272,36 +284,44 @@
     
 
     return (
-      <div id='content-company-info'>
-        <h2>Welcome {name}</h2>
-        <h3>Thông tin cơ bản</h3>
+      <div className='applicant-info'>
+        <h1>Welcome {name}</h1>
+        {/* <h3>Thông tin cơ bản</h3> */}
+        <div className='info-section'>
+          <div id='content-company-info'>
 
-        <div className="company-info">
-          <img src={`https://via.placeholder.com/150`} alt="Company Logo" className="company-logo" />
-          <button className="upload-btn">Tải lên</button>
-          <p className="file-info">
-            Max file size is 1MB, Minimum dimension: 300x300 And Suitable files are .jpg & .png
-          </p>
-        </div>
+            <div className="company-info">
+              <img src={`https://via.placeholder.com/150`} alt="Company Logo" className="company-logo" />
+              <button className="upload-btn">Tải lên</button>
+              <p className="file-info">
+                Max file size is 1MB, Minimum dimension: 300x300 And Suitable files are .jpg & .png
+              </p>
+            </div>
+          </div>
 
-        <div className="company-details">
-          <label>Tên Công Ty</label>
+        {/* <div className="company-details"> */}
+        <div className="info-row">
+          <p><strong>Tên Công Ty</strong></p>
           <input
             type="text"
             value={name}
             readOnly={!isEditing}
             onChange={(e) => setCompanyInfo({ ...companyInfo, name: e.target.value })}
           />
+        </div>
 
-          <label>Mã số thuế</label>
+        <div className='info-row'>
+          <p><strong>Mã số thuế</strong></p>
           <input
             type="text"
             value={taxCode}
             readOnly={!isEditing}
             onChange={(e) => setCompanyInfo({ ...companyInfo, taxCode: e.target.value })}
           />
+        </div>
 
-          <label>Mô tả</label>
+        <div className='info-row'>
+          <p><strong>Mô tả</strong></p>
           <textarea
             rows="5"
             cols="50"
@@ -311,100 +331,111 @@
           />
         </div>
 
-        <div className="contact-info">
-          <h3>Contact Information</h3>
-
-          <label>Số điện thoại</label>
-          {phoneNumbers.map((phone, index) => (
-          <div key={index} className="input-with-buttons">
-            <input
-              type="text"
-              value={phone}
-              readOnly={!isEditing}
-              onChange={(e) => {
-                const newPhoneNumbers = [...phoneNumbers];
-                newPhoneNumbers[index] = e.target.value;
-                setCompanyInfo({ ...companyInfo, phoneNumbers: newPhoneNumbers });
-              }}
-            />
+          <div className='info-row'>
+            <p><strong>Số điện thoại</strong></p>
+            <div className="phone-container">
+              {phoneNumbers.map((phone, index) => (
+              <div key={index} className="info-row">
+                <input
+                  type="text"
+                  value={phone}
+                  readOnly={!isEditing}
+                  onChange={(e) => {
+                    const newPhoneNumbers = [...phoneNumbers];
+                    newPhoneNumbers[index] = e.target.value;
+                    setCompanyInfo({ ...companyInfo, phoneNumbers: newPhoneNumbers });
+                  }}
+                />
+                {isEditing && (
+                  <button className="remove-skill-btn" type="button" onClick={() => handleDeletePhone(index)}>-</button>
+                )}
+              </div>
+            ))}
             {isEditing && (
-              <button type="button" onClick={() => handleDeletePhone(index)}>-</button>
+              <button className="add-skill-btn" type="button" onClick={handleAddPhone}>+ </button>
             )}
           </div>
-        ))}
-        {isEditing && (
-          <button type="button" onClick={handleAddPhone}>+ Thêm số điện thoại</button>
-        )}
+        </div>
 
-          <label>Email</label>
-          {emails.map((email, index) => (
-          <div key={index} className="input-with-buttons">
-            <input
-              type="email"
-              value={email}
-              readOnly={!isEditing}
-              onChange={(e) => {
-                const newEmails = [...emails];
-                newEmails[index] = e.target.value;
-                setCompanyInfo({ ...companyInfo, emails: newEmails });
-              }}
-            />
-            {isEditing && (
-              <button type="button" onClick={() => handleDeleteEmail(index)}>-</button>
-            )}
-          </div>
-        ))}
-        {isEditing && (
-          <button type="button" onClick={handleAddEmail}>+ Thêm email</button>
-        )}
-
-
-          <label>Ngành</label>
-          {Array.isArray(companyInfo?.fields) && companyInfo.fields.map((field, index) => (
-          <div key={index} className="input-with-buttons">
-            <select
-              value={field || ''}
-              onChange={(e) => handleFieldChange(index, e.target.value)}
-              disabled={!isEditing}
-            >
-              <option value=''>Chọn ngành</option>
-              {fields.map((fieldOption, idx) => (
-                <option key={idx} value={fieldOption.name}>
-                  {fieldOption.name} {/* Render tên ngành */}
-                </option>
-              ))}
-            </select>
-            {isEditing && (
-              <button
-                type="button"
-                onClick={() => handleDeleteField(index)}
-                className="delete-btn"
-              >
-                -
-              </button>
-            )}
-          </div>
-        ))}
-
+        <div className='info-row'>
+          <p><strong>Email</strong></p>
+          <div className='email-container'>
+            {emails.map((email, index) => (
+              <div key={index} className="info-row">
+                <input
+                  type="email"
+                  value={email}
+                  readOnly={!isEditing}
+                  onChange={(e) => {
+                    const newEmails = [...emails];
+                    newEmails[index] = e.target.value;
+                    setCompanyInfo({ ...companyInfo, emails: newEmails });
+                  }}
+                />
+                {isEditing && (
+                  <button className="remove-skill-btn" type="button" onClick={() => handleDeleteEmail(index)}>-</button>
+                )}
+              </div>
+            ))}
           {isEditing && (
-            <button
-              type="button"
-              onClick={() =>
-                setCompanyInfo({
-                  ...companyInfo,
-                  fields: [...(companyInfo.fields || []), ''], // Thêm ngành mới
-                })
-              }
-            >
-              + Thêm ngành
-            </button>
+            <button className="add-skill-btn" type="button" onClick={handleAddEmail}>+</button>
           )}
+          </div>
+        </div>
 
-            <div className="location-info">
-            <div>
-                <label>Tỉnh</label>
-
+        <div className='info-row'>
+          <p><strong>Ngành</strong></p>
+          <div className="phone-container">
+            {Array.isArray(companyInfo?.fields) && companyInfo.fields.map((field, index) => (
+              <div key={index} className="info-row">
                 <select
+                  value={field || ''}
+                  onChange={(e) => handleFieldChange(index, e.target.value)}
+                  disabled={!isEditing}
+                >
+                  <option value=''>Chọn ngành</option>
+                  {fields.map((fieldOption, idx) => (
+                    <option key={idx} value={fieldOption.name}>
+                      {fieldOption.name} {/* Render tên ngành */}
+                    </option>
+                  ))}
+                </select>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteField(index)}
+                    className="remove-skill-btn"
+                  >
+                    -
+                  </button>
+                )}
+              </div>
+            ))}
+
+              {isEditing && (
+                <button
+                className="add-skill-btn"
+                  type="button"
+                  onClick={() =>
+                    setCompanyInfo({
+                      ...companyInfo,
+                      fields: [...(companyInfo.fields || []), ''], // Thêm ngành mới
+                    })
+                  }
+                >
+                  +
+                </button>
+              )}
+            </div>
+        </div>
+
+
+      
+            <div className='info-row'>
+              <p><strong>Tỉnh</strong></p>
+              <div className='skills-container'>
+                <select
+                  className="input-field-skill"
                   value={selectedProvince || ''}
                   onChange={handleProvinceChange}
                   disabled={!isEditing}
@@ -417,47 +448,53 @@
                   ))}
                 </select>
               </div>
-
-              <div>
-                <label>Quận</label>
-                <select
-                  value={selectedCity || ''}
-                  onChange={handleCityChange}
-                  disabled={!isEditing || !selectedProvince}
-                >
-                  <option value=''>Chọn Quận</option>
-                  {locations
-                    .find((province) => province.name === selectedProvince)?.cities.map((city) => (
-                      <option key={city.id} value={city.name}>
-                        {city.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div>
-                <label>Phường</label>
-                <select
-                  value={selectedDistrict || ''}
-                  onChange={handleDistrictChange}
-                  disabled={!isEditing}
-                >
-                  <option value=''>Chọn Phường</option>
-                  {locations
-                    .find((province) => province.name === selectedProvince)?.cities
-                    .find((city) => city.name === selectedCity)?.wards.map((ward) => (
-                      <option key={ward.id} value={ward.name}>
-                        {ward.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-
             </div>
 
-          <div className="specific-address">
-            <label>Địa chỉ cụ thể</label>
+              <div className='info-row'>
+                <p><strong>Quận</strong></p>
+                <div className='skills-container'>
+                  <select
+                    className="input-field-skill"
+                    value={selectedCity || ''}
+                    onChange={handleCityChange}
+                    disabled={!isEditing || !selectedProvince}
+                  >
+                    <option value=''>Chọn Quận</option>
+                    {locations
+                      .find((province) => province.name === selectedProvince)?.cities.map((city) => (
+                        <option key={city.id} value={city.name}>
+                          {city.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className='info-row'>
+                <p><strong>Phường</strong></p>
+                <div className='skills-container'>
+                  <select
+                    className="input-field-skill"
+                    value={selectedDistrict || ''}
+                    onChange={handleDistrictChange}
+                    disabled={!isEditing}
+                  >
+                    <option value=''>Chọn Phường</option>
+                    {locations
+                      .find((province) => province.name === selectedProvince)?.cities
+                      .find((city) => city.name === selectedCity)?.wards.map((ward) => (
+                        <option key={ward.id} value={ward.name}>
+                          {ward.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+
+
+          <div className="info-row">
+            <p><strong>Địa chỉ cụ thể</strong></p>
             <input
               type="text"
               value={companyInfo.specificAddress || ''}
@@ -467,19 +504,38 @@
           </div>
 
 
-        </div>
+        {isEditing ? (
+          <div className="button-container">
+            <button className="update-btn" onClick={() => setIsModalVisible(true)}>Lưu</button>
+            <button className="cancel-btn" onClick={handleExitClick}>Thoát</button>
+          </div>
+        ) : (
+          <button className="update-btn" onClick={() => setIsEditing(true)}>Cập nhật</button>
+        )}
+        {/* Hộp xác nhận khi nhấn "Cập nhật" */}
+        {isModalVisible && (
+          <ConfirmModal
+            isLoading={isSaving}
+            isVisible={isModalVisible}  // Thêm isVisible vào đây
+            message="Bạn chắc chắn muốn cập nhật thông tin?"
+            onConfirm={handleConfirmEdit}
+            onCancel={handleCancelEdit}
+          />
+        )}
 
-        <div className="button-group">
+        {/* <div className="button-group">
           <button className="update-btn" onClick={isEditing ? handleSaveClick : handleEditClick} 
             disabled={isSaving} // Vô hiệu hóa nút khi đang lưu
           >
              {isSaving ? "Đang lưu..." : isEditing ? "Lưu" : "Chỉnh sửa"}
           </button>
+
           {isEditing && (
             <button className="exit-btn" onClick={handleExitClick}>
               Thoát
             </button>
           )}
+        </div> */}
         </div>
       </div>
     );

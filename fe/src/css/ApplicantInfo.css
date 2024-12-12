@@ -24,7 +24,7 @@
   padding-top: 20px;
 }
 
-.remove-skill-btn {
+/* .remove-skill-btn {
   margin-left: 10px;
   color: red;
   background: none;
@@ -40,6 +40,44 @@
   color: white;
   border: none;
   cursor: pointer;
+} */
+
+.add-jobtype-btn,
+.add-skill-btn,
+.remove-skill-btn,
+.remove-jobtype-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.add-skill-btn,
+.add-jobtype-btn {
+  background-color: #28a745; /* Màu xanh cho nút thêm */
+}
+
+.remove-skill-btn,
+.remove-jobtype-btn {
+  margin-top: 6px;
+  background-color: #dc3545; /* Màu đỏ cho nút xóa */
+}
+
+.add-skill-btn:hover,
+.add-jobtype-btn:hover {
+  background-color: #218838;
+}
+
+.remove-skill-btn:hover,
+.remove-jobtype-btn:hover {
+  background-color: #c82333;
 }
 
 .input-field-skill {
@@ -170,4 +208,25 @@
 
 .update-btn:hover {
   background-color: #0056b3;
+}
+
+/* Container cho các hàng job type */
+.jobtype-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Khoảng cách giữa các hàng */
+}
+
+/* Mỗi hàng job type */
+.jobtype-row {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Khoảng cách giữa các cột */
+}
+
+.jobtype-row select {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
