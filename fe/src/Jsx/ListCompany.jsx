@@ -50,6 +50,10 @@ function ListCompany() {
   //   );
   // }
 
+  const handleCompany = (id) => {
+    navigate(`/allcompany/${id}`);
+  }
+
   return (
     <div>
       <div id="list-company-container">
@@ -75,7 +79,12 @@ function ListCompany() {
 
             <div className="company-list">
               {currentItems.map((company) => (
-                <div className="company-card" key={company.id}>
+                 <div
+                  className="company-card"
+                  key={company.id}
+                  onClick={() => handleCompany(company.id)} // Gắn sự kiện onClick cho từng công ty
+                  style={{ cursor: 'pointer' }} // Thêm con trỏ chuột chỉ vào công ty
+                >
                   {/* Phần trên: logo (hoặc hình đại diện) + thông tin */}
                   <div className="card-top">
                     <div className="company-logo">

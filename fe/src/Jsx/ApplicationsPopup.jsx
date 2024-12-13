@@ -190,7 +190,7 @@ const ApplicationsPopup = ({ jobId, onClose }) => {
                     <div className="loading-spinner">
                     <img src={SpinLoad}  size={200}/>
 
-                    <p className='loading-p'>Đang sửa thông tin công việc...</p>
+                    <p className='loading-p'>Đang tải các đơn ứng tuyển...</p>
                     </div>
                 </div>
             </div>
@@ -202,8 +202,8 @@ const ApplicationsPopup = ({ jobId, onClose }) => {
             <div className="applications-popup">
                 <div className="popup-content">
                     <h2>Danh sách các đơn ứng tuyển</h2>
-                    <p className="error">Có lỗi xảy ra: {error}</p>
-                    <button onClick={onClose} className="close-btn">Đóng</button>
+                    <p className="error">Hiện tại chưa có đơn ứng tuyển nào</p>
+                    <button onClick={onClose} className="close-btn">x</button>
                 </div>
             </div>
         );

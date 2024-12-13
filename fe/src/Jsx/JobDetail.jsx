@@ -309,7 +309,7 @@ const handleSave = async (id) => {
                   <button className="apply-btn" onClick={handleApplyClick}>
                     {userId === job.companyId ? "Xem các đơn ứng tuyển" : "Ứng tuyển ngay"}
                   </button>
-                  <button disabled={isSaving} className="save-btn" onClick={() => handleSave(job.id)}>
+                  <button disabled={isSaving} className="save-btn" onClick={() => handleSaveOrEdit(job.id)}>
                     {userId === job.companyId ? "Sửa" : 
                       !isSaving && interestedPosts.includes(job.id) ? "Đã lưu" :
                       isSaving &&  !interestedPosts.includes(job.id) ? "Đang lưu" :
