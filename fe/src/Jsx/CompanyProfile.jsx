@@ -16,7 +16,8 @@ import TokenManager from "../utils/tokenManager";
 const CompanyProfile = () => {
   const { tab } = useParams(); // Lấy tham số "tab" từ URL
   const [activeTab, setActiveTab] = useState(tab || 'Thông tin công ty'); // Active tab mặc định
-  
+  const { handleLogout, isAuthenticated } = useAuth();
+
   const [userInfo, setUserInfo] = useState(null);
   const [role, setRole] = useState(null); // State để lưu role
   const [userId, setUserId] = useState(null); // State để lưu userId
@@ -60,6 +61,13 @@ const CompanyProfile = () => {
     }
   };
 
+  const onLogoutClick = () => {
+    const confirmLogout = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
+    if (confirmLogout) {
+        handleLogout();
+    }
+};
+
   return (
     <div className='pprofile-container'>
       {renderNavbar()}
@@ -75,7 +83,7 @@ const CompanyProfile = () => {
                 {item}
               </li>
             ))}
-            <li onClick={() => alert('Đăng xuất')} className="logout">Đăng xuất</li>
+            <li onClick={onLogoutClick} className="logout">Đăng xuất</li>
           </ul>
         </div>
         <div className="content">{renderContent()}</div>

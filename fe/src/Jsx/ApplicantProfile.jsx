@@ -13,7 +13,9 @@ import { useAuth } from "../Contexts/AuthContext";
 import TokenManager from "../utils/tokenManager";
 
 const ApplicantProfile = () => {
-  const { tab } = useParams();
+  const { tab } = useParams();    
+  const { handleLogout, isAuthenticated } = useAuth();
+  
   const [activeTab, setActiveTab] = useState(tab || 'Thông tin cá nhân');
 
   const [role, setRole] = useState(null); 
@@ -56,6 +58,12 @@ const ApplicantProfile = () => {
         return null;
     }
   };
+  const onLogoutClick = () => {
+    const confirmLogout = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
+      if (confirmLogout) {
+          handleLogout();
+      }
+  };
 
   return (
     <div>
@@ -72,7 +80,7 @@ const ApplicantProfile = () => {
                 {item}
               </li>
             ))}
-            <li onClick={() => alert('Đăng xuất')} className="logout">Đăng xuất</li>
+            <li onClick={onLogoutClick} className="logout">Đăng xuất</li>
           </ul>
         </div>
         <div className="content">{renderContent()}</div>

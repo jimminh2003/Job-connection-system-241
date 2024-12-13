@@ -2,7 +2,7 @@
 #industry-container {
     width: 70%;
     /* max-height: 800px; */
-    height: 500px;
+    /* height: 500px; */
     margin: 0 auto;
     margin-top: 20px;
     padding: 20px;
@@ -61,6 +61,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
+    overflow: hidden;
   }
   
   #industry-container .industry-card:hover {

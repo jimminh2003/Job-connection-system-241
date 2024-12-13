@@ -16,10 +16,16 @@
   align-items: center;
   margin-bottom: 15px;
 }
-#list-company-container .loading-company{
-  position: relative;
-  margin-left: 47%;
-  width: 67%;
+#list-company-container .loading-container {
+  display: flex; /* Sử dụng flexbox */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  height: auto; /* Chiều cao container, có thể tùy chỉnh */
+  width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+}
+
+#list-company-container .loading-company {
+  width: 50%; /* Đặt kích thước hợp lý cho ảnh GIF */
   height: auto;
 }
 
@@ -56,6 +62,47 @@
   box-sizing: border-box;
 }
 
+/* Ô công ty */
+#list-company-container .company-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Hiển thị 3 cột */
+  gap: 15px; /* Khoảng cách giữa các ô */
+  width: 100%;
+}
+
+/* Ô công ty */
+#list-company-container .company-card {
+  display: flex;
+  flex-direction: column; /* Chia thành 2 phần theo chiều dọc */
+  background-color: #fff;
+  border: 1px solid #dfe3e8;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+  /* height: 135px; */
+}
+
+#list-company-container .company-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Sử dụng Media Queries để thay đổi giao diện trên màn hình nhỏ hơn */
+@media (max-width: 1024px) {
+  #list-company-container .company-list {
+    grid-template-columns: repeat(2, 1fr); /* Hiển thị 2 cột */
+  }
+}
+
+@media (max-width: 768px) {
+  #list-company-container .company-list {
+    grid-template-columns: repeat(1, 1fr); /* Hiển thị 1 cột */
+  }
+}
+
 /* Nút điều hướng */
 #list-company-container .carousel-control {
   background-color: white;
@@ -84,33 +131,6 @@
   right: -17px;
 }
 
-/* Ô công ty */
-#list-company-container .company-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Hiển thị 3 cột */
-  gap: 15px; /* Khoảng cách giữa các ô */
-  width: 100%;
-}
-
-/* Ô công ty */
-#list-company-container .company-card {
-  display: flex;
-  flex-direction: column; /* Chia thành 2 phần theo chiều dọc */
-  background-color: #fff;
-  border: 1px solid #dfe3e8;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-  cursor: pointer;
-  /* height: 135px; */
-}
-
-#list-company-container .company-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
 
 /* Phần trên của card (logo + thông tin) */
 #list-company-container .card-top {

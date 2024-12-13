@@ -19,7 +19,7 @@ function ListCompany() {
         const response = await fetch('/public/companies');
         const data = await response.json();
         // Lọc công ty có `recruitQuantity` > 20
-        const filteredCompanies = data.filter((company) => company.recruitQuantity > 0);
+        const filteredCompanies = data.filter((company) => company.recruitQuantity > 10);
         setCompanies(filteredCompanies);
       } catch (error) {
         console.error('Error fetching companies:', error);
@@ -91,7 +91,7 @@ function ListCompany() {
 
                   {/* Phần dưới: số lượng tuyển dụng */}
                   <div className="card-bottom">
-                    <p>Số việc làm: {company.recruitQuantity}</p>
+                    <p>Số lượng tuyển: {company.recruitQuantity}</p>
                   </div>
                 </div>
               ))}

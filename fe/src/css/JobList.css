@@ -1,40 +1,70 @@
 /* Container của danh sách job */
 #jobhome-container .job-list-container {
   width: 100%;
-  height: auto;
+  height: auto; /* Thay vì min-height */
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* Bố cục theo chiều dọc */
+  justify-content: space-between; /* Đẩy các phần tử giữa nội dung và nút phân trang */
+  min-height: 500px;
+  position: relative;
 }
 
 
 #jobhome-container .job-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-  box-sizing: border-box;
-  justify-content: flex-start; /* Điều chỉnh căn giữa hoặc kéo các job về bên trái */
-  align-items: center;
-  height: 100%; /* Đảm bảo container chiếm đủ không gian */
-  min-height: 400px; /* Chiều cao tối thiểu để dễ nhìn */
-  position: relative; /* Đảm bảo các phần tử con căn chỉnh chính xác */
-  background-color: white; /* Màu nền cho container */
-
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Tự động sắp xếp các cột */
+  gap: 20px; /* Khoảng cách giữa các ô */
+  align-items: start; /* Căn chỉnh nội dung trong các ô theo chiều dọc */
 }
 
+/* Khi màn hình nhỏ hơn 1024px */
+@media (max-width: 1024px) {
+  #jobhome-container .job-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 items trên mỗi hàng */
+  }
+}
+
+/* Khi màn hình nhỏ hơn 768px */
+@media (max-width: 768px) {
+  #jobhome-container .job-list {
+    grid-template-columns: repeat(1, 1fr); /* 1 item trên mỗi hàng */
+  }
+}
+
+#jobhome-container .job-card {
+  /* flex: 1 1 calc(30% );  */
+  /* Chia đều mỗi item thành 1/3 dòng trừ khoảng cách */
+  /* min-width: 31%; 
+  max-width: calc(33%); */
+  /* Đảm bảo không vượt quá 1/3 chiều rộng dòng */
+
+  display: flex;
+  flex-direction: column; /* Nội dung trong card theo chiều dọc */
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  overflow: hidden; /* Đảm bảo nội dung nằm trong card */
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Phần loading gif */
 #jobhome-container .loading-container {
+  position: absolute;
+  top: 45%; /* Căn giữa theo chiều dọc */
+  left: 50%; /* Căn giữa theo chiều ngang */
+  transform: translate(-50%, -50%); /* Chuyển tâm căn giữa */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: absolute; 
-  /* Đặt tuyệt đối để căn giữa */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Căn giữa theo trục X và Y */
-  z-index: 1;
+  z-index: 10; /* Đảm bảo nổi trên các thành phần khác */
 }
 
 #jobhome-container .loading-gif {
@@ -42,23 +72,6 @@
   height: auto;
 }
 
-
-#jobhome-container .job-card {
-  display: flex; /* Sử dụng flex để căn chỉnh logo và nội dung */
-  flex-direction: row; /* Logo nằm bên trái, nội dung nằm bên phải */
-  align-items: center; /* Căn giữa logo và nội dung theo chiều dọc */
-  flex: 1 1 calc(30% - 20px);
-  background-color: white;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-  text-align: left;
-  transition: transform 0.2s ease-in-out;
-  cursor: pointer;
-  min-width: 385px;
-  flex: 1 1 auto; /* Cho phép tự điều chỉnh width theo không gian còn lại */
-  position: relative; /* Bắt buộc để có thể dùng position cho Heart */
-}
 
 #jobhome-container .job-card:hover {
   transform: scale(1.02); /* Thay đổi hiệu ứng hover */
@@ -69,18 +82,46 @@
 }
 #jobhome-container .job-heart {
   position: absolute;
-  top: 10px; /* Khoảng cách từ trên */
+  bottom: 10px; /* Khoảng cách từ trên */
   right: 10px; /* Khoảng cách từ bên phải */
 }
 
 #jobhome-container .heart-icon {
-  color: #ccc; /* Màu mặc định */
+  color: red; /* Màu mặc định */
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
+#jobhome-container .heart-icon.saving {
+  animation: scaleHeart 1s infinite; /* Lặp lại animation liên tục */
+  cursor: wait; /* Đổi con trỏ chuột thành dạng chờ */
+}
+@keyframes scaleHeart {
+  0% {
+    transform: scale(1); /* Tim ở kích thước bình thường */
+  }
+  50% {
+    transform: scale(1.4); /* Tim phóng to */
+  }
+  100% {
+    transform: scale(1); /* Tim trở lại kích thước ban đầu */
+  }
+}
+
+.job-heart .saved .heart-icon {
+  fill: red; /* Màu đỏ khi đã lưu */
+  color: red; /* Đảm bảo đồng nhất */
+}
+#jobhome-container .job-heart .heart-icon.red {
+  fill: red;
+  color: red;
+}
+
+
 #jobhome-container .heart-icon:hover {
-  color: #ff4d4f; /* Màu đỏ khi hover */
+  color: red; /* Màu đỏ khi hover */
+  transform: scale(1.25);
+  transition: transform 0.3s ease, color 0.3s ease; /* Thời gian và kiểu chuyển đổi */
 }
 /* Đảm bảo các ô không kéo dài khi có ít hơn 4 job */
 #jobhome-container .job-list > .job-card {
@@ -96,40 +137,67 @@
   margin-right: 0;
 }
 
-@media (max-width: 1024px) {
+/* @media (max-width: 1024px) {
   #jobhome-container .job-card {
-    flex-basis: calc(50% - 20px); /* 2 cột cho màn hình nhỏ */
+    flex-basis: calc(50% - 20px);
+    min-width: 48%; 
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   #jobhome-container .job-card {
-    flex-basis: 100%; /* 1 cột cho màn hình cực nhỏ */
+    flex-basis: 100%; 
+    min-width: 98%; 
   }
+} */
+#jobhome-container .notification-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #ffcccc; /* Màu nền (đỏ nhạt) */
+  color: #d8000c; /* Màu chữ (đỏ đậm) */
+  padding: 10px 20px;
+  border: 1px solid #d8000c;
+  border-radius: 5px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeInOut 3s ease-in-out;
 }
+
+/* Hiệu ứng mờ dần */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-20px); }
+}
+
 
 #jobhome-container .job-card h3 {
   font-size: 18px;
-  color: #333;
+  color: var(--thirdColor);
   font-weight: bold;
   margin-bottom: 10px;
+  text-overflow: ellipsis; /* Hiển thị dấu "..." khi tràn */
 }
 
 #jobhome-container .job-card p {
   font-size: 12px;
-  color: #666;
+  /* color: #666; */
   margin-bottom: 5px;;
+  text-overflow: ellipsis; /* Hiển thị dấu "..." khi tràn */
 }
 
 
 #jobhome-container .job-content {
   display: flex;
   align-items: center; /* Đảm bảo căn giữa logo và nội dung theo chiều dọc */
+  
 }
 
 #jobhome-container .job-logo {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: auto;
   margin-right: 15px; /* Khoảng cách giữa logo và nội dung */
   border-radius: 5px; /* Bo góc cho logo */
   object-fit: cover; /* Logo giữ tỉ lệ và lấp đầy khung */
@@ -150,6 +218,16 @@
   text-overflow: ellipsis; /* Thêm '...' khi có overflow */
   display: flex;
 }
+
+#jobhome-container .job-company {
+  color: #6f079c ;
+}
+
+#jobhome-container .job-salary,
+#jobhome-container .job-location {
+  color: #666;
+}
+
 #jobhome-container .icon-and-text {
   display: flex;
   align-items: center; /* Căn giữa icon và text theo chiều dọc */
@@ -160,6 +238,9 @@
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  margin-bottom: 0; /* Loại bỏ khoảng cách không cần thiết */
+  flex-shrink: 0; /* Đảm bảo pagination không bị co lại */
+  
 }
 
 .pagination button {

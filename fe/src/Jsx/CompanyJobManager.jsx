@@ -133,7 +133,7 @@ const CompanyJobManagement = () => {
       {showConfirmDelete && (
         <div className="confirm-delete-popup">
           <div className="popup-content">
-            <p>Bạn có chắc chắn muốn xóa bài đăng này không?</p>
+            <h1>Bạn có chắc chắn muốn xóa bài đăng này không?</h1>
             <div className="popup-actions">
               <button
                 className="cancel-button"

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import '../css/AppNavBar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import TokenManager from '../utils/tokenManager';
+import { useAuth } from "../Contexts/AuthContext";
 
 function CompanyNavbar() {  
+    const { handleLogout, isAuthenticated } = useAuth();
     const navigate = useNavigate(); // Hook điều hướng
     const [role, setRole] = useState(null); // State để lưu role
     const [userId, setUserId] = useState(null); // State để lưu userId
@@ -36,10 +38,11 @@ function CompanyNavbar() {
         navigate(`/CompanyProfile/${tab}`); // Điều hướng với tham số tab
     };
     
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate('/');
-        window.location.reload();
+    const onLogoutClick = () => {
+        const confirmLogout = window.confirm('Bạn có chắc chắn muốn đăng xuất?');
+        if (confirmLogout) {
+            handleLogout();
+        }
     };
 
     return (
@@ -150,7 +153,7 @@ function CompanyNavbar() {
                             </li>
                             <li className="logout">
                                 <i className="fa-solid fa-sign-out-alt"></i>
-                                <a onClick={handleLogout}>Đăng xuất</a>
+                                <a onClick={onLogoutClick}>Đăng xuất</a>
                             </li>
                         </ul>
                     </div>

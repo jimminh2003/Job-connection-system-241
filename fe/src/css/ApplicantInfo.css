@@ -68,6 +68,7 @@
 .remove-jobtype-btn {
   margin-top: 6px;
   background-color: #dc3545; /* Màu đỏ cho nút xóa */
+  margin-left: 10px;
 }
 
 .add-skill-btn:hover,

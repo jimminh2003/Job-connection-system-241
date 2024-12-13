@@ -9,6 +9,10 @@ function TopCompany() {
             description: 'Vitex Vietnam Software kỳ vọng tìm được nguồn cung ứng nhân lực IT chất lượng qua chương trình hợp tác đồng thời đóng góp hiệu quả vào đào tạo CNTT tại Việt Nam', 
             url: 'https://vnexpress.net/vitex-hop-tac-funix-tim-kiem-nguon-cung-ung-nhan-luc-it-chat-luong-4816280.html',
             imageUrl: 'https://i1-vnexpress.vnecdn.net/2024/11/15/2-1263-1731644383.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=H8ClFOkADFdR9Ak9bt3ARQ' },
+        { title: 'Công ty Elite là nhà phân phối của VMware by Broadcom', 
+            description: 'Hợp tác đánh dấu việc đưa các giải pháp thế giới của VMware by Broadcom đến gần hơn với doanh nghiệp Việt Nam.', 
+            url: 'https://vnexpress.net/cong-ty-elite-la-nha-phan-phoi-cua-vmware-by-broadcom-4808365.html',
+            imageUrl: 'https://i1-sohoa.vnecdn.net/2024/10/25/edit-JPG-9894-1729844398.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=Clz5SI1KXcBaIBsVpJMC2Q' },
         { title: 'Trò yêu công nghệ giúp mentor được tiếp thêm lửa nghề', 
             description: 'Trở thành mentor giảng dạy online Khoa học máy tính với Python tại FUNiX từ năm 2023, chị Phan Vũ Hà Thiên (27 tuổi, Quảng Trị) có nhiều kỷ niệm khi đồng hành cùng học viên nhỏ tuổi.', 
             url: 'https://vnexpress.net/tro-yeu-cong-nghe-giup-mentor-duoc-tiep-them-lua-nghe-4813784.html',
@@ -21,10 +25,7 @@ function TopCompany() {
             description: 'Nguyễn Hoàng Minh (15 tuổi, Thanh Hóa) được bố mẹ ủng hộ theo học khóa FUNiX Wings để theo đuổi ngành công nghệ thông tin khi vào đại học.', 
             url: 'https://vnexpress.net/nam-sinh-15-tuoi-hoc-funix-wings-theo-duoi-nganh-cong-nghe-thong-tin-4812903.html',
             imageUrl: 'https://i1-vnexpress.vnecdn.net/2024/11/07/Image-986679571-ExtractWord-0-6858-1897-1730948621.png?w=1020&h=0&q=100&dpr=1&fit=crop&s=Wn7JHzLqXKfQ4vPsR3d3Rg' },
-        { title: 'Công ty Elite là nhà phân phối của VMware by Broadcom', 
-            description: 'Hợp tác đánh dấu việc đưa các giải pháp thế giới của VMware by Broadcom đến gần hơn với doanh nghiệp Việt Nam.', 
-            url: 'https://vnexpress.net/cong-ty-elite-la-nha-phan-phoi-cua-vmware-by-broadcom-4808365.html',
-            imageUrl: 'https://i1-sohoa.vnecdn.net/2024/10/25/edit-JPG-9894-1729844398.jpg?w=1020&h=0&q=100&dpr=1&fit=crop&s=Clz5SI1KXcBaIBsVpJMC2Q' },
+
       ];
     const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
     // Tự động chuyển trang

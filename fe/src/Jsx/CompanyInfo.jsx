@@ -392,6 +392,7 @@
                   value={field || ''}
                   onChange={(e) => handleFieldChange(index, e.target.value)}
                   disabled={!isEditing}
+                  className='input-field-skill'
                 >
                   <option value=''>Chọn ngành</option>
                   {fields.map((fieldOption, idx) => (

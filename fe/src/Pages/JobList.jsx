@@ -181,62 +181,62 @@ const JobList = ({ jobs, loading, pagination, onPageChange }) => {
     
               {/* Skills với animation */}
               <div className="mt-4">
-  <div className="flex flex-wrap gap-2">
-    {job.skills && typeof job.skills === 'string' ? (
-      job.skills.split(',').map((skill, index) => (
-        <span 
-          key={index}
-          className="px-3 py-1 text-sm font-medium rounded-full
-            bg-blue-50 text-blue-600 hover:bg-blue-100
-            transition-all duration-200 hover:scale-105
-            cursor-default"
-        >
-          {skill.trim()}
-        </span>
-      ))
-    ) : (
-      <span>No skills available</span>
-    )}
-     {/* Skills với animation */}
-     {/* <div className="mt-4">
-                <div className="flex flex-wrap gap-2">
-                  {job.skills.split(',').map((skill, index) => (
-                    <span 
-                      key={index}
-                      className="px-3 py-1 text-sm font-medium rounded-full
-                        bg-blue-50 text-blue-600 hover:bg-blue-100
-                        transition-all duration-200 hover:scale-105
-                        cursor-default"
-                    >
-                      {skill.trim()}
-                    </span>
-                  ))} */}
-                </div>
-              </div>
-    
-              <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-100">
-                <div className="text-sm text-gray-500">
-                  Cập nhật: {new Date(job.updatedAt).toLocaleDateString('vi-VN')}
-                </div>
-                <button 
-          onClick={() => navigate(`/JobDetail/${job.id}`)}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg
-            hover:bg-blue-600 active:bg-blue-700 
-            transform hover:-translate-y-0.5 active:translate-y-0
-            transition-all duration-200
-            shadow-md hover:shadow-lg
-            flex items-center space-x-2"
-        >
-          <span>Xem chi tiết</span>
-          <svg 
-            className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+          <div className="flex flex-wrap gap-2">
+            {job.skills && typeof job.skills === 'string' ? (
+              job.skills.split(',').map((skill, index) => (
+                <span 
+                  key={index}
+                  className="px-3 py-1 text-sm font-medium rounded-full
+                    bg-blue-50 text-blue-600 hover:bg-blue-100
+                    transition-all duration-200 hover:scale-105
+                    cursor-default"
+                >
+                  {skill.trim()}
+                </span>
+              ))
+            ) : (
+              <span>No skills available</span>
+            )}
+            {/* Skills với animation */}
+            {/* <div className="mt-4">
+                        <div className="flex flex-wrap gap-2">
+                          {job.skills.split(',').map((skill, index) => (
+                            <span 
+                              key={index}
+                              className="px-3 py-1 text-sm font-medium rounded-full
+                                bg-blue-50 text-blue-600 hover:bg-blue-100
+                                transition-all duration-200 hover:scale-105
+                                cursor-default"
+                            >
+                              {skill.trim()}
+                            </span>
+                          ))} */}
+                        </div>
+                      </div>
+            
+                      <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-100">
+                        <div className="text-sm text-gray-500">
+                          Cập nhật: {new Date(job.updatedAt).toLocaleDateString('vi-VN')}
+                        </div>
+                        <button 
+                  onClick={() => navigate(`/JobDetail/${job.id}`)}
+                  className="bg-blue-500 text-white px-6 py-2 rounded-lg
+                    hover:bg-blue-600 active:bg-blue-700 
+                    transform hover:-translate-y-0.5 active:translate-y-0
+                    transition-all duration-200
+                    shadow-md hover:shadow-lg
+                    flex items-center space-x-2"
+                >
+                  <span>Xem chi tiết</span>
+                  <svg 
+                    className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
     
               {/* Thêm badge cho urgent jobs */}
