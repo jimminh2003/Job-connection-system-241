@@ -12,7 +12,7 @@ input:focus::placeholder {
     opacity: 1; /* Độ mờ khi focus */
 }
 /* Spinner.css hoặc tệp CSS của bạn */
-.select {
+select {
     appearance: none; /* Ẩn kiểu mặc định của trình duyệt */
     background-color: #f0f0f0; /* Màu nền cho select */
     border: 1px solid #ccc; /* Đường viền */
