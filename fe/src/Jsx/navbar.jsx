@@ -34,7 +34,7 @@ function Navbar() {
                     <a href="/">Trang chủ</a>
                 </div>
                 <div className="menu-job menu-effect auth-only">
-                    <a href="./">
+                    <a href="/alljob">
                         Việc Làm
                         <i className="fa-solid fa-angle-down"></i>
                     </a>
@@ -47,7 +47,7 @@ function Navbar() {
                     <div className="underline"></div>
                 </div>
                 <div className="menu-company menu-effect student-only">
-                    <a href="./">
+                    <a href="/allcompany">
                         Công Ty
                         <i className="fa-solid fa-angle-down"></i>
                     </a>
