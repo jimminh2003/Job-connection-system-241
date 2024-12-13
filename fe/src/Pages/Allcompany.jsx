@@ -376,7 +376,7 @@ const totalPages = Array.isArray(companies) ? Math.ceil(companies.length / compa
           Người theo dõi: <span className="font-medium">{company.numberOfFollowers || 0}</span>
         </p>
             <button 
-              onClick={() => navigate(`/company/${company.id}`)}
+              onClick={() => navigate(`/allcompany/${company.id}`)}
               className="mt-2 w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center"
             >
               Xem Chi Tiết <ArrowRight className="ml-2 w-4 h-4" />
