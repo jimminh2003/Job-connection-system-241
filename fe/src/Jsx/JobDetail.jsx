@@ -26,6 +26,8 @@ import AppNavbar from './AppNavbar';
 import CompanyNavbar from './CompanyNavbar';
 import TokenManager from "../utils/tokenManager";
 import Loadingedit from '../images/Load_info.gif'
+import ApplicationsPopup from './ApplicationsPopup';
+
 
 function JobDetail() {
     const { id } = useParams(); // Lấy `id` từ URL
@@ -39,6 +41,11 @@ function JobDetail() {
     const [userId, setUserId] = useState(null); // State để lưu userId
     const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [notification, setNotification] = useState(null); // Trạng thái thông báo
+    const [interestedPosts, setInterestedPosts] = useState([]);
+    const [isSaving, setIsSaving] = useState(false);
+    
 
 
     const token = TokenManager.getToken();
@@ -59,19 +66,44 @@ function JobDetail() {
         return <Navbar />;
       }
     };
+      useEffect(() => {
+        const fetchInterestedPosts = async () => {
+            if (!userId) return; // Không gọi API nếu chưa có userId
+    
+            try {
+                const response = await fetch(`/applicants/${userId}/interested-posts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token?.value}`,
+                    },
+                });
+    
+                if (response.ok) {
+                    const result = await response.json();
+                    setInterestedPosts(result.data?.map(post => post.id) || []);
+                } else {
+                    console.error("Failed to fetch interested posts");
+                }
+            } catch (error) {
+                console.error("Error fetching interested posts:", error);
+            }
+        };
+    
+        fetchInterestedPosts();
+    }, [userId, token]);
 
     const handleApplyClick = () => {
-      if (role !== 'applicant') {
-        setIsWarningPopupOpen(true);
-        return;
+      if (userId === job.companyId) {
+          setIsPopupOpen(true);
+      } else if (role !== 'applicant') {
+          setIsWarningPopupOpen(true);
+      } else {
+          setIsPopupOpen(true);
       }
-      setIsPopupOpen(true);
-    };
-
+  };
+  
     const handleWarningPopupClose = () => {
       setIsWarningPopupOpen(false);
     };
-    
   
     const handleClosePopup = () => {
       setIsPopupOpen(false);
@@ -114,6 +146,9 @@ function JobDetail() {
       [e.target.name]: e.target.value,
     });
   };
+
+
+
   const handleSubmit = async () => {
     const jobData = {
         id: id, // Giữ nguyên id của công việc
@@ -140,7 +175,7 @@ function JobDetail() {
     setIsLoading(true); // Bắt đầu quá trình loading
 
     try {
-        const response = await fetch('http://localhost:8080/companies/jobpostings', {
+        const response = await fetch('/companies/jobpostings', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token.value}`,
@@ -164,15 +199,58 @@ function JobDetail() {
       setIsLoading(false); // Kết thúc quá trình loading
     }
 };
+const handleSave = async (id) => {
 
+    if (!userId) {
+        setNotification('Vui lòng đăng nhập để lưu bài đăng!');
+        setTimeout(() => setNotification(null), 3000);
+        return;
+    }
+    else if(role === 'company') {
+        setNotification('Bạn phải là ứng viên mới có thể lưu bài đăng!');
+        setTimeout(() => setNotification(null), 3000);
+        return;
+    }
+    
+    setIsSaving(true); // Bắt đầu lưu, thay đổi biểu tượng thành GIF loading
+    try {
+        const response = await fetch('/applicants/interested-posts', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                applicantId: userId,
+                jobPostingId: id
+            })
+        });
 
-  const handleSaveOrEdit = () => {
+        const result = await response.json();
+
+        if (response.ok) {
+            setNotification(result.message); // Hiển thị thông báo từ API
+            setTimeout(() => setNotification(null), 3000);
+        } else {
+            setNotification('Đã xảy ra lỗi. Vui lòng thử lại!');
+            setTimeout(() => setNotification(null), 3000);
+        }
+    } catch (error) {
+        console.error('Error saving post:', error);
+        setNotification('Đã xảy ra lỗi. Vui lòng thử lại!');
+        setTimeout(() => setNotification(null), 3000);
+    } finally {
+        setIsSaving(false); // Kết thúc quá trình lưu, trở lại biểu tượng tim
+        setTimeout(() => setNotification(null), 3000);
+    }
+};
+  const handleSaveOrEdit = (id) => {
     if (userId === job.companyId) {
       // Nếu userId trùng với companyId, chuyển sang chế độ "Sửa"
       setIsEditModalOpen(true);
     } else {
       // Nếu không, lưu tin
-      alert("Đã lưu tin!");
+      handleSave(id);
     }
   };
     if (loading) {
@@ -185,6 +263,11 @@ function JobDetail() {
          <div>
         {renderNavbar()}
         <div id="job-detail-container">
+          {notification && (
+                <div className="notification-popup">
+                    {notification}
+                </div>
+            )}
           <div className="content-container">
             
             {/* Main Content (Left Column) */}
@@ -223,13 +306,22 @@ function JobDetail() {
                   </div>
                 </div>
                 <div className="button">
-                  <button className="apply-btn" onClick={handleApplyClick}>Ứng tuyển ngay</button>
-                  <button className="save-btn" onClick={handleSaveOrEdit}>
-                    {userId === job.companyId ? "Sửa" : "Lưu tin"}
+                  <button className="apply-btn" onClick={handleApplyClick}>
+                    {userId === job.companyId ? "Xem các đơn ứng tuyển" : "Ứng tuyển ngay"}
+                  </button>
+                  <button disabled={isSaving} className="save-btn" onClick={() => handleSave(job.id)}>
+                    {userId === job.companyId ? "Sửa" : 
+                      !isSaving && interestedPosts.includes(job.id) ? "Đã lưu" :
+                      isSaving &&  !interestedPosts.includes(job.id) ? "Đang lưu" :
+                      isSaving &&  interestedPosts.includes(job.id) ? "Đang hủy lưu " :
+                        "Lưu tin"}
                   </button>
                 </div>
               </div>
-              {isPopupOpen && <ApplicationForm onClose={handleClosePopup} jobPostingId={id} />}
+                {isPopupOpen && userId === job.companyId && (
+                    <ApplicationsPopup jobId={id} onClose={handleClosePopup} />
+                )}
+              {isPopupOpen && userId !== job.companyId && <ApplicationForm onClose={handleClosePopup} jobPostingId={id} />}
               <div className="job-details">
                 <h3>Chi tiết tin tuyển dụng</h3>
                 <p>{job.description && job.description.split('\n').map((line, index) => (

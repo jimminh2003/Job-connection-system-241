@@ -247,47 +247,7 @@ const AllJob = () => {
     fetchJobs();
   }, [localPage, searchParams]);
 
-  // Update Filter Methods
-  
-  const handleSearch = () => {
-    const params = new URLSearchParams(searchParams);
-    
-    // Reset page to 1 when searching
-    params.delete('page');
-  
-    // Update params with current filter values
-    if (searchTitle) params.set('title', searchTitle);
-    if (schedule) params.set('schedule', schedule);
-    if (experienceLevel) params.set('level', experienceLevel);
-    if (salaryRange) params.set('salary', salaryRange);
-    if (yoe) params.set('yoe', yoe);
-    if (companyName) params.set('companyName', companyName);
-    if (allowance) params.set('allowance', allowance);
-    if (minOfApplicants) params.set('minOfApplicants', minOfApplicants);
-  
-    // Ensure jobType is correctly encoded
-    if (selectedJobType) {
-      params.set('jobType', encodeURIComponent(selectedJobType));
-    } else {
-      params.delete('jobType'); // Remove jobType if no job type is selected
-    }
-  
-    if (sortByTime) params.set('sortByTime', sortByTime);
-    if (selectedProvince) params.set('province', selectedProvince);
-    if (selectedCity) params.set('city', selectedCity);
-    if (selectedWard) params.set('ward', selectedWard);
-    
-    // Skills filter
-    if (selectedSkills.length > 0) {
-      params.set('skills', selectedSkills.map(skill => encodeURIComponent(skill)).join(','));
-    } else {
-      params.delete('skills'); // Remove skills if no skills are selected
-    }
-  
-    setSearchParams(params);
-  };
-  // Handle Page Change
-  const handlePageChange = (direction) => {
+    const handlePageChange = (direction) => {
     const newPage = direction === 'next' 
       ? Math.min(localPage + 1, pagination.totalPages)
       : Math.max(localPage - 1, 1);
@@ -298,6 +258,83 @@ const AllJob = () => {
     setLocalPage(newPage);
   };
 
+  // Thêm các hàm xóa cho từng trường
+const clearTitle = () => {
+  setSearchTitle('');
+  const params = new URLSearchParams(searchParams);
+  params.delete('title');
+  setSearchParams(params);
+};
+
+const clearCompanyName = () => {
+  setCompanyName('');
+  const params = new URLSearchParams(searchParams);
+  params.delete('companyName');
+  setSearchParams(params);
+};
+
+  const handleSearch = () => {
+  const params = new URLSearchParams(searchParams);
+  
+  // Reset page to 1 when searching
+  params.delete('page');
+
+  const handleTextField = (fieldName, value) => {
+    if (value == null || value.trim() === '') {
+      params.delete(fieldName); // Xóa nếu rỗng hoặc null
+    } else {
+      params.set(fieldName, value.trim()); // Gán giá trị sau khi trim
+    }
+  };
+  handleTextField('title', searchTitle);
+  handleTextField('companyName', companyName);
+  const handleNumericField = (fieldName, value) => {
+    // Kiểm tra kỹ hơn: 
+    // Nếu value là null, undefined, 0, chuỗi rỗng, chỉ toàn khoảng trắng, hoặc không phải số
+    if (
+      value == null || 
+      value === '0' || 
+      value === 0 ||
+      value.toString().trim() === '' || 
+      isNaN(Number(value))
+    ) {
+      params.delete(fieldName);
+    } else {
+      // Chuyển đổi sang số để loại bỏ các số 0 đứng đầu
+      params.set(fieldName, Number(value).toString());
+    }
+  };
+  // Áp dụng xử lý cho các trường số
+  handleNumericField('salary', salaryRange);
+  handleNumericField('yoe', yoe);
+  handleNumericField('minOfApplicants', minOfApplicants);
+  handleNumericField('allowance', allowance);
+  
+  // Các xử lý khác như cũ
+  if (searchTitle) params.set('title', searchTitle);
+  if (schedule) params.set('schedule', schedule);
+  if (experienceLevel) params.set('level', experienceLevel);
+  if (companyName) params.set('companyName', companyName);
+
+  if (selectedJobType) {
+    params.set('jobType', encodeURIComponent(selectedJobType));
+  } else {
+    params.delete('jobType');
+  }
+
+  if (sortByTime) params.set('sortByTime', sortByTime);
+  if (selectedProvince) params.set('province', selectedProvince);
+  if (selectedCity) params.set('city', selectedCity);
+  if (selectedWard) params.set('ward', selectedWard);
+  
+  if (selectedSkills.length > 0) {
+    params.set('skills', selectedSkills.map(skill => encodeURIComponent(skill)).join(','));
+  } else {
+    params.delete('skills');
+  }
+
+  setSearchParams(params);
+};
  
 
   // Handle Clear All Filters
@@ -318,6 +355,7 @@ const AllJob = () => {
     setCompanyName("");
     setAllowance("");
     setSelectedSkills([]);
+   
   };
 
   // Render Navbar based on role
@@ -327,7 +365,7 @@ const AllJob = () => {
     return <Navbar />;
   };
 
-  
+
   
   return (
     <>
@@ -336,7 +374,7 @@ const AllJob = () => {
 
       <div className="h-auto bg-gradient-to-b from-blue-50 via-white to-blue-50">
         <div className="container max-w-7xl mx-auto px-4 py-8 mt-20">
-        <div className={`w-full h-[${calculateHeight()}px] bg-gradient-to-br from-thirdColor to-themeColor text-white shadow-2xl rounded-none p-6 border-l-7 border-blue-700 transition-all duration-500 hover:shadow-3xl hover:scale-105 hover:border-purple-600 from-blue-300 via-blue-400 to-purple-170`}>
+        <div className={`w-full h-[${calculateHeight()}px] rounded-xl bg-gradient-to-br from-thirdColor to-themeColor text-white shadow-2xl p-6 border-l-7 border-blue-700 transition-all duration-500 hover:shadow-3xl hover:scale-105 hover:border-purple-600 from-blue-300 via-blue-400 to-purple-170`}>
             {/* Main Search Bar */}
 
 
@@ -374,20 +412,19 @@ const AllJob = () => {
       </svg>
     </div>
 
-    {/* Nút filter và search thông minh */}
     <div className="absolute inset-y-0 right-0 flex items-center pr-2 space-x-2">
-      {/* Filter chip */}
-      {searchTitle && (
-        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
-          <span>{searchTitle}</span>
-          <button 
-            onClick={() => setSearchTitle('')}
-            className="ml-2 text-blue-500 hover:text-blue-700"
-          >
-            ×
-          </button>
-        </div>
-      )}
+  {/* Filter chip cho title */}
+  {searchTitle && (
+    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+      <span>{searchTitle}</span>
+      <button 
+        onClick={clearTitle}
+        className="ml-2 text-blue-500 hover:text-blue-700"
+      >
+        ×
+      </button>
+    </div>
+  )}
 
     
     
@@ -440,12 +477,23 @@ const AllJob = () => {
         <input 
           type="text"
           placeholder="Nhập tên công ty"
-          className="w-full p-2 rounded border"
+          className="w-full p-2 rounded border text-gray-700"
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
         />
       </div>
     )}
+     {companyName && (
+    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+      <span>{companyName}</span>
+      <button 
+        onClick={clearCompanyName}
+        className="ml-2 text-blue-500 hover:text-blue-700"
+      >
+        ×
+      </button>
+    </div>
+  )}
   </div>
               <div className="space-y-2">
                 <div 
@@ -522,6 +570,7 @@ const AllJob = () => {
                   className="w-full p-2 rounded border"
                   value={experienceLevel}
                   onChange={(e) => setExperienceLevel(e.target.value)}
+                  
                 >
                   <option value="">Cấp độ</option>
                   <option value="INTERN">Thực tập sinh</option>
@@ -541,7 +590,7 @@ const AllJob = () => {
                   min="0"
                   onChange={(e) => setYoe(Math.max(0, Number(e.target.value)).toString())}
                 />
-                <label className="block text-sm font-medium text-gray-700">Số lượng đơn tuyển</label>
+                <label className="block text-sm font-medium text-gray-700">Số lượng tuyển tối thiểu</label>
                 <input 
                   type="number"
                   placeholder="Số lượng đơn tuyển"
@@ -581,29 +630,22 @@ const AllJob = () => {
                   <option value="CONTRACT">Theo hợp đồng</option>
                 </select>
 
-                {/* <input 
-                  type="number"
-                  placeholder="Mức lương (Triệu VNĐ)"
-                  className="w-full p-2 rounded border"
-                  value={salaryRange}
-                  min="0"
-                  onChange={(e) => setSalaryRange(Math.max(0, Number(e.target.value)).toString())}
-                /> */}
+              
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Mức lương</label>
+                  <label className="block text-sm font-medium text-gray-700">Mức lương ($)</label>
                   <input 
                     type="number"
-                    placeholder="Nhập mức lương ($)"
+                    placeholder="Nhập mức lương"
                     className="w-full p-2 rounded border text-gray-500"
                     value={salaryRange}
                     min="0"
                     onChange={(e) => setSalaryRange(Math.max(0, Number(e.target.value)).toString())}
                   />
                 </div>
-                <label className="block text-sm font-medium text-gray-700">Phụ cấp</label>
+                <label className="block text-sm font-medium text-gray-700">Phụ cấp ($)</label>
                 <input 
                   type="number"
-                  placeholder="Phụ cấp ($)"
+                  placeholder="Phụ cấp"
                   className="w-full p-2 rounded border text-gray-500"
                   value={allowance}
                   min="0"
@@ -650,23 +692,29 @@ const AllJob = () => {
 
 
             {/* Search and Reset Buttons */}
-            <div className="flex justify-center space-x-4 mt-6">
-            <button 
-  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full 
-  hover:from-blue-700 hover:to-blue-800 transition-all duration-300 
-  transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  onClick={handleSearch}
->
-  Tìm Kiếm
-</button>
-              <button 
-                className="px-8 py-3 bg-gray-600 text-white rounded-full hover:bg-gray-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 
-  transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 transition duration-300"
-                onClick={handleClearAllFilters}
-              >
-                Đặt Lại
-              </button>
-            </div>
+            {/* Search and Reset Buttons */}
+<div className="flex justify-center space-x-4 mt-6">
+  <button 
+    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full 
+    hover:from-blue-500 hover:to-blue-600 shadow-lg 
+    transform transition-transform duration-300 hover:scale-105 focus:outline-none 
+    focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50"
+    onClick={handleSearch}
+  >
+    Tìm Kiếm
+  </button>
+  
+  <button 
+    className="px-8 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-full 
+    hover:from-gray-500 hover:to-gray-600 shadow-lg 
+    transform transition-transform duration-300 hover:scale-105 focus:outline-none 
+    focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50"
+    onClick={handleClearAllFilters}
+  >
+    Đặt Lại
+  </button>
+</div>
+
           </div>
         </div>
 
@@ -759,7 +807,7 @@ const AllJob = () => {
               </label>
             </div>
           ))}
-      </div>
+          </div> 
     </div>
   </div>
   </div>

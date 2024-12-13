@@ -26,6 +26,7 @@ function Job_Home() {
     const [notification, setNotification] = useState(null); // Trạng thái thông báo
     const [interestedPosts, setInterestedPosts] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
+    
 
 
     const [role, setRole] = useState(null);
@@ -106,6 +107,7 @@ function Job_Home() {
         } catch (error) {
             console.error('Error saving post:', error);
             setNotification('Đã xảy ra lỗi. Vui lòng thử lại!');
+            console('Đã xảy ra lỗi!')
             setTimeout(() => setNotification(null), 3000);
         } finally {
             setIsSaving(false); // Kết thúc quá trình lưu, trở lại biểu tượng tim

@@ -99,7 +99,7 @@ if (!response.ok) {
     try {
       const token = TokenManager.getToken().value;
       if (editingUser) {
-        const response = await fetch(`http://localhost:8080/users/users/${editingUser.id}`, {
+        const response = await fetch(`http://localhost:8080/applicants/${editingUser.id}`, {
           method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -145,7 +145,7 @@ if (!response.ok) {
   const handleDelete = async (id) => {
     try {
       const token = TokenManager.getToken().value;
-      const response = await fetch(`http://localhost:8080/users/users/${id}`, {
+      const response = await fetch(`http://localhost:8080/applicants/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

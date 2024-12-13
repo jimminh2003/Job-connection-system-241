@@ -11,6 +11,9 @@ function Navbar() {
     const handleLogin = () => {
         navigate('/login');
     }
+    const handleRegist = () => {
+        navigate('/register');
+    }
 
     return (
         <div id="headernav">
@@ -70,7 +73,7 @@ function Navbar() {
 
             <div className="navbar-auth-custom">
               <button onClick={handleLogin}>Đăng nhập</button>
-              <button >Đăng ký</button>
+              <button onClick={handleRegist}>Đăng ký</button>
             </div>
         </div>
     </div>

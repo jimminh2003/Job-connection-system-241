@@ -71,6 +71,7 @@
   .company-job-management-container .delete-job-button:hover {
     background-color: #c0392b;
   }
+  
   .company-job-management-container   .confirm-delete-popup {
     position: fixed;
     top: 0;

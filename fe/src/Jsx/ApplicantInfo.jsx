@@ -257,13 +257,12 @@ const handleRemoveJobType = (index) => {
   // Hàm gửi dữ liệu thay đổi lên server
   const handleUpdate = () => {
     setIsLoading(true); // Bật loading khi bắt đầu cập nhật
-
+  
     const selectedWard = locations
       .find((province) => province.name === selectedProvince)
       ?.cities.find((city) => city.name === selectedCity)
       ?.wards.find((ward) => ward.name === selectedDistrict);
-    const wardId = selectedWard ? selectedWard.id : null;
-
+  
     const updatedData = {
       id: userId,
       username: editableInfo.username,
@@ -271,22 +270,15 @@ const handleRemoveJobType = (index) => {
       firstName: editableInfo.firstName,
       lastName: editableInfo.lastName,
       description: editableInfo.description,
-      isPublic: true,  // Trả về true
-      ward: wardId,
-      specificAddress: editableInfo.specificAddress,
       image: editableInfo.image,  // Giữ nguyên hình ảnh
-      phoneNumbers: editableInfo.phoneNumbers,  // Đảm bảo chỉ lấy số điện thoại
+      phoneNumbers: editableInfo.phoneNumbers.map((phone) => phone), // Trả về mảng chuỗi
+      emails: editableInfo.emails.map((email) => email), // Trả về mảng chuỗi
+      specificAddress: editableInfo.specificAddress,
+      ward: selectedWard
+        ? { id: selectedWard.id, name: selectedWard.name }
+        : null, // Đảm bảo ward là object
       dob: editableInfo.dob,
-      emails: editableInfo.emails,  // Đảm bảo chỉ lấy email
-      notificationIds: applicantInfo.notificationIds,  // Giữ nguyên notificationIds
-      blockedUserIds: applicantInfo.blockedUserIds,  // Giữ nguyên blockedUserIds
-      skillIds: editableInfo.skills.map(skill => skill.id),  // Lấy ID kỹ năng từ dữ liệu đã chọn
-      jobTypes: editableInfo.jobTypes.map((jobType) => ({
-        id: jobType.id,
-        name: jobType.name,
-        level: jobType.level,
-      })),
-      certifications: editableInfo.certifications.map(cert => ({
+      certifications: editableInfo.certifications.map((cert) => ({
         name: cert.name,
         level: cert.level,
         description: cert.description,
@@ -294,6 +286,14 @@ const handleRemoveJobType = (index) => {
         startDate: cert.startDate,
         endDate: cert.endDate,
         applicantId: userId,
+      })),
+      jobTypes: editableInfo.jobTypes.map((jobType) => ({
+        id: jobType.id,
+        name: jobType.name,
+        level: jobType.level,
+      })),
+      skills: editableInfo.skills.map((skill) => ({
+        id: skill.id,
       })),
     };
   
@@ -307,22 +307,25 @@ const handleRemoveJobType = (index) => {
         credentials: 'include',
       })
       .then((response) => {
-        setApplicantInfo(response.data);  // Cập nhật thông tin sau khi thay đổi
-        setEditableInfo(response.data);  // Cập nhật editableInfo để UI phản ánh ngay
-        setIsEditing(false);  // Tắt chế độ chỉnh sửa
-        setIsLoading(false);  // Tắt loading khi cập nhật thành công
+        setApplicantInfo(response.data); // Cập nhật thông tin sau khi thay đổi
+        setEditableInfo(response.data); // Cập nhật editableInfo để UI phản ánh ngay
+        setIsEditing(false); // Tắt chế độ chỉnh sửa
         
         setInitialProvince(applicantInfo.province); // Khôi phục tỉnh ban đầu
-        setInitialCity(applicantInfo.city);         // Khôi phục thành phố ban đầu
+        setInitialCity(applicantInfo.city); // Khôi phục thành phố ban đầu
         setInitialDistrict(applicantInfo.ward); // Khôi phục huyện ban đầu
         alert('Cập nhật thành công!');
+        setIsLoading(false); // Tắt loading khi cập nhật thành công
+        window.location.reload();
       })
       .catch((error) => {
         console.error('Lỗi khi cập nhật thông tin:', error);
-        setIsLoading(false);  // Tắt loading khi cập nhật thành công
+        setIsLoading(false); // Tắt loading khi cập nhật thất bại
         alert('Cập nhật thất bại. Vui lòng thử lại.');
-      });
+      } 
+    );
   };
+  
 
   const handleConfirmEdit = () => {
     handleUpdate();  // Gọi hàm handleUpdate khi xác nhận
@@ -367,7 +370,10 @@ const handleRemoveJobType = (index) => {
 
   return (
     <div className="applicant-info">
-      {isLoading && <Loading />}  {/* Hiển thị loading khi isLoading = true */}
+       {isLoading ? (
+      <Loading /> // Hiển thị Loading khi isLoading = true
+    ) : (
+      <>
       <h1>Thông tin cá nhân</h1>
       <div className="info-section">
         <div className="info-row">
@@ -729,6 +735,8 @@ const handleRemoveJobType = (index) => {
           onCancel={handleCancelEdit}
         />
       )}
+       </>
+    )}
     </div>
   );
 };

@@ -462,72 +462,62 @@ export default function CompanyRegistrationForm() {
                   </FormItem>
                 )}
               />
+               {/* Phần lĩnh vực kinh doanh */}
+   {/* Phần lĩnh vực kinh doanh */}
+{/* Phần lĩnh vực kinh doanh */}
+<div>
+  <FormLabel className="text-gray-700">Lĩnh Vực Kinh Doanh</FormLabel>
 
-              {/* Phần lĩnh vực kinh doanh */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <FormLabel className="text-gray-700">Lĩnh Vực Kinh Doanh</FormLabel>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => appendCompanyField({ id: null, name: "" })}
-                    className="bg-gray-50 text-gray-800 border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4 text-gray-600" /> Thêm lĩnh vực
-                  </Button>
-                </div>
-                {companyFields.map((field, index) => (
-                  <div key={field.id} className="flex space-x-2 mb-2">
-                    <FormField
-                      control={form.control}
-                      name={`fields.${index}`}
-                      render={({ field: fieldProps }) => (
-                        <FormItem className="flex-grow">
-                          <FormControl>
-                            <div className="flex items-center space-x-2">
-                              <Select
-                                onValueChange={(value) => {
-                                  const selectedField = fields.find(f => f.id === parseInt(value));
-                                  fieldProps.onChange(selectedField);
-                                }}
-                                value={fieldProps.value?.id ? String(fieldProps.value.id) : ""}
-                              >
-                                <SelectTrigger className="text-gray-800 bg-gray-200">
-                                  <SelectValue placeholder="Chọn lĩnh vực" className="bg-gray-200"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {fields.map((businessField) => (
-                                    <SelectItem 
-                                      key={businessField.id} 
-                                      value={String(businessField.id)}
-                                      className="text-gray-800 hover:bg-gray-100"
-                                    >
-                                      {businessField.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              {index > 0 && (
-                                <Button 
-                                  type="button" 
-                                  variant="destructive" 
-                                  size="icon"
-                                  onClick={() => removeCompanyField(index)}
-                                  className="bg-red-500 text-white"
-                                >
-                                  <Trash2 className="h-4 w-4 text-white" />
-                                </Button>
-                              )}
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                ))}
-              </div>
+  {/* Nếu chưa chọn lĩnh vực, hiển thị ô input */}
+  {!companyFields.length && (
+    <div className="relative">
+      <Select
+        onValueChange={(value) => {
+          const selectedField = fields.find(f => f.id === parseInt(value));
+          if (selectedField) {
+            appendCompanyField(selectedField); // Thêm lĩnh vực mới
+          }
+        }}
+      >
+        <SelectTrigger className="w-full text-gray-800 bg-gray-200">
+          <SelectValue placeholder="Chọn lĩnh vực" className="bg-gray-200" />
+        </SelectTrigger>
+        <SelectContent>
+          {fields.map((businessField) => (
+            <SelectItem
+              key={businessField.id}
+              value={String(businessField.id)}
+              className="text-gray-800 hover:bg-gray-100"
+            >
+              {businessField.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  )}
 
+  {/* Nếu đã chọn lĩnh vực, hiển thị lĩnh vực đã chọn */}
+  {companyFields.map((field, index) => (
+    <div key={field.id} className="flex items-center space-x-2 mt-2">
+      <div className="flex-grow text-gray-800 bg-gray-200 px-2 py-1 rounded">
+        {field.name}
+      </div>
+      <Button
+        type="button"
+        variant="destructive"
+        size="icon"
+        onClick={() => removeCompanyField(index)} // Xóa lĩnh vực đã chọn
+        className="bg-red-500 text-white"
+      >
+        <Trash2 className="h-4 w-4 text-white" />
+      </Button>
+    </div>
+  ))}
+</div>
+
+
+            
               {/* Phần Email */}
               <div>
                 <div className="flex justify-between items-center mb-2">

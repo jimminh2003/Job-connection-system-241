@@ -170,10 +170,10 @@ const Login = () => {
             {/* Additional Links */}
             <div className="flex items-center justify-between text-sm">
             <button 
-        onClick={() => navigate('/forgot-password')}
+        onClick={() => navigate('/')}
         className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
       >
-        Quên mật khẩu?
+        Quay về trang chủ
       </button>
       <button
         onClick={() => navigate('/register')}

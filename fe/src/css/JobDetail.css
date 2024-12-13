@@ -7,7 +7,19 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   font-size: 17px;
 }
-
+#job-detail-container .notification-popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #68f29d; /* Màu nền (đỏ nhạt) */
+  color: #ffffff; /* Màu chữ (đỏ đậm) */
+  padding: 10px 20px;
+  border: 1px solid #68f29d;
+  border-radius: 5px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeInOut 3s ease-in-out;
+}
 #job-detail-container .content-container {
   display: flex;
   gap: 20px;

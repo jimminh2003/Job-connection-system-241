@@ -64,7 +64,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 10; /* Đảm bảo nổi trên các thành phần khác */
+  z-index: 1; 
+  /* Đảm bảo nổi trên các thành phần khác */
 }
 
 #jobhome-container .loading-gif {
@@ -150,7 +151,7 @@
     min-width: 98%; 
   }
 } */
-#jobhome-container .notification-popup {
+ .notification-popup {
   position: fixed;
   top: 20px;
   right: 20px;

@@ -54,12 +54,12 @@
   }
   
   /* Style for resume text */
-  td:last-child {
+  .job-applied-container td:last-child {
     color: #007BFF;
     text-decoration: underline;
   }
   
-  td:last-child:hover {
+  .job-applied-container td:last-child:hover {
     color: #0056b3;
   }
   

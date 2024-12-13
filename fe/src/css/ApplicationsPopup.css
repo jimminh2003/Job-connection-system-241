@@ -1,0 +1,286 @@
+
+.applications-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.applications-popup .popup-content {
+    background-color: #fff;
+    border-radius: 8px;
+    width: 90%;
+    padding: 20px;
+    min-height: 70%;
+    max-height: 80%;
+    overflow-y: auto; /* Enable scrolling for long content */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    align-items: center;
+    text-align: center;
+}
+/* Căn giữa loading-spinner */
+.applications-popup .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Đảm bảo nó chiếm toàn bộ chiều cao của container */
+    flex-direction: column; /* Để căn giữa cả hình ảnh và văn bản */
+}
+
+.applications-popup .loading-spinner img {
+    width: 30%; /* Bạn có thể điều chỉnh kích thước cho phù hợp */
+    height: 30%;
+}
+
+.applications-popup .loading-spinner .loading-p {
+    margin-top: 2%;
+    animation: pulse 1.5s infinite;
+  }
+  
+  /* Animation for Modal */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+.applications-popup h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: var(--thirdColor);
+    font-weight: bold;
+    text-align: center; /* Thêm dòng này để căn giữa */
+}
+
+.applications-popup .applications-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.applications-popup .application-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.applications-popup .application-item h3 {
+    font-size: 1.2rem;
+    margin: 0 0 5px;
+    color: #007BFF;
+}
+
+
+.applications-popup .error {
+    color: red;
+    font-weight: bold;
+}
+
+.applications-popup .applications-table td button {
+    margin: 0 5px; /* Cách nhau 5px */
+    border: 2px;
+}
+
+.applications-popup .sa-btn {
+    background-color: #007bff; /* Màu nền của nút */
+    color: white; /* Màu chữ */
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu */
+}
+
+.applications-popup .del-btn {
+    background-color: #ff0000; /* Màu nền của nút */
+    color: white; /* Màu chữ */
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu */
+}
+
+.applications-popup .sa-btn:hover {
+    background-color: #0056b3; /* Màu nền khi hover */
+}
+
+.applications-popup .del-btn:hover {
+    background-color: #c51b1b; /* Màu nền khi hover */
+}
+
+.applications-popup button {
+    background-color: #28a745; /* Màu nền cho nút thông thường */
+    color: white; /* Màu chữ */
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu */
+}
+
+/* Căn giữa các th trong bảng */
+.applications-popup .applications-table th {
+    text-align: center; /* Căn giữa nội dung các th */
+    padding: 12px; /* Tăng khoảng cách bên trong th */
+}
+
+/* Đảm bảo bảng có đủ không gian để căn giữa */
+.applications-popup .applications-table {
+    width: 100%;
+    border-collapse: collapse; /* Tùy chọn để xóa các khoảng cách giữa các ô trong bảng */
+}
+
+.applications-popup button:hover {
+    background-color: #218838; /* Màu nền khi hover */
+}
+
+.applications-popup .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgb(255, 58, 58);
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: white;
+    /* padding: 10px;    */
+    border-radius: 5px;
+    width: 3%;
+    height: auto;
+}
+.applications-popup  .filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.applications-popup  .search-bar {
+    width: 70%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.applications-popup  .status-filter {
+    width: 25%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.applications-popup .close-btn:hover {
+    color: #000;
+}
+
+/* Add scrollbar styling for better UX */
+.applications-popup .popup-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.applications-popup .popup-content::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.applications-popup .popup-content::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+.applications-popup .pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.applications-popup .pagination-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.applications-popup .pagination-btn.active {
+    background-color: #0056b3;
+    font-weight: bold;
+}
+
+.applications-popup .pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+
+.applications-popup .confirm-delete-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .applications-popup .popup-delete-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+  }
+
+  .applications-popup .popup-content h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 50px;
+  }
+  
+  .applications-popup .popup-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .applications-popup .cancel-button,
+  .applications-popup .confirm-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 30%;
+  }
+  
+  .applications-popup .cancel-button {
+    background-color: #ccc;
+  }
+  
+  .applications-popup .confirm-button {
+    background-color: #ff0000;
+    color: white;
+  }
+  
+  .applications-popup .confirm-button:hover {
+    background-color: #990b0b;
+  }
+  
+  .confirm-button[disabled] {
+    background-color: #b01919;
+    cursor: not-allowed;
+  }
+  
