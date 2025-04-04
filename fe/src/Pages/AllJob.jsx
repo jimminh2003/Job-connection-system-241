@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect} from 'react';
 import "./Search.css";
 
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/solid';

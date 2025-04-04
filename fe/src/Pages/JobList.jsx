@@ -6,6 +6,7 @@ const format = (date, formatString) => {
   const year = d.getFullYear();
   return formatString === 'dd/MM/yyyy' ? `${day}/${month}/${year}` : d.toLocaleDateString();
 };
+
 const JobList = ({ jobs, loading, pagination, onPageChange }) => {
     const navigate = useNavigate(); 
     const isHotJob = (updatedAt) => {
